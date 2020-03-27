@@ -21,7 +21,7 @@ def home():
 
 '''
 
-@app.route('/api/v1/itinerary', methods=['GET'])
+@app.route('/api/1.0/itinerary', methods=['GET'])
 def api_itinerary():
     query_parameters = request.args
     start = query_parameters.get('start')
@@ -51,7 +51,7 @@ def api_itinerary():
 
 
 # Route
-@app.route('/api/v1/route', methods=['GET'])
+@app.route('/api/1.0/route', methods=['GET'])
 def api_route():
     query_parameters = request.args
     start = query_parameters.get('start')

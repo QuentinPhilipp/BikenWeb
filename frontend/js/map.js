@@ -1,4 +1,4 @@
-var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+var mymap = L.map('mapid').setView([48.8589507,2.2770202], 10);
 
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -7,5 +7,20 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
+    zoomControl: false,
     accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
 }).addTo(mymap);
+
+
+
+
+function sendData() {
+  var start = document.getElementById('start').value
+  var finish = document.getElementById('finish').value
+
+  console.log("Send data");
+  console.log("Start : ",start," | Finish : ",finish);
+
+
+
+}
