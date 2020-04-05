@@ -207,7 +207,7 @@
       "name":"FINISTERE",
       "lon":-4.0332,
       "lat":48.154,
-      "download":0
+      "download":1
    },
    {
       "id":"30",
@@ -674,8 +674,8 @@
    {
       "id":"200",
       "name":"Test_Departement",
-      "lon":0,
-      "lat":0,
+      "lon":6.8248,
+      "lat":48.8814,
       "download":1
    }
 ]

@@ -91,12 +91,11 @@ def resetDatabase():
         pass
 
 def callApi(north,west,south,east):
-    resolved=0;
-    while resolved==0:
-        overpass_url = "http://overpass-api.de/api/interpreter"
-        # overpass_query = f"[out:json];\n(\nnode[highway=tertiary]({south},{west},{north},{east});\nway[highway=tertiary]({south},{west},{north},{east});\nnode[highway=secondary]({south},{west},{north},{east});\nway[highway=secondary]({south},{west},{north},{east});\nnode[highway=primary]({south},{west},{north},{east});\nway[highway=primary]({south},{west},{north},{east});\nway[highway=cycleway]({south},{west},{north},{east});\n);\nout body;\n>;\nout skel qt;\n"
+    resolved=False;
+    overpass_url = "http://overpass-api.de/api/interpreter"
+    # overpass_query = f"[out:json];\n(\nnode[highway=tertiary]({south},{west},{north},{east});\nway[highway=tertiary]({south},{west},{north},{east});\nnode[highway=secondary]({south},{west},{north},{east});\nway[highway=secondary]({south},{west},{north},{east});\nnode[highway=primary]({south},{west},{north},{east});\nway[highway=primary]({south},{west},{north},{east});\nway[highway=cycleway]({south},{west},{north},{east});\n);\nout body;\n>;\nout skel qt;\n"
 
-        overpass_query = f"""
+    overpass_query = f"""
 [out:json];
 // gather results
 (
@@ -115,23 +114,35 @@ def callApi(north,west,south,east):
 out body;
 out skel asc;
 """
-        print(overpass_query)
-
+    while resolved=False:
+        print("\nRequesting...")
         response = requests.get(overpass_url,
                         params={'data': overpass_query})
-        print("API response :",response)
+        # print("API response :",response)
 
-        if (response.status_code==409):
+        if (response.status_code==429):
             print("Try again later. Limit reached");
+
+            # "Hack to get the waiting time"
             timeBlocked = requests.get("http://overpass-api.de/api/status")
-            print(timeBlocked)
-            exit()
+            # return a text explaining how many time you need to wait
+            index = timeBlocked.text.rfind("seconds")
+            # cut the string at the last "seconds" in the text
+            newString = result[:index]
+            # get all the digits in the text.
+            intList = [int(s) for s in newString.split() if s.isdigit()])
+
+            # We need the last one because we cut the string just before "seconds"
+            timeToWait=intList[]
+            print("waiting for ",timeToWait)
+            time.sleep(timeToWait)
         elif (response.status_code==200):
-            print("Response OK")
+            print("Status 200 : OK")
             data = response.json()
-            resolved=1
+            resolved=True
             return data
         else :
+            resolved=True
             print("Response from API :",response)
 
 def getData(north,west,south,east):
@@ -145,8 +156,6 @@ def getData(north,west,south,east):
 
     #parse elements
     elems = data["elements"]
-    print("Elements :",len(elems))
-
 
     startFetchingTime = time.time()         #timer
     nodesVector = []
@@ -212,8 +221,8 @@ def getData(north,west,south,east):
     endFetchingTime = time.time()
     fetchingTime+=endFetchingTime-startFetchingTime
 
-    print("\nNode vector size : ",len(nodesVector))
-    print("Way vector size : ",len(wayVector),"\n")
+    print("Node vector size : ",len(nodesVector))
+    print("Way vector size : ",len(wayVector))
 
     startStockageTime = time.time()
     addValues(nodesVector,wayVector)
@@ -277,18 +286,56 @@ def addRegion(region):
     distance = 25           #distance*2 = distance between two requestPoint
     errorList=[]
 
+    squareSize = 50;
+    # region[lat] and region[lon] are in the center of the region. For each request we need a square.
+    # each square are 50km by 50km. We will use the following names
+    #
+    #         lon1     lon2    lon3
+    #        lat1---------------
+    #            |   1  |   2  |
+    #        lat2 ---------------
+    #            |   3  |   4  |
+    #        lat3---------------
+    # lat2 and lon2 are the center of the region so it's equal to region[lat] and region[lon]
+    lat1 = addKmToLatitude(region["lat"],-squareSize)
+    lon1 = addKmToLongitude(region["lat"],region["lon"],-squareSize)
 
-    north = "49.018312"
-    west = "7.3889923"
-    south = "49.083115"
-    east = "7.4961090"
+    lat2 = region["lat"]
+    lon2 = region["lon"]
+
+    lat3 = addKmToLatitude(region["lat"],squareSize)
+    lon3 = addKmToLongitude(region["lat"],region["lon"],squareSize)
+
+    print("Lat : ",lat1,lat2,lat3)
+    print("Lon : ",lon1,lon2,lon3)
+
+    # getData(north,west,south,east)
 
     try:
-        getData(north,west,south,east)                #71km fais un cercle qui englobe tout le carre
-        print("one tile added")
+        getData(lat1,lon1,lat2,lon2)                #square 1
+        print("1/4 added")
     except Exception as e:
-        errorList.append((north,west,south,east))
+        errorList.append((lat1,lon1,lat2,lon2))
         print(e)
+    try:
+        getData(lat1,lon2,lat2,lon3)                #square 2
+        print("1/2 added")
+    except Exception as e:
+        errorList.append((lat1,lon2,lat2,lon3))
+        print(e)
+    try:
+        getData(lat2,lon1,lat3,lon2)                #square 3
+        print("3/4 added")
+    except Exception as e:
+        errorList.append((lat2,lon1,lat3,lon2))
+        print(e)
+    try:
+        getData(lat2,lon2,lat3,lon3)                #square 4
+        print("Finish")
+    except Exception as e:
+        errorList.append((lat2,lon2,lat3,lon3))
+        print(e)
+
 
     while (len(errorList)!=0):
         print('Still ',len(errorList),' errors')
@@ -297,6 +344,14 @@ def addRegion(region):
             errorList.pop()
         except Exception as e:
             pass
+
+
+def addKmToLatitude(originalLat,kmToAdd):
+    return originalLat + kmToAdd/111.1  #almost 111km everywhere on the planet
+
+def addKmToLongitude(originalLat,originalLon,kmToAdd):
+    r_earth = 6378
+    return originalLon + (kmToAdd / r_earth) * (180 / pi) / cos(originalLat *pi/180); #longitude to km depend on the latitude. 111km at equador but 0 in the pole
 
 def checkDataIn():
     #return the list of departement to add to avoid double values in the database
@@ -328,11 +383,11 @@ def addRequestedRegions():
             if region['download']==1 and region["id"] not in regionIn:
                 regionToAdd.append(region)
 
-    print("Region to add : ",regionToAdd)
+    print("Regions to add : ",regionToAdd)
 
     for region in regionToAdd:
+        print('Adding region :',region["name"])
         addRegion(region)
-        print('region :',region)
         cur=conn.cursor()
         data_tuple = (region["id"],region["name"])
         cur.execute("INSERT INTO departement(id,name) VALUES (?,?)",data_tuple)

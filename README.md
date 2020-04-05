@@ -19,3 +19,10 @@ If start and finish are latitude and longitude</h3>
   Route : http://127.0.0.1:5000/api/1.0/route?startPos=48.577043,7.759002&distance={km}
 
 Those endpoint just return basic information.
+
+
+
+Database generation :
+  select which departement should be downloaded : edit data/departements.json and put download:1 if you want to download this departement
+  build the database : python3 generateDatabase.py
+  clean the database : python3 generateDatabase.py
