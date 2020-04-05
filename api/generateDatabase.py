@@ -77,22 +77,76 @@ def createTable():
         print("Table already created")
         pass
 
-def getData(lat,lon,rad):
+def resetDatabase():
+    c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
+    try :
+        # Create table - CLIENTS
+        c.execute('''DROP TABLE roads''')
+        conn.commit()
+        c.execute('''DROP TABLE departement''')
+        conn.commit()
+        print("Table clear")
+    except :
+        print("Table already destroy")
+        pass
+
+def callApi(north,west,south,east):
+    resolved=0;
+    while resolved==0:
+        overpass_url = "http://overpass-api.de/api/interpreter"
+        # overpass_query = f"[out:json];\n(\nnode[highway=tertiary]({south},{west},{north},{east});\nway[highway=tertiary]({south},{west},{north},{east});\nnode[highway=secondary]({south},{west},{north},{east});\nway[highway=secondary]({south},{west},{north},{east});\nnode[highway=primary]({south},{west},{north},{east});\nway[highway=primary]({south},{west},{north},{east});\nway[highway=cycleway]({south},{west},{north},{east});\n);\nout body;\n>;\nout skel qt;\n"
+
+        overpass_query = f"""
+[out:json];
+// gather results
+(
+  node["highway"="tertiary"]({north},{west},{south},{east});
+  node["highway"="secondary"]({north},{west},{south},{east});
+  node["highway"="primary"]({north},{west},{south},{east});
+
+  way["highway"="tertiary"]({north},{west},{south},{east});
+  way["highway"="secondary"]({north},{west},{south},{east});
+  way["highway"="primary"]({north},{west},{south},{east});
+
+  // way[highway=cycleway]({north},{west},{south},{east});
+);
+// print results
+(._;>;);
+out body;
+out skel asc;
+"""
+        print(overpass_query)
+
+        response = requests.get(overpass_url,
+                        params={'data': overpass_query})
+        print("API response :",response)
+
+        if (response.status_code==409):
+            print("Try again later. Limit reached");
+            timeBlocked = requests.get("http://overpass-api.de/api/status")
+            print(timeBlocked)
+            exit()
+        elif (response.status_code==200):
+            print("Response OK")
+            data = response.json()
+            resolved=1
+            return data
+        else :
+            print("Response from API :",response)
+
+def getData(north,west,south,east):
     global requestTime,stockageTime,fetchingTime
 
     startRequestTime = time.time()
-    urlString = 'http://overpass-api.de/api/interpreter?data=%3Cosm-script%20output%3D%22json%22%3E%0A%20%20%3Cquery%20type%3D%22way%22%3E%0A%20%20%20%20%20%20%3Caround%20lat%3D%22'+lat+'%22%20lon%3D%22'+lon+"%22%20radius%3D%22"+rad+"%22%2F%3E%0A%20%20%20%20%20%20%3Chas-kv%20k%3D%22highway"+"%22%20regv%3D%22primary%7Csecondary%7Ctertiary"+"%22%2F%3E%0A%20%20%3C%2Fquery%3E%0A%20%20%3Cunion%3E%0A%20%20%20%20%3Citem%2F%3E%0A%20%20%20%20%3"+"Crecurse%20type%3D%22down%22%2F%3E%0A%20%20%3C%2Funion%3E%0A%20%20%3Cprint%2F%3E%0A%3C%2Fosm-script%3E";
 
-    #make the request
-    r = requests.get(urlString)
+    data = callApi(north,west,south,east);
 
     endRequestTime = time.time()
-    requestTime+=endRequestTime-startRequestTime         #timer
-    print('Request Done')
-    print(urlString)
 
     #parse elements
-    elems = r.json()["elements"]
+    elems = data["elements"]
+    print("Elements :",len(elems))
+
 
     startFetchingTime = time.time()         #timer
     nodesVector = []
@@ -107,6 +161,7 @@ def getData(lat,lon,rad):
 
 
         elif elem["type"] == "way":
+            # print("way :",elem)
             nodeIdVector = []
             idWay = elem["id"]
             try :
@@ -142,33 +197,38 @@ def getData(lat,lon,rad):
 
             i=0
             for nodeId in elem["nodes"]:
+                # print("add node id :",nodeId)
                 nodeIdVector.append(nodeId)
 
-                if(i==len(elem["nodes"])/2-1):        #on est au milieu
+                if(i==int(len(elem["nodes"])/2-1)):        #on est au milieu
                     centerNode = findNodeInNodeVector(nodeId,nodesVector)
+                    # print("centerNode : ",centerNode)
                 i+=1
 
             w = Way(idWay,nodeIdVector,centerNode,oneway,roundabout,maxspeed,highway)
-            print(w)
+            # print(w)
             wayVector.append(w)
 
     endFetchingTime = time.time()
     fetchingTime+=endFetchingTime-startFetchingTime
 
-    # print "\nNode vector size : ",len(nodesVector)
-    # print "Way vector size : ",len(wayVector),"\n"
+    print("\nNode vector size : ",len(nodesVector))
+    print("Way vector size : ",len(wayVector),"\n")
 
     startStockageTime = time.time()
     addValues(nodesVector,wayVector)
+
     endStockageTime = time.time()
     stockageTime+=endStockageTime-startStockageTime
 
 def findNodeInNodeVector(idNode,nodeVector):
+    # print("Find node ", idNode, "in nodeVector")
     i = len(nodeVector)-1
     prev_i=0
     temporaryValue=0
     valueToSubstract=0
     while(True):
+        # print("Search for nodeID",temporaryValue," ",valueToSubstract," ",i," ",prev_i)
         node = nodeVector[i]
         id =node.getId()
         if(id==idNode):
@@ -176,9 +236,9 @@ def findNodeInNodeVector(idNode,nodeVector):
         else :
             temporaryValue=i
             if(i>prev_i):
-                valueToSubstract=(i-prev_i)/2
+                valueToSubstract=int((i-prev_i)/2)
             else :
-                valueToSubstract=(prev_i-i)/2
+                valueToSubstract=int((prev_i-i)/2)
 
             if(valueToSubstract==0): #I had to add this because in the last operation we can have: (prev_i-i=1), so valueToSubstract would be 1/2=0
                 valueToSubstract=1
@@ -216,45 +276,24 @@ def addValues(nodesVector,wayVector):
 def addRegion(region):
     distance = 25           #distance*2 = distance between two requestPoint
     errorList=[]
-    # each region is splitted in 4 squares. It is big so every departement should be totally inside that box
-    lat1 = str(region["lat"]+distance/111.11)
-    lon1 = str(region["lon"]+distance/(111.11*cos(region["lat"])))
-    lat2 = str(region["lat"]-distance/111.11)
-    lon2 = str(region["lon"]-distance/(111.11*cos(region["lat"])))
 
-    radius = "71000"
-    try:
-        getData(lat1,lon1,radius)                #71km fais un cercle qui englobe tout le carre
-        print("one tile added")
-    except Exception as e:
-        errorList.append((lat1,lon1))
-        print(e)
+
+    north = "49.018312"
+    west = "7.3889923"
+    south = "49.083115"
+    east = "7.4961090"
 
     try:
-        getData(lat2,lon1,radius)                #71km fais un cercle qui englobe tout le carre
+        getData(north,west,south,east)                #71km fais un cercle qui englobe tout le carre
         print("one tile added")
     except Exception as e:
-        errorList.append((lat2,lon1))
-        print(e)
-
-    try:
-        getData(lat1,lon2,radius)                #71km fais un cercle qui englobe tout le carre
-        print("one tile added")
-    except Exception as e:
-        errorList.append((lat1,lon2))
-        print(e)
-
-    try:
-        getData(lat2,lon2,radius)                #71km fais un cercle qui englobe tout le carre
-        print("one tile added")
-    except Exception as e:
-        errorList.append((lat2,lon2))
+        errorList.append((north,west,south,east))
         print(e)
 
     while (len(errorList)!=0):
         print('Still ',len(errorList),' errors')
         try:
-            getData(errorList[len(errorList)-1][0],errorList[len(errorList)-1][1],"71000")
+            getData(errorList[len(errorList)-1][0],errorList[len(errorList)-1][1],errorList[len(errorList)-1][2],errorList[len(errorList)-1][3])
             errorList.pop()
         except Exception as e:
             pass
@@ -295,8 +334,14 @@ def addRequestedRegions():
         addRegion(region)
         print('region :',region)
         cur=conn.cursor()
-        cur.executemany("INSERT INTO departement(id,name) VALUES (?,?)",regionToAdd)
+        data_tuple = (region["id"],region["name"])
+        cur.execute("INSERT INTO departement(id,name) VALUES (?,?)",data_tuple)
         conn.commit()
 
-createTable()
-addRequestedRegions();
+if len(sys.argv)>1:
+    if sys.argv[1]=="clear":
+        print("Clearing database")
+        resetDatabase();
+else :
+    createTable()
+    addRequestedRegions();
