@@ -1,10 +1,12 @@
 import flask
 import requests
 from flask import request, jsonify
+from flask_cors import CORS
 import sqlite3
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+CORS(app)
 
 @app.route('/api/docs', methods=['GET'])
 def home():
@@ -12,16 +14,16 @@ def home():
 <p>Follow the project on <a href="https://github.com/QuentinPhilipp/BikenAPI">Github</a></p>
 <hr>
 <h3>If start and finish is an address</h3>
-<p>Endpoint : http://127.0.0.1:5000/api/1.0/itinerary?start={startPoint}&finish={endPoint} WIP
+<p>Endpoint : http://127.0.0.1:5000/api/1.0/itinerary?start={startPoint}&finish={finishPoint} WIP
 <p>Endpoint : http://127.0.0.1:5000/api/1.0/route?start={startPoint}&distance={km} WIP
 <hr>
 <h3>If start and finish are latitude and longitude</h3>
-<p>Endpoint : http://127.0.0.1:5000/api/1.0/itinerary?startPos=48.577043,7.759002&finishPos={endPoint} WIP
+<p>Endpoint : http://127.0.0.1:5000/api/1.0/itinerary?startPos=48.577043,7.759002&finishPos={finishPoint} WIP
 <p>Endpoint : http://127.0.0.1:5000/api/1.0/route?startPos=48.577043,7.759002&distance={km} WIP
 
 '''
 
-@app.route('/api/v1/itinerary', methods=['GET'])
+@app.route('/api/1.0/itinerary', methods=['GET'])
 def api_itinerary():
     query_parameters = request.args
     start = query_parameters.get('start')
@@ -51,7 +53,7 @@ def api_itinerary():
 
 
 # Route
-@app.route('/api/v1/route', methods=['GET'])
+@app.route('/api/1.0/route', methods=['GET'])
 def api_route():
     query_parameters = request.args
     start = query_parameters.get('start')
