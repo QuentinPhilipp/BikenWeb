@@ -3,6 +3,7 @@ import requests
 from flask import request, jsonify
 from flask_cors import CORS
 import sqlite3
+import databaseManager
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -77,6 +78,15 @@ def api_route():
         print("Bad request")
         val = {"error_code": "01", "error_desc": "Endpoint not defined"}
         return jsonify(val)
+
+
+@app.route('/api/1.0/debugDownload', methods=['GET'])
+def sendDownloadSquares():
+    dbManager = databaseManager.DatabaseManager()
+    values = dbManager.getDownloadPoints()
+    val = {"status_code": "200", "data": values}
+    return jsonify(val)
+
 
 def geocode(location):
     # This function use nominatim to get the GPS point of an address

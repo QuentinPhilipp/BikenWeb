@@ -1,3 +1,2 @@
 
-#Don't track database
-.db
+*.db

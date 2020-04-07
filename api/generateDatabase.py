@@ -72,6 +72,8 @@ def createTable():
         conn.commit()
         c.execute('''CREATE TABLE departement (id TEXT,name TEXT)''')
         conn.commit()
+        c.execute('''CREATE TABLE downloadPoints (latitude1 DOUBLE, longitude1 DOUBLE,latitude2 DOUBLE, longitude2 DOUBLE,latitude3 DOUBLE, longitude3 DOUBLE,latitude4 DOUBLE, longitude4 DOUBLE)''')
+        conn.commit()
         print("Table created")
     except :
         print("Table already created")
@@ -114,7 +116,7 @@ def callApi(north,west,south,east):
 out body;
 out skel asc;
 """
-    while resolved=False:
+    while resolved==False:
         print("\nRequesting...")
         response = requests.get(overpass_url,
                         params={'data': overpass_query})
@@ -130,10 +132,10 @@ out skel asc;
             # cut the string at the last "seconds" in the text
             newString = result[:index]
             # get all the digits in the text.
-            intList = [int(s) for s in newString.split() if s.isdigit()])
+            intList = [int(s) for s in newString.split() if s.isdigit()]
 
             # We need the last one because we cut the string just before "seconds"
-            timeToWait=intList[]
+            timeToWait=intList[-1]
             print("waiting for ",timeToWait)
             time.sleep(timeToWait)
         elif (response.status_code==200):
@@ -224,6 +226,12 @@ def getData(north,west,south,east):
     print("Node vector size : ",len(nodesVector))
     print("Way vector size : ",len(wayVector))
 
+    data_tuple = (north,east,south,east,south,west,north,west) #store the square of the requests. Use to debug
+    cur = conn.cursor()
+    cur.execute("INSERT INTO downloadPoints(latitude1,longitude1,latitude2,longitude2,latitude3,longitude3,latitude4,longitude4) VALUES (?,?,?,?,?,?,?,?)",data_tuple)
+    print("Inserting downloadPoints : ",data_tuple)
+    conn.commit()
+
     startStockageTime = time.time()
     addValues(nodesVector,wayVector)
 
@@ -283,58 +291,78 @@ def addValues(nodesVector,wayVector):
 
 
 def addRegion(region):
-    distance = 25           #distance*2 = distance between two requestPoint
     errorList=[]
 
-    squareSize = 50;
-    # region[lat] and region[lon] are in the center of the region. For each request we need a square.
-    # each square are 50km by 50km. We will use the following names
+    squareSize = 70;
+
+    for point in region["points"]:
+        try:
+            lat1 = addKmToLatitude(point["lat"],-squareSize/2)
+            lon1 = addKmToLongitude(point["lat"],point["lon"],-squareSize/2)
+            lat2 = addKmToLatitude(point["lat"],squareSize/2)
+            lon2 = addKmToLongitude(point["lat"],point["lon"],squareSize/2)
+            # Create a square centered on the point
+            getData(lat1,lon1,lat2,lon2)
+            print("1 point added")
+        except Exception as e:
+            errorList.append((lat1,lon1,lat2,lon2))
+            print(e)
+
+
+    # overlapping = 5; #5km of overlapping between the square. Each square will go 2.5 km across
+    # # region[lat] and region[lon] are in the center of the region. For each request we need a square.
+    # # each square are 50km by 50km. We will use the following names
+    # #
+    # #         lon1 lon21|lon22  lon3
+    # #        lat1---------------
+    # #            |   1  |   2  |
+    # #       lat21---------------
+    # #       lat22---------------
+    # #            |   3  |   4  |
+    # #        lat3---------------
     #
-    #         lon1     lon2    lon3
-    #        lat1---------------
-    #            |   1  |   2  |
-    #        lat2 ---------------
-    #            |   3  |   4  |
-    #        lat3---------------
-    # lat2 and lon2 are the center of the region so it's equal to region[lat] and region[lon]
-    lat1 = addKmToLatitude(region["lat"],-squareSize)
-    lon1 = addKmToLongitude(region["lat"],region["lon"],-squareSize)
-
-    lat2 = region["lat"]
-    lon2 = region["lon"]
-
-    lat3 = addKmToLatitude(region["lat"],squareSize)
-    lon3 = addKmToLongitude(region["lat"],region["lon"],squareSize)
-
-    print("Lat : ",lat1,lat2,lat3)
-    print("Lon : ",lon1,lon2,lon3)
-
-    # getData(north,west,south,east)
-
-    try:
-        getData(lat1,lon1,lat2,lon2)                #square 1
-        print("1/4 added")
-    except Exception as e:
-        errorList.append((lat1,lon1,lat2,lon2))
-        print(e)
-    try:
-        getData(lat1,lon2,lat2,lon3)                #square 2
-        print("1/2 added")
-    except Exception as e:
-        errorList.append((lat1,lon2,lat2,lon3))
-        print(e)
-    try:
-        getData(lat2,lon1,lat3,lon2)                #square 3
-        print("3/4 added")
-    except Exception as e:
-        errorList.append((lat2,lon1,lat3,lon2))
-        print(e)
-    try:
-        getData(lat2,lon2,lat3,lon3)                #square 4
-        print("Finish")
-    except Exception as e:
-        errorList.append((lat2,lon2,lat3,lon3))
-        print(e)
+    # # For the center, there is two latitude and two longitude. There is an overlapping
+    # # of the square to prevent issue with point or road in the middle
+    #
+    #
+    # lat1 = addKmToLatitude(region["lat"],-squareSize)
+    # lon1 = addKmToLongitude(region["lat"],region["lon"],-squareSize)
+    #
+    # lat21 = addKmToLatitude(region["lat"],overlapping/2)
+    # lon21 = addKmToLongitude(region["lat"],region["lon"],overlapping/2)
+    # lat22 = addKmToLatitude(region["lat"],-(overlapping/2))
+    # lon22 = addKmToLongitude(region["lat"],region["lon"],-(overlapping/2))
+    #
+    # lat3 = addKmToLatitude(region["lat"],squareSize)
+    # lon3 = addKmToLongitude(region["lat"],region["lon"],squareSize)
+    #
+    #
+    # # getData(north,west,south,east)
+    #
+    # try:
+    #     getData(lat1,lon1,lat21,lon21)                #square 1
+    #     print("1/4 added")
+    # except Exception as e:
+    #     errorList.append((lat1,lon1,lat21,lon21))
+    #     print(e)
+    # try:
+    #     getData(lat1,lon22,lat21,lon3)                #square 2
+    #     print("1/2 added")
+    # except Exception as e:
+    #     errorList.append((lat1,lon22,lat21,lon3))
+    #     print(e)
+    # try:
+    #     getData(lat22,lon1,lat3,lon21)                #square 3
+    #     print("3/4 added")
+    # except Exception as e:
+    #     errorList.append((lat22,lon1,lat3,lon21))
+    #     print(e)
+    # try:
+    #     getData(lat22,lon22,lat3,lon3)                #square 4
+    #     print("Finish")
+    # except Exception as e:
+    #     errorList.append((lat22,lon22,lat3,lon3))
+    #     print(e)
 
 
     while (len(errorList)!=0):

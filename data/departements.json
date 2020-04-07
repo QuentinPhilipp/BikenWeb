@@ -2,680 +2,1071 @@
    {
       "id":"01",
       "name":"AIN",
-      "lon":5.2056,
-      "lat":46.0558,
+      "points":[
+         {
+            "lat":46.0558,
+            "lon":5.2056
+         }
+      ],
       "download":0
    },
    {
       "id":"02",
       "name":"AISNE",
-      "lon":3.333,
-      "lat":49.3334,
+      "points":[
+         {
+            "lon":3.333,
+            "lat":49.3334
+         }
+      ],
       "download":0
    },
    {
       "id":"03",
       "name":"ALLIER",
-      "lon":3.1118,
-      "lat":46.2337,
+      "points":[
+         {
+            "lon":3.1118,
+            "lat":46.2337
+         }
+      ],
       "download":0
    },
    {
       "id":"04",
       "name":"ALPES-DE-HAUTEPROVENCE",
-      "lon":6.1438,
-      "lat":44.0622,
+      "points":[
+         {
+            "lon":6.1438,
+            "lat":44.0622
+         }
+      ],
       "download":0
    },
    {
       "id":"05",
       "name":"HAUTES-ALPES",
-      "lon":6.1547,
-      "lat":44.3949,
+      "points":[
+         {
+            "lon":6.1547,
+            "lat":44.3949
+         }
+      ],
       "download":0
    },
    {
       "id":"06",
       "name":"ALPES-MARITIMES",
-      "lon":7.0659,
-      "lat":43.5615,
+      "points":[
+         {
+            "lon":7.0659,
+            "lat":43.5615
+         }
+      ],
       "download":0
    },
    {
       "id":"07",
       "name":"ARDECHE",
-      "lon":4.2529,
-      "lat":44.4506,
+      "points":[
+         {
+            "lon":4.2529,
+            "lat":44.4506
+         }
+      ],
       "download":0
    },
    {
       "id":"08",
       "name":"ARDENNES",
-      "lon":4.3827,
-      "lat":49.3656,
+      "points":[
+         {
+            "lon":4.3827,
+            "lat":49.3656
+         }
+      ],
       "download":0
    },
    {
       "id":"09",
       "name":"ARIEGE",
-      "lon":1.3014,
-      "lat":42.5515,
+      "points":[
+         {
+            "lon":1.3014,
+            "lat":42.5515
+         }
+      ],
       "download":0
    },
    {
       "id":"10",
       "name":"AUBE",
-      "lon":4.0942,
-      "lat":48.1816,
+      "points":[
+         {
+            "lon":4.0942,
+            "lat":48.1816
+         }
+      ],
       "download":0
    },
    {
       "id":"11",
       "name":"AUDE",
-      "lon":2.2451,
-      "lat":43.0612,
+      "points":[
+         {
+            "lon":2.2451,
+            "lat":43.0612
+         }
+      ],
       "download":0
    },
    {
       "id":"12",
       "name":"AVEYRON",
-      "lon":2.4047,
-      "lat":44.1649,
+      "points":[
+         {
+            "lon":2.4047,
+            "lat":44.1649
+         }
+      ],
       "download":0
    },
    {
       "id":"13",
       "name":"BOUCHES-DU-RHONE",
-      "lon":5.0511,
-      "lat":43.3236,
+      "points":[
+         {
+            "lon":5.0511,
+            "lat":43.3236
+         }
+      ],
       "download":0
    },
    {
       "id":"14",
       "name":"CALVADOS",
-      "lon":-0.2149,
-      "lat":49.0559,
+      "points":[
+         {
+            "lon":-0.2149,
+            "lat":49.0559
+         }
+      ],
       "download":0
    },
    {
       "id":"15",
       "name":"CANTAL",
-      "lon":2.4007,
-      "lat":45.0304,
+      "points":[
+         {
+            "lon":2.4007,
+            "lat":45.0304
+         }
+      ],
       "download":0
    },
    {
       "id":"16",
       "name":"CHARENTE",
-      "lon":0.1206,
-      "lat":45.4305,
+      "points":[
+         {
+            "lon":0.1206,
+            "lat":45.4305
+         }
+      ],
       "download":0
    },
    {
       "id":"17",
       "name":"CHARENTE-MARITIME",
-      "lon":-0.4028,
-      "lat":45.4651,
+      "points":[
+         {
+            "lon":-0.4028,
+            "lat":45.4651
+         }
+      ],
       "download":0
    },
    {
       "id":"18",
       "name":"CHER",
-      "lon":2.2928,
-      "lat":47.0353,
+      "points":[
+         {
+            "lon":2.2928,
+            "lat":47.0353
+         }
+      ],
       "download":0
    },
    {
       "id":"19",
       "name":"CORREZE",
-      "lon":1.5237,
-      "lat":45.2125,
+      "points":[
+         {
+            "lon":1.5237,
+            "lat":45.2125
+         }
+      ],
       "download":0
    },
    {
       "id":"2a",
       "name":"CORSE-DU-SUD",
-      "lon":8.5917,
-      "lat":41.5149,
+      "points":[
+         {
+            "lon":8.5917,
+            "lat":41.5149
+         }
+      ],
       "download":0
    },
    {
       "id":"2b",
       "name":"HAUTE-CORSE",
-      "lon":9.1223,
-      "lat":42.2339,
+      "points":[
+         {
+            "lon":9.1223,
+            "lat":42.2339
+         }
+      ],
       "download":0
    },
    {
       "id":"21",
       "name":"COTE-D'OR",
-      "lon":4.462,
-      "lat":47.2529,
+      "points":[
+         {
+            "lon":4.462,
+            "lat":47.2529
+         }
+      ],
       "download":0
    },
    {
       "id":"22",
       "name":"COTES-D'ARMOR",
-      "lon":-2.5151,
-      "lat":48.2628,
+      "points":[
+         {
+            "lon":-2.5151,
+            "lat":48.2628
+         }
+      ],
       "download":0
    },
    {
       "id":"23",
       "name":"CREUSE",
-      "lon":2.0108,
-      "lat":46.0525,
+      "points":[
+         {
+            "lon":2.0108,
+            "lat":46.0525
+         }
+      ],
       "download":0
    },
    {
       "id":"24",
       "name":"DORDOGNE",
-      "lon":0.4429,
-      "lat":45.0615,
+      "points":[
+         {
+            "lon":0.4429,
+            "lat":45.0615
+         }
+      ],
       "download":0
    },
    {
       "id":"25",
       "name":"DOUBS",
-      "lon":6.2142,
-      "lat":47.0955,
+      "points":[
+         {
+            "lon":6.2142,
+            "lat":47.0955
+         }
+      ],
       "download":0
    },
    {
       "id":"26",
       "name":"DROME",
-      "lon":5.1005,
-      "lat":44.4103,
+      "points":[
+         {
+            "lon":5.1005,
+            "lat":44.4103
+         }
+      ],
       "download":0
    },
    {
       "id":"27",
       "name":"EURE",
-      "lon":0.5946,
-      "lat":49.0649,
+      "points":[
+         {
+            "lon":0.5946,
+            "lat":49.0649
+         }
+      ],
       "download":0
    },
    {
       "id":"28",
       "name":"EURE-ET-LOIR",
-      "lon":1.2213,
-      "lat":48.2315,
+      "points":[
+         {
+            "lon":1.2213,
+            "lat":48.2315
+         }
+      ],
       "download":0
    },
    {
       "id":"29",
       "name":"FINISTERE",
-      "lon":-4.0332,
-      "lat":48.154,
-      "download":1
+      "points":[
+         {
+            "lon":-4.0332,
+            "lat":48.154
+         }
+      ],
+      "download":0
    },
    {
       "id":"30",
       "name":"GARD",
-      "lon":4.1049,
-      "lat":43.5936,
+      "points":[
+         {
+            "lon":4.1049,
+            "lat":43.5936
+         }
+      ],
       "download":0
    },
    {
       "id":"31",
       "name":"HAUTE-GARONNE",
-      "lon":1.1022,
-      "lat":43.2131,
+      "points":[
+         {
+            "lon":1.1022,
+            "lat":43.2131
+         }
+      ],
       "download":0
    },
    {
       "id":"32",
       "name":"GERS",
-      "lon":0.2712,
-      "lat":43.4134,
+      "points":[
+         {
+            "lon":0.2712,
+            "lat":43.4134
+         }
+      ],
       "download":0
    },
    {
       "id":"33",
       "name":"GIRONDE",
-      "lon":-0.3431,
-      "lat":44.4931,
+      "points":[
+         {
+            "lon":-0.3431,
+            "lat":44.4931
+         }
+      ],
       "download":0
    },
    {
       "id":"34",
       "name":"HERAULT",
-      "lon":3.2202,
-      "lat":43.3447,
+      "points":[
+         {
+            "lon":3.2202,
+            "lat":43.3447
+         }
+      ],
       "download":0
    },
    {
       "id":"35",
       "name":"ILLE-ET-VILAINE",
-      "lon":-1.3819,
-      "lat":48.0916,
+      "points":[
+         {
+            "lon":-1.3819,
+            "lat":48.0916
+         }
+      ],
       "download":0
    },
    {
       "id":"36",
       "name":"INDRE",
-      "lon":1.3433,
-      "lat":46.464,
+      "points":[
+         {
+            "lon":1.3433,
+            "lat":46.464
+         }
+      ],
       "download":0
    },
    {
       "id":"37",
       "name":"INDRE-ET-LOIRE",
-      "lon":0.4129,
-      "lat":47.1529,
+      "points":[
+         {
+            "lon":0.4129,
+            "lat":47.1529
+         }
+      ],
       "download":0
    },
    {
       "id":"38",
       "name":"ISERE",
-      "lon":5.3434,
-      "lat":45.1548,
+      "points":[
+         {
+            "lon":5.3434,
+            "lat":45.1548
+         }
+      ],
       "download":0
    },
    {
       "id":"39",
       "name":"JURA",
-      "lon":5.4152,
-      "lat":46.4342,
+      "points":[
+         {
+            "lon":5.4152,
+            "lat":46.4342
+         }
+      ],
       "download":0
    },
    {
       "id":"40",
       "name":"LANDES",
-      "lon":-0.4702,
-      "lat":43.5756,
+      "points":[
+         {
+            "lon":-0.4702,
+            "lat":43.5756
+         }
+      ],
       "download":0
    },
    {
       "id":"41",
       "name":"LOIR-ET-CHER",
-      "lon":1.2546,
-      "lat":47.37,
+      "points":[
+         {
+            "lon":1.2546,
+            "lat":47.37
+         }
+      ],
       "download":0
    },
    {
       "id":"42",
       "name":"LOIRE",
-      "lon":4.0957,
-      "lat":45.4337,
+      "points":[
+         {
+            "lon":4.0957,
+            "lat":45.4337
+         }
+      ],
       "download":0
    },
    {
       "id":"43",
       "name":"HAUTE-LOIRE",
-      "lon":3.4823,
-      "lat":45.0741,
+      "points":[
+         {
+            "lon":3.4823,
+            "lat":45.0741
+         }
+      ],
       "download":0
    },
    {
       "id":"44",
       "name":"LOIRE-ATLANTIQUE",
-      "lon":-1.4056,
-      "lat":47.2141,
+      "points":[
+         {
+            "lon":-1.4056,
+            "lat":47.2141
+         }
+      ],
       "download":0
    },
    {
       "id":"45",
       "name":"LOIRET",
-      "lon":2.2039,
-      "lat":47.5443,
+      "points":[
+         {
+            "lon":2.2039,
+            "lat":47.5443
+         }
+      ],
       "download":0
    },
    {
       "id":"46",
       "name":"LOT",
-      "lon":1.3617,
-      "lat":44.3727,
+      "points":[
+         {
+            "lon":1.3617,
+            "lat":44.3727
+         }
+      ],
       "download":0
    },
    {
       "id":"47",
       "name":"LOT-ET-GARONNE",
-      "lon":0.2737,
-      "lat":44.2203,
+      "points":[
+         {
+            "lon":0.2737,
+            "lat":44.2203
+         }
+      ],
       "download":0
    },
    {
       "id":"48",
       "name":"LOZERE",
-      "lon":3.3001,
-      "lat":44.3102,
+      "points":[
+         {
+            "lon":3.3001,
+            "lat":44.3102
+         }
+      ],
       "download":0
    },
    {
       "id":"49",
       "name":"MAINE-ET-LOIRE",
-      "lon":-0.3351,
-      "lat":47.2327,
+      "points":[
+         {
+            "lon":-0.3351,
+            "lat":47.2327
+         }
+      ],
       "download":0
    },
    {
       "id":"50",
       "name":"MANCHE",
-      "lon":-1.1939,
-      "lat":49.0446,
+      "points":[
+         {
+            "lon":-1.1939,
+            "lat":49.0446
+         }
+      ],
       "download":0
    },
    {
       "id":"51",
       "name":"MARNE",
-      "lon":4.1419,
-      "lat":48.5657,
+      "points":[
+         {
+            "lon":4.1419,
+            "lat":48.5657
+         }
+      ],
       "download":0
    },
    {
       "id":"52",
       "name":"HAUTE-MARNE",
-      "lon":5.1335,
-      "lat":48.0634,
+      "points":[
+         {
+            "lon":5.1335,
+            "lat":48.0634
+         }
+      ],
       "download":0
    },
    {
       "id":"53",
       "name":"MAYENNE",
-      "lon":-0.3929,
-      "lat":48.0848,
+      "points":[
+         {
+            "lon":-0.3929,
+            "lat":48.0848
+         }
+      ],
       "download":0
    },
    {
       "id":"54",
       "name":"MEURTHE-ET-MOSELLE",
-      "lon":6.0954,
-      "lat":48.4713,
+      "points":[
+         {
+            "lon":6.0954,
+            "lat":48.4713
+         }
+      ],
       "download":0
    },
    {
       "id":"55",
       "name":"MEUSE",
-      "lon":5.2254,
-      "lat":48.5922,
+      "points":[
+         {
+            "lon":5.2254,
+            "lat":48.5922
+         }
+      ],
       "download":0
    },
    {
       "id":"56",
       "name":"MORBIHAN",
-      "lon":-2.4836,
-      "lat":47.5047,
+      "points":[
+         {
+            "lon":-2.4836,
+            "lat":47.5047
+         }
+      ],
       "download":0
    },
    {
       "id":"57",
       "name":"MOSELLE",
-      "lon":6.3948,
-      "lat":49.0214,
-      "download":0
+      "points":[
+         {
+            "lon":6.223243104,
+            "lat":49.302909252
+         },{
+             "lon":6.3948,
+             "lat":49.0214
+          }
+      ],
+      "download":1
    },
    {
       "id":"58",
       "name":"NIEVRE",
-      "lon":3.3017,
-      "lat":47.0655,
+      "points":[
+         {
+            "lon":3.3017,
+            "lat":47.0655
+         }
+      ],
       "download":0
    },
    {
       "id":"59",
       "name":"NORD",
-      "lon":3.1314,
-      "lat":50.265,
+      "points":[
+         {
+            "lon":3.1314,
+            "lat":50.265
+         }
+      ],
       "download":0
    },
    {
       "id":"60",
       "name":"OISE",
-      "lon":2.2531,
-      "lat":49.2437,
+      "points":[
+         {
+            "lon":2.2531,
+            "lat":49.2437
+         }
+      ],
       "download":0
    },
    {
       "id":"61",
       "name":"ORNE",
-      "lon":0.0744,
-      "lat":48.3725,
+      "points":[
+         {
+            "lon":0.0744,
+            "lat":48.3725
+         }
+      ],
       "download":0
    },
    {
       "id":"62",
       "name":"PAS-DE-CALAIS",
-      "lon":2.1719,
-      "lat":50.2937,
+      "points":[
+         {
+            "lon":2.1719,
+            "lat":50.2937
+         }
+      ],
       "download":0
    },
    {
       "id":"63",
       "name":"PUY-DE-DOME",
-      "lon":3.0827,
-      "lat":45.4333,
+      "points":[
+         {
+            "lon":3.0827,
+            "lat":45.4333
+         }
+      ],
       "download":0
    },
    {
       "id":"64",
       "name":"PYRENEES-ATLANTIQUES",
-      "lon":-0.4541,
-      "lat":43.1524,
+      "points":[
+         {
+            "lon":-0.4541,
+            "lat":43.1524
+         }
+      ],
       "download":0
    },
    {
       "id":"65",
       "name":"HAUTES-PYRENEES",
-      "lon":-0.095,
-      "lat":43.0311,
+      "points":[
+         {
+            "lon":-0.095,
+            "lat":43.0311
+         }
+      ],
       "download":0
    },
    {
       "id":"66",
       "name":"PYRENEES-ORIENTALES",
-      "lon":-2.312,
-      "lat":42.36,
+      "points":[
+         {
+            "lon":-2.312,
+            "lat":42.36
+         }
+      ],
       "download":0
    },
    {
       "id":"67",
       "name":"BAS-RHIN",
-      "lon":7.3305,
-      "lat":48.4015,
-      "download":0
+      "points":[
+         {
+            "lon":7.3305,
+            "lat":48.4015
+         }
+      ],
+      "download":1
    },
    {
       "id":"68",
       "name":"HAUT-RHIN",
-      "lon":7.1627,
-      "lat":47.5131,
+      "points":[
+         {
+            "lon":7.1627,
+            "lat":47.5131
+         }
+      ],
       "download":0
    },
    {
       "id":"69",
       "name":"RHONE",
-      "lon":4.3829,
-      "lat":45.5213,
+      "points":[
+         {
+            "lon":4.3829,
+            "lat":45.5213
+         }
+      ],
       "download":0
    },
    {
       "id":"70",
       "name":"HAUTE-SAONE",
-      "lon":6.051,
-      "lat":47.3828,
+      "points":[
+         {
+            "lon":6.051,
+            "lat":47.3828
+         }
+      ],
       "download":0
    },
    {
       "id":"71",
       "name":"SAONE-ET-LOIRE",
-      "lon":4.3232,
-      "lat":46.3841,
+      "points":[
+         {
+            "lon":4.3232,
+            "lat":46.3841
+         }
+      ],
       "download":0
    },
    {
       "id":"72",
       "name":"SARTHE",
-      "lon":0.132,
-      "lat":47.594,
+      "points":[
+         {
+            "lon":0.132,
+            "lat":47.594
+         }
+      ],
       "download":0
    },
    {
       "id":"73",
       "name":"SAVOIE",
-      "lon":6.2637,
-      "lat":45.2839,
+      "points":[
+         {
+            "lon":6.2637,
+            "lat":45.2839
+         }
+      ],
       "download":0
    },
    {
       "id":"74",
       "name":"HAUTE-SAVOIE",
-      "lon":6.2541,
-      "lat":46.0204,
+      "points":[
+         {
+            "lon":6.2541,
+            "lat":46.0204
+         }
+      ],
       "download":0
    },
    {
       "id":"75",
       "name":"PARIS",
-      "lon":2.2032,
-      "lat":48.5124,
+      "points":[
+         {
+            "lon":2.2032,
+            "lat":48.5124
+         }
+      ],
       "download":0
    },
    {
       "id":"76",
       "name":"SEINE-MARITIME",
-      "lon":1.0135,
-      "lat":49.3918,
+      "points":[
+         {
+            "lon":1.0135,
+            "lat":49.3918
+         }
+      ],
       "download":0
    },
    {
       "id":"77",
       "name":"SEINE-ET-MARNE",
-      "lon":2.56,
-      "lat":48.3736,
+      "points":[
+         {
+            "lon":2.56,
+            "lat":48.3736
+         }
+      ],
       "download":0
    },
    {
       "id":"78",
       "name":"YVELINES",
-      "lon":1.503,
-      "lat":48.4854,
+      "points":[
+         {
+            "lon":1.503,
+            "lat":48.4854
+         }
+      ],
       "download":0
    },
    {
       "id":"79",
       "name":"DEUX-SEVRES",
-      "lon":-0.1902,
-      "lat":46.332,
+      "points":[
+         {
+            "lon":-0.1902,
+            "lat":46.332
+         }
+      ],
       "download":0
    },
    {
       "id":"80",
       "name":"SOMME",
-      "lon":2.164,
-      "lat":49.5729,
+      "points":[
+         {
+            "lon":2.164,
+            "lat":49.5729
+         }
+      ],
       "download":0
    },
    {
       "id":"81",
       "name":"TARN",
-      "lon":2.0958,
-      "lat":43.4707,
+      "points":[
+         {
+            "lon":2.0958,
+            "lat":43.4707
+         }
+      ],
       "download":0
    },
    {
       "id":"82",
       "name":"TARN-ET-GARONNE",
-      "lon":1.1655,
-      "lat":44.0509,
+      "points":[
+         {
+            "lon":1.1655,
+            "lat":44.0509
+         }
+      ],
       "download":0
    },
    {
       "id":"83",
       "name":"VAR",
-      "lon":6.1305,
-      "lat":43.2738,
+      "points":[
+         {
+            "lon":6.1305,
+            "lat":43.2738
+         }
+      ],
       "download":0
    },
    {
       "id":"84",
       "name":"VAUCLUSE",
-      "lon":5.111,
-      "lat":43.5938,
+      "points":[
+         {
+            "lon":5.111,
+            "lat":43.5938
+         }
+      ],
       "download":0
    },
    {
       "id":"85",
       "name":"VENDEE",
-      "lon":-1.1752,
-      "lat":46.4029,
+      "points":[
+         {
+            "lon":-1.1752,
+            "lat":46.4029
+         }
+      ],
       "download":0
    },
    {
       "id":"86",
       "name":"VIENNE",
-      "lon":0.2737,
-      "lat":46.335,
+      "points":[
+         {
+            "lon":0.2737,
+            "lat":46.335
+         }
+      ],
       "download":0
    },
    {
       "id":"87",
       "name":"HAUTE-VIENNE",
-      "lon":1.1407,
-      "lat":45.533,
+      "points":[
+         {
+            "lon":1.1407,
+            "lat":45.533
+         }
+      ],
       "download":0
    },
    {
       "id":"88",
       "name":"VOSGES",
-      "lon":6.225,
-      "lat":48.1148,
+      "points":[
+         {
+            "lon":6.225,
+            "lat":48.1148
+         }
+      ],
       "download":0
    },
    {
       "id":"89",
       "name":"YONNE",
-      "lon":3.3352,
-      "lat":47.5023,
+      "points":[
+         {
+            "lon":3.3352,
+            "lat":47.5023
+         }
+      ],
       "download":0
    },
    {
       "id":"90",
       "name":"TERRITOIRE DE BELFORT",
-      "lon":6.5543,
-      "lat":47.3754,
+      "points":[
+         {
+            "lon":6.5543,
+            "lat":47.3754
+         }
+      ],
       "download":0
    },
    {
       "id":"91",
       "name":"ESSONNE",
-      "lon":2.1435,
-      "lat":48.312,
+      "points":[
+         {
+            "lon":2.1435,
+            "lat":48.312
+         }
+      ],
       "download":0
    },
    {
       "id":"92",
       "name":"HAUTS-DE-SEINE",
-      "lon":2.1445,
-      "lat":48.505,
+      "points":[
+         {
+            "lon":2.1445,
+            "lat":48.505
+         }
+      ],
       "download":0
    },
    {
       "id":"93",
       "name":"SEINE-SAINT-DENIS",
-      "lon":2.2841,
-      "lat":48.5503,
+      "points":[
+         {
+            "lon":2.2841,
+            "lat":48.5503
+         }
+      ],
       "download":0
    },
    {
       "id":"94",
       "name":"VAL-DE-MARNE",
-      "lon":2.2808,
-      "lat":48.4639,
+      "points":[
+         {
+            "lon":2.2808,
+            "lat":48.4639
+         }
+      ],
       "download":0
    },
    {
       "id":"95",
       "name":"VAL-D'OISE",
-      "lon":2.0752,
-      "lat":49.0458,
+      "points":[
+         {
+            "lon":2.0752,
+            "lat":49.0458
+         }
+      ],
       "download":0
    },
    {
       "id":"200",
       "name":"Test_Departement",
-      "lon":6.8248,
-      "lat":48.8814,
-      "download":1
+      "points":[
+         {
+            "lon":6.8248,
+            "lat":48.8814
+         }
+      ],
+      "download":0
    }
 ]
