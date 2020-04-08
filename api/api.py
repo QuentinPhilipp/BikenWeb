@@ -83,7 +83,16 @@ def api_route():
 @app.route('/api/1.0/debugDownload', methods=['GET'])
 def sendDownloadSquares():
     dbManager = databaseManager.DatabaseManager()
-    values = dbManager.getDownloadPoints()
+    valuesRaw = dbManager.getDownloadPoints()
+    values = []
+    for point in valuesRaw :
+        value = {
+        "id":point[0],
+        "lat":point[1],
+        "lon":point[2]
+        }
+        values.append(value)
+
     val = {"status_code": "200", "data": values}
     return jsonify(val)
 

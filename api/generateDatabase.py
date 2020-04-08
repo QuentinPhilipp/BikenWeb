@@ -6,6 +6,7 @@ import time
 import json
 import sys
 from math import *
+import utils
 
 beforeData = 0
 afterData = 0
@@ -26,7 +27,6 @@ class Way(object):
         self.roundabout = roundabout
         self.maxspeed = maxspeed
         self.type = type
-
 
     def getNodes(self):
         return self.nodes
@@ -70,9 +70,7 @@ def createTable():
         # Create table - CLIENTS
         c.execute('''CREATE TABLE roads (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, id_node BIGINT,oneway BOOL,roundabout BOOL, maxspeed INT, type TEXT,latitude DOUBLE, longitude DOUBLE)''')
         conn.commit()
-        c.execute('''CREATE TABLE departement (id TEXT,name TEXT)''')
-        conn.commit()
-        c.execute('''CREATE TABLE downloadPoints (latitude1 DOUBLE, longitude1 DOUBLE,latitude2 DOUBLE, longitude2 DOUBLE,latitude3 DOUBLE, longitude3 DOUBLE,latitude4 DOUBLE, longitude4 DOUBLE)''')
+        c.execute('''CREATE TABLE downloadPoints (id TEXT, latitude DOUBLE,longitude DOUBLE)''')
         conn.commit()
         print("Table created")
     except :
@@ -85,7 +83,7 @@ def resetDatabase():
         # Create table - CLIENTS
         c.execute('''DROP TABLE roads''')
         conn.commit()
-        c.execute('''DROP TABLE departement''')
+        c.execute('''DROP TABLE downloadPoints''')
         conn.commit()
         print("Table clear")
     except :
@@ -147,10 +145,17 @@ out skel asc;
             resolved=True
             print("Response from API :",response)
 
-def getData(north,west,south,east):
+def getData(tile):
     global requestTime,stockageTime,fetchingTime
 
     startRequestTime = time.time()
+    squareSize = 70
+
+    north = utils.addKmToLatitude(tile["lat"],-squareSize/2)
+    west = utils.addKmToLongitude(tile["lat"],tile["lon"],-squareSize/2)
+    south = utils.addKmToLatitude(tile["lat"],squareSize/2)
+    east = utils.addKmToLongitude(tile["lat"],tile["lon"],squareSize/2)
+
 
     data = callApi(north,west,south,east);
 
@@ -212,7 +217,7 @@ def getData(north,west,south,east):
                 nodeIdVector.append(nodeId)
 
                 if(i==int(len(elem["nodes"])/2-1)):        #on est au milieu
-                    centerNode = findNodeInNodeVector(nodeId,nodesVector)
+                    centerNode = utils.findNodeInNodeVector(nodeId,nodesVector)
                     # print("centerNode : ",centerNode)
                 i+=1
 
@@ -226,200 +231,87 @@ def getData(north,west,south,east):
     print("Node vector size : ",len(nodesVector))
     print("Way vector size : ",len(wayVector))
 
-    data_tuple = (north,east,south,east,south,west,north,west) #store the square of the requests. Use to debug
+    data_tuple = (tile["id"],tile["lat"],tile["lon"]) #store the positions of the requests. Use to debug
     cur = conn.cursor()
-    cur.execute("INSERT INTO downloadPoints(latitude1,longitude1,latitude2,longitude2,latitude3,longitude3,latitude4,longitude4) VALUES (?,?,?,?,?,?,?,?)",data_tuple)
+    cur.execute("INSERT INTO downloadPoints(id,latitude,longitude) VALUES (?,?,?)",data_tuple)
     print("Inserting downloadPoints : ",data_tuple)
     conn.commit()
 
     startStockageTime = time.time()
-    addValues(nodesVector,wayVector)
+
+    ways = []
+    for way in wayVector:
+        #centerNodeData = getNodeFromId(way.getCenterNodeId())
+        for nodeId in way.getNodes():
+            nodeLat = utils.findNodeInNodeVector(nodeId,nodesVector).getLat()
+            nodeLon = utils.findNodeInNodeVector(nodeId,nodesVector).getLon()
+            ways.append((way.getId(),way.getCenterNode().getLat(),way.getCenterNode().getLon(),nodeId,way.getOneway(),way.getRoundabout(),way.getMaxspeed(),way.getType(),nodeLat,nodeLon))
+
+    sqlInsertQuery = """INSERT INTO roads (id_way,centerLat,centerLon,id_node,oneway,roundabout,maxspeed,type,latitude,longitude) VALUES (?,?,?,?,?,?,?,?,?,?)"""
+
+    cur.executemany(sqlInsertQuery, ways)
+    conn.commit()
+    print("Added to db")
 
     endStockageTime = time.time()
     stockageTime+=endStockageTime-startStockageTime
 
-def findNodeInNodeVector(idNode,nodeVector):
-    # print("Find node ", idNode, "in nodeVector")
-    i = len(nodeVector)-1
-    prev_i=0
-    temporaryValue=0
-    valueToSubstract=0
-    while(True):
-        # print("Search for nodeID",temporaryValue," ",valueToSubstract," ",i," ",prev_i)
-        node = nodeVector[i]
-        id =node.getId()
-        if(id==idNode):
-            return node
-        else :
-            temporaryValue=i
-            if(i>prev_i):
-                valueToSubstract=int((i-prev_i)/2)
-            else :
-                valueToSubstract=int((prev_i-i)/2)
-
-            if(valueToSubstract==0): #I had to add this because in the last operation we can have: (prev_i-i=1), so valueToSubstract would be 1/2=0
-                valueToSubstract=1
-
-            if(id>idNode):
-                i-=valueToSubstract
-
-            else :
-                i+=valueToSubstract
-
-            prev_i=temporaryValue
-
-def addValues(nodesVector,wayVector):
-    c = conn.cursor()
-    ways = []
-    i =0
-    for way in wayVector:
-        i+=1
-        #centerNodeData = getNodeFromId(way.getCenterNodeId())
-        for nodeId in way.getNodes():
-            nodeLat = findNodeInNodeVector(nodeId,nodesVector).getLat()
-            nodeLon = findNodeInNodeVector(nodeId,nodesVector).getLon()
-            ways.append((way.getId(),way.getCenterNode().getLat(),way.getCenterNode().getLon(),nodeId,way.getOneway(),way.getRoundabout(),way.getMaxspeed(),way.getType(),nodeLat,nodeLon))
-
-    # print "Creating Database Ways: ",time.time()
-    # for node in nodesVector:
-    sqlInsertQuery = """INSERT INTO roads (id_way,centerLat,centerLon,id_node,oneway,roundabout,maxspeed,type,latitude,longitude) VALUES (?,?,?,?,?,?,?,?,?,?)"""
-
-    #print ways
-    c.executemany(sqlInsertQuery, ways)
-    conn.commit()
-    print("Added to db")
 
 
-def addRegion(region):
+def checkDataIn():
+    #return the list of departement to add to avoid double values in the database
+    cur = conn.cursor()
+    tilesIn = []
+
+    #check which tiles we have
+    cur.execute("SELECT * FROM downloadPoints")
+    rows = cur.fetchall()
+
+    for row in rows:
+        tilesIn.append(row[0])
+
+    print("Tiles already in the database : ")
+    for tile in tilesIn:
+        print(tile)
+
+    if len(tilesIn)==0:
+        print("0")
+    return tilesIn
+
+def addRequestedTiles():
+    tilesIn = checkDataIn()
+    tilesToAdd = []
+    with open('../data/tiles.json') as json_file:
+        data = json.load(json_file)
+        for tile in data["points"]:
+            # If we need to download and not already in
+            if tile['download']==1 and tile["id"] not in tilesIn:
+                tilesToAdd.append(tile)
+
+    print("Tiles to add : ",tilesToAdd)
+
     errorList=[]
 
-    squareSize = 70;
-
-    for point in region["points"]:
+    for tile in tilesToAdd:
+        print('Adding tile :',tile["id"])
         try:
-            lat1 = addKmToLatitude(point["lat"],-squareSize/2)
-            lon1 = addKmToLongitude(point["lat"],point["lon"],-squareSize/2)
-            lat2 = addKmToLatitude(point["lat"],squareSize/2)
-            lon2 = addKmToLongitude(point["lat"],point["lon"],squareSize/2)
-            # Create a square centered on the point
-            getData(lat1,lon1,lat2,lon2)
+            getData(tile)
             print("1 point added")
         except Exception as e:
-            errorList.append((lat1,lon1,lat2,lon2))
+            errorList.append(tile)
             print(e)
-
-
-    # overlapping = 5; #5km of overlapping between the square. Each square will go 2.5 km across
-    # # region[lat] and region[lon] are in the center of the region. For each request we need a square.
-    # # each square are 50km by 50km. We will use the following names
-    # #
-    # #         lon1 lon21|lon22  lon3
-    # #        lat1---------------
-    # #            |   1  |   2  |
-    # #       lat21---------------
-    # #       lat22---------------
-    # #            |   3  |   4  |
-    # #        lat3---------------
-    #
-    # # For the center, there is two latitude and two longitude. There is an overlapping
-    # # of the square to prevent issue with point or road in the middle
-    #
-    #
-    # lat1 = addKmToLatitude(region["lat"],-squareSize)
-    # lon1 = addKmToLongitude(region["lat"],region["lon"],-squareSize)
-    #
-    # lat21 = addKmToLatitude(region["lat"],overlapping/2)
-    # lon21 = addKmToLongitude(region["lat"],region["lon"],overlapping/2)
-    # lat22 = addKmToLatitude(region["lat"],-(overlapping/2))
-    # lon22 = addKmToLongitude(region["lat"],region["lon"],-(overlapping/2))
-    #
-    # lat3 = addKmToLatitude(region["lat"],squareSize)
-    # lon3 = addKmToLongitude(region["lat"],region["lon"],squareSize)
-    #
-    #
-    # # getData(north,west,south,east)
-    #
-    # try:
-    #     getData(lat1,lon1,lat21,lon21)                #square 1
-    #     print("1/4 added")
-    # except Exception as e:
-    #     errorList.append((lat1,lon1,lat21,lon21))
-    #     print(e)
-    # try:
-    #     getData(lat1,lon22,lat21,lon3)                #square 2
-    #     print("1/2 added")
-    # except Exception as e:
-    #     errorList.append((lat1,lon22,lat21,lon3))
-    #     print(e)
-    # try:
-    #     getData(lat22,lon1,lat3,lon21)                #square 3
-    #     print("3/4 added")
-    # except Exception as e:
-    #     errorList.append((lat22,lon1,lat3,lon21))
-    #     print(e)
-    # try:
-    #     getData(lat22,lon22,lat3,lon3)                #square 4
-    #     print("Finish")
-    # except Exception as e:
-    #     errorList.append((lat22,lon22,lat3,lon3))
-    #     print(e)
 
 
     while (len(errorList)!=0):
         print('Still ',len(errorList),' errors')
         try:
-            getData(errorList[len(errorList)-1][0],errorList[len(errorList)-1][1],errorList[len(errorList)-1][2],errorList[len(errorList)-1][3])
+            getData(errorList[len(errorList)-1])
             errorList.pop()
         except Exception as e:
+            print("Exception : ",e)
             pass
 
 
-def addKmToLatitude(originalLat,kmToAdd):
-    return originalLat + kmToAdd/111.1  #almost 111km everywhere on the planet
-
-def addKmToLongitude(originalLat,originalLon,kmToAdd):
-    r_earth = 6378
-    return originalLon + (kmToAdd / r_earth) * (180 / pi) / cos(originalLat *pi/180); #longitude to km depend on the latitude. 111km at equador but 0 in the pole
-
-def checkDataIn():
-    #return the list of departement to add to avoid double values in the database
-    cur = conn.cursor()
-    regionIn = []
-
-    #check which region we have
-    cur.execute("SELECT * FROM departement")
-    rows = cur.fetchall()
-
-    for row in rows:
-        regionIn.append(row[0])
-
-    print("Region already in the database : ")
-    for region in regionIn:
-        print(region)
-
-    if len(regionIn)==0:
-        print("0")
-    return regionIn
-
-def addRequestedRegions():
-    regionIn = checkDataIn()
-    regionToAdd = []
-    with open('../data/departements.json') as json_file:
-        data = json.load(json_file)
-        for region in data:
-            # If we need to download and not already in
-            if region['download']==1 and region["id"] not in regionIn:
-                regionToAdd.append(region)
-
-    print("Regions to add : ",regionToAdd)
-
-    for region in regionToAdd:
-        print('Adding region :',region["name"])
-        addRegion(region)
-        cur=conn.cursor()
-        data_tuple = (region["id"],region["name"])
-        cur.execute("INSERT INTO departement(id,name) VALUES (?,?)",data_tuple)
-        conn.commit()
 
 if len(sys.argv)>1:
     if sys.argv[1]=="clear":
@@ -427,4 +319,4 @@ if len(sys.argv)>1:
         resetDatabase();
 else :
     createTable()
-    addRequestedRegions();
+    addRequestedTiles();
