@@ -48,35 +48,6 @@ function displayStartFinish(pointList) {
 }
 
 
-
-function getDownloadPoints() {
-  var url = "http://127.0.0.1:5000/api/1.0/debugDownload"
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.open( "GET", url, false ); // false for synchronous request
-  xmlHttp.send();
-  console.log("API : ",xmlHttp.responseText);
-  var response = JSON.parse(xmlHttp.responseText);
-  console.log(response);
-  return response.data
-}
-
-
-function displayDownloadedSquares() {
-  var squares = getDownloadPoints();
-  squares.forEach((square, i) => {
-    drawSquare(square)
-  });
-}
-
-// drawSquare("")
-//displayDownloadedSquares();
-var squareList = [];
-
-
-function removeLastSquare()
-{
-
-}
 function addKmToLatitude(originalLat,kmToAdd) {
     return originalLat + kmToAdd/111.1;
   }
@@ -86,7 +57,48 @@ function addKmToLongitude(originalLat,originalLon,kmToAdd) {
     return originalLon + (kmToAdd / r_earth) * (180 / Math.PI) / Math.cos(originalLat *Math.PI/180);
   }
 
-function addSquare(lat,lon) {
+
+
+
+
+
+
+
+
+////// DEBUG FUNCTION ///////
+
+function displayDebug() {
+  displayDownloadedSquares();
+  drawAllSquare();
+
+
+  var corner1 = L.latLng(50.2, -5.7);
+  var corner2 = L.latLng(49.5, 9.5);
+  var bounds = L.latLngBounds(corner1, corner2);
+  mymap.flyToBounds(bounds);
+}
+
+function getDownloadPoints() {
+  var url = "http://127.0.0.1:5000/api/1.0/debugDownload"
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open( "GET", url, false ); // false for synchronous request
+  xmlHttp.send();
+  // console.log("API : ",xmlHttp.responseText);
+  var response = JSON.parse(xmlHttp.responseText);
+  // console.log(response);
+  return response.data
+}
+
+
+function displayDownloadedSquares() {
+    var squares = getDownloadPoints();
+    squares.forEach((square, i) => {
+      addSquare(square.lat,square.lon,"#ff0000")
+    });
+  }
+
+function addSquare(lat,lon,colorRectangle="#3388ff") {
+  // Draw a square centered on lat,lon
   var squareSize = 70
   lat1 = addKmToLatitude(lat,-squareSize/2)
   lon1 = addKmToLongitude(lat,lon,-squareSize/2)
@@ -97,18 +109,9 @@ function addSquare(lat,lon) {
   var corner2 = L.latLng(lat2, lon2);
   var bounds = L.latLngBounds(corner1, corner2);
 
-  L.rectangle(bounds).addTo(mymap);
-  mymap.flyToBounds(bounds);
-}
-
-function drawSquare(square)
-{
-  var corner1 = L.latLng(square[0], square[1]);
-  var corner2 = L.latLng(square[4], square[5]);
-  var bounds = L.latLngBounds(corner1, corner2);
-
-  L.rectangle(bounds).addTo(mymap)
-  mymap.flyToBounds(bounds);
+  L.rectangle(bounds,{
+    color:colorRectangle
+  }).addTo(mymap);
 }
 
 function drawAllSquare()

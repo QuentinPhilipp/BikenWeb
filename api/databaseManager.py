@@ -1,7 +1,6 @@
 import sqlite3
 
 
-
 class DatabaseManager():
     """The datamanager contain all the useful
      function to link the program
@@ -58,5 +57,7 @@ class DatabaseManager():
         # print(values)
         return values
 
-# db = DatabaseManager()
-# db.getDownloadPoints()
+
+if __name__ == '__main__' :
+    db = DatabaseManager()
+    db.getClosestNodesTest()
