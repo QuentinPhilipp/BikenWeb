@@ -103,7 +103,6 @@ function addSquare(lat,lon) {
 
 function drawSquare(square)
 {
-
   var corner1 = L.latLng(square[0], square[1]);
   var corner2 = L.latLng(square[4], square[5]);
   var bounds = L.latLngBounds(corner1, corner2);
@@ -112,25 +111,23 @@ function drawSquare(square)
   mymap.flyToBounds(bounds);
 }
 
-
-
-// addSquare(50.8, 2);
-// addSquare(50.2, 2);
-
-// addSquare(48.965843, 6.907149)
-
-var startLat = 50.8;
-var startLon = 7.81
-
-var currentLat = startLat
-var currentLon = startLon
-while (currentLon>-5)
+function drawAllSquare()
 {
-  currentLat=startLat;
-  while (currentLat>42)
+  var startLat = 50.8;
+  var startLon = 7.81;
+  var maxLat = 42;
+  var maxLon = -5;
+
+  var currentLat = startLat
+  var currentLon = startLon
+  while (currentLat>maxLat)
   {
-    addSquare(currentLat,currentLon);
-    currentLat-=0.6;
+    currentLon=startLon;
+    while (currentLon>maxLon)
+    {
+      addSquare(currentLat,currentLon);
+      currentLon = addKmToLongitude(currentLat,currentLon,-65);
+    }
+    currentLat = addKmToLatitude(currentLat,-65);
   }
-  currentLon-=0.9;
 }
