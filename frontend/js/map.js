@@ -1,5 +1,8 @@
+
 var mymap = L.map('mapid').setView([48.8589507,2.2770202], 10);
 
+debugState = false;
+squareList = [];
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -12,7 +15,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 }).addTo(mymap);
 
 
-function sendData() {
+function sendRequest() {
   var start = document.getElementById('start').value
   var finish = document.getElementById('finish').value
 
@@ -25,13 +28,30 @@ function sendData() {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.open( "GET", url, false ); // false for synchronous request
   xmlHttp.send();
-  console.log("API : ",xmlHttp.responseText);
+  //console.log("API : ",xmlHttp.responseText);
   var response = JSON.parse(xmlHttp.responseText);
   var startPos = response.data.startPos;
   var finishPos = response.data.finishPos;
+  var finishPos = response.data.finishPos;
+  var waypoints = response.data.waypoints;
+
   console.log("Start : ",startPos);
   console.log("Finish : ",finishPos);
+
+  console.log("Waypoints : ",waypoints);
+
   displayStartFinish([startPos,finishPos]);
+  displayRoute(waypoints);
+}
+
+
+function displayRoute(waypoints) {
+
+var polyline = L.polyline(waypoints, {
+  color: '#F67C5A',
+  weight:6
+}).addTo(mymap);
+
 }
 
 
@@ -68,14 +88,27 @@ function addKmToLongitude(originalLat,originalLon,kmToAdd) {
 ////// DEBUG FUNCTION ///////
 
 function displayDebug() {
-  displayDownloadedSquares();
-  drawAllSquare();
+  debugState = !debugState;
 
+  if (debugState) {
+    console.log("Debug ON")
 
-  var corner1 = L.latLng(50.2, -5.7);
-  var corner2 = L.latLng(49.5, 9.5);
-  var bounds = L.latLngBounds(corner1, corner2);
-  mymap.flyToBounds(bounds);
+    displayDownloadedSquares();
+    drawAllSquare();
+
+    var corner1 = L.latLng(50.2, -5.7);
+    var corner2 = L.latLng(49.5, 9.5);
+    var bounds = L.latLngBounds(corner1, corner2);
+    mymap.flyToBounds(bounds);
+  }
+  else {
+    console.log("Debug OFF")
+    mymap.removeLayer(L);
+    squareList.forEach((square, i) => {
+      square.remove();
+    });
+
+  }
 }
 
 function getDownloadPoints() {
@@ -109,9 +142,12 @@ function addSquare(lat,lon,colorRectangle="#3388ff") {
   var corner2 = L.latLng(lat2, lon2);
   var bounds = L.latLngBounds(corner1, corner2);
 
-  L.rectangle(bounds,{
+  var rect = L.rectangle(bounds,{
     color:colorRectangle
-  }).addTo(mymap);
+  })
+  rect.addTo(mymap);
+  squareList.push(rect);
+
 }
 
 function drawAllSquare()

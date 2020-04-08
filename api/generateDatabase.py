@@ -5,7 +5,7 @@ import requests
 import time
 import json
 import sys
-from math import *
+from math import pi,cos
 import utils
 
 beforeData = 0
@@ -22,7 +22,7 @@ class Way(object):
     def __init__(self, id,nodesIdVector,centerNode,oneway,roundabout,maxspeed,type):
         self.nodes = nodesIdVector
         self.id = id
-        self.centerNode = centerNode;
+        self.centerNode = centerNode
         self.oneway = oneway
         self.roundabout = roundabout
         self.maxspeed = maxspeed
@@ -91,7 +91,7 @@ def resetDatabase():
         pass
 
 def callApi(north,west,south,east):
-    resolved=False;
+    resolved=False
     overpass_url = "http://overpass-api.de/api/interpreter"
     # overpass_query = f"[out:json];\n(\nnode[highway=tertiary]({south},{west},{north},{east});\nway[highway=tertiary]({south},{west},{north},{east});\nnode[highway=secondary]({south},{west},{north},{east});\nway[highway=secondary]({south},{west},{north},{east});\nnode[highway=primary]({south},{west},{north},{east});\nway[highway=primary]({south},{west},{north},{east});\nway[highway=cycleway]({south},{west},{north},{east});\n);\nout body;\n>;\nout skel qt;\n"
 
@@ -121,14 +121,14 @@ out skel asc;
         # print("API response :",response)
 
         if (response.status_code==429):
-            print("Try again later. Limit reached");
+            print("Try again later. Limit reached")
 
             # "Hack to get the waiting time"
             timeBlocked = requests.get("http://overpass-api.de/api/status")
             # return a text explaining how many time you need to wait
             index = timeBlocked.text.rfind("seconds")
             # cut the string at the last "seconds" in the text
-            newString = result[:index]
+            newString = timeBlocked[:index]
             # get all the digits in the text.
             intList = [int(s) for s in newString.split() if s.isdigit()]
 
@@ -147,8 +147,6 @@ out skel asc;
 
 def getData(tile):
     global requestTime,stockageTime,fetchingTime
-
-    startRequestTime = time.time()
     squareSize = 70
 
     north = utils.addKmToLatitude(tile["lat"],-squareSize/2)
@@ -157,9 +155,7 @@ def getData(tile):
     east = utils.addKmToLongitude(tile["lat"],tile["lon"],squareSize/2)
 
 
-    data = callApi(north,west,south,east);
-
-    endRequestTime = time.time()
+    data = callApi(north,west,south,east)
 
     #parse elements
     elems = data["elements"]
@@ -192,11 +188,13 @@ def getData(tile):
                 else :
                     oneway = False
             except Exception as e:
+                print(e)
                 oneway = False
 
             try:
                 highway = elem["tags"]["highway"]
             except Exception as e:
+                print(e)
                 highway = "None"
 
             try:
@@ -316,7 +314,7 @@ def addRequestedTiles():
 if len(sys.argv)>1:
     if sys.argv[1]=="clear":
         print("Clearing database")
-        resetDatabase();
+        resetDatabase()
 else :
     createTable()
-    addRequestedTiles();
+    addRequestedTiles()
