@@ -34,16 +34,38 @@ class DatabaseManager():
         # print(values)
         return values
 
+    def getAllDataDB(self):
+        self.cursor.execute("""SELECT DISTINCT * FROM roads""")
+        return self.cursor.fetchall()
+
+
+    def getAllNodeInBoundingBox(self,north,west,south,east):
+        self.cursor.execute("""
+        SELECT DISTINCT id_node,latitude,longitude FROM roads
+        WHERE (latitude<?) AND (latitude>?) AND (longitude>?) AND (longitude<?)
+        ORDER BY id_node
+        """,(north,south,west,east,))
+        return self.cursor.fetchall()
+
+
+    def getAllWayInBoundingBox(self,north,west,south,east):
+        self.cursor.execute("""
+        SELECT DISTINCT id_way,centerLat,centerLon,id_node_center,id_node,oneway,roundabout,maxspeed,type,latitude,longitude FROM roads
+        WHERE (centerLat<?) AND (centerLat>?) AND (centerLon>?) AND (centerLon<?)
+        ORDER BY id_way
+        """,(north,south,west,east,))
+        return self.cursor.fetchall()
+
+
 
 if __name__ == '__main__' :
     db = DatabaseManager()
 
-    # db.getClosestNodes(49.0478,7.4446)
 
-    node1=Node(1, 49.0478,7.4446)
-    node2=Node(2, 49.0278,7.4546)
+    startTimeB = time.time()
+    data = db.getAllWayInBoundingBox(49.278,6.55,48.6723,7.7917)
+    interTimeB = time.time()-startTimeB
+    print("size of data : ", len(data))    
+    finalTimeB = time.time()-interTimeB
+    print("In : ",interTimeB,"s for request and ", finalTimeB,"s for display")
 
-    way= Way(5,[node1,node2],node1)
-
-
-    print(way)

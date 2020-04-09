@@ -68,7 +68,7 @@ def createTable():
     c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
     try :
         # Create table - CLIENTS
-        c.execute('''CREATE TABLE roads (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, id_node BIGINT,oneway BOOL,roundabout BOOL, maxspeed INT, type TEXT,latitude DOUBLE, longitude DOUBLE)''')
+        c.execute('''CREATE TABLE roads (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, id_node_center BIGINT, id_node BIGINT,oneway BOOL,roundabout BOOL, maxspeed INT, type TEXT,latitude DOUBLE, longitude DOUBLE)''')
         conn.commit()
         c.execute('''CREATE TABLE downloadPoints (id TEXT, latitude DOUBLE,longitude DOUBLE)''')
         conn.commit()
@@ -125,6 +125,8 @@ out skel asc;
 
             # "Hack to get the waiting time"
             timeBlocked = requests.get("http://overpass-api.de/api/status")
+            print("Request GET ok")
+
             # return a text explaining how many time you need to wait
             index = timeBlocked.text.rfind("seconds")
             # cut the string at the last "seconds" in the text
@@ -179,6 +181,8 @@ def getData(tile):
             try :
                 if elem["tags"]["junction"] == "roundabout":
                     roundabout = True
+                else :
+                    roundabout = False
             except :
                 roundabout = False
 
@@ -187,14 +191,12 @@ def getData(tile):
                     oneway = True
                 else :
                     oneway = False
-            except Exception as e:
-                print(e)
+            except :
                 oneway = False
 
             try:
                 highway = elem["tags"]["highway"]
-            except Exception as e:
-                print(e)
+            except :
                 highway = "None"
 
             try:
@@ -219,9 +221,11 @@ def getData(tile):
                     # print("centerNode : ",centerNode)
                 i+=1
 
-            w = Way(idWay,nodeIdVector,centerNode,oneway,roundabout,maxspeed,highway)
-            # print(w)
-            wayVector.append(w)
+            if highway!="None":
+                w = Way(idWay,nodeIdVector,centerNode,oneway,roundabout,maxspeed,highway)
+                # print(w)
+                wayVector.append(w)
+
 
     endFetchingTime = time.time()
     fetchingTime+=endFetchingTime-startFetchingTime
@@ -243,9 +247,9 @@ def getData(tile):
         for nodeId in way.getNodes():
             nodeLat = utils.findNodeInNodeVector(nodeId,nodesVector).getLat()
             nodeLon = utils.findNodeInNodeVector(nodeId,nodesVector).getLon()
-            ways.append((way.getId(),way.getCenterNode().getLat(),way.getCenterNode().getLon(),nodeId,way.getOneway(),way.getRoundabout(),way.getMaxspeed(),way.getType(),nodeLat,nodeLon))
+            ways.append((way.getId(),way.getCenterNode().getLat(),way.getCenterNode().getLon(),way.getCenterNode().getId(),nodeId,way.getOneway(),way.getRoundabout(),way.getMaxspeed(),way.getType(),nodeLat,nodeLon))
 
-    sqlInsertQuery = """INSERT INTO roads (id_way,centerLat,centerLon,id_node,oneway,roundabout,maxspeed,type,latitude,longitude) VALUES (?,?,?,?,?,?,?,?,?,?)"""
+    sqlInsertQuery = """INSERT INTO roads (id_way,centerLat,centerLon,id_node_center,id_node,oneway,roundabout,maxspeed,type,latitude,longitude) VALUES (?,?,?,?,?,?,?,?,?,?,?)"""
 
     cur.executemany(sqlInsertQuery, ways)
     conn.commit()

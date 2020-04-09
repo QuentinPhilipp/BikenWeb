@@ -4,10 +4,18 @@ from flask import request, jsonify
 from flask_cors import CORS
 import sqlite3
 import databaseManager
+import itinaryCreator
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 CORS(app)
+
+creator = itinaryCreator.itineraryCreator(49.005115, 7.373121)
+creator.createAllNodesObject()
+creator.createAllWaysObject()
+
+print("itinaryCreator ready")
+
 
 @app.route('/api/docs', methods=['GET'])
 def home():
@@ -38,12 +46,14 @@ def api_itinerary():
         startPosition = geocode(start)
         finishPosition = geocode(finish)
 
-        waypointList = [[49.040371,7.427740],
-        [49.040846,7.428406],
-        [49.041191,7.428663],
-        [49.041615,7.428701],
-        [49.041982,7.428529],
-        [49.042428,7.428310]]
+        # waypointList = [[49.040371,7.427740],
+        # [49.040846,7.428406],
+        # [49.041191,7.428663],
+        # [49.041615,7.428701],
+        # [49.041982,7.428529],
+        # [49.042428,7.428310]]
+
+        waypointList = creator.getItinerary()
 
         val = {"type" : "itinerary", "gps" : "false", "data" : {"startName": start, "startPos": startPosition, "finishName": finish, "finishPos": finishPosition, "waypoints":waypointList}}
         return jsonify(val)

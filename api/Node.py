@@ -1,4 +1,4 @@
-import math
+from math import inf
 
 
 class Node(object):
@@ -8,7 +8,7 @@ class Node(object):
         self._id = id
         self._latitude = lat
         self._longitude = lon
-        self._distance = math.inf
+        self._distance = inf
         self._precedingNodeId = 0
         self._marque = False
         self._numberOfWays = 0
@@ -112,3 +112,7 @@ class Node(object):
 
     def addWay(self, way):
         self._ways.append(way)
+
+
+    def addWayCount(self):
+        self._numberOfWays += 1

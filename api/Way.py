@@ -2,14 +2,14 @@
 class Way(object):
     """Represent an OSM Way"""
 
-    def __init__(self,id,nodes,centerNode,oneway=False,roundabout=False,maxspeed=0,type="None"):
+    def __init__(self,id,nodes,centerNode,oneway=False,roundabout=False,maxspeed=0,roadType="None"):
         self._id = id
         self._nodes = nodes
         self._centerNode = centerNode
         self._oneway=oneway
         self._roundabout=roundabout
         self._maxspeed=maxspeed
-        self._type=type
+        self._roadType=roadType
 
     # Getter and setter
     # ID
