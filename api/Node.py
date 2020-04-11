@@ -126,3 +126,10 @@ class Node(object):
     def addWay(self, way):
         self._ways.append(way)
 
+
+    def resetNode(self):
+        self._distanceTotal=inf
+        self._distanceToGoal=inf
+        self._distanceFromStart=inf
+        self._precedingNode=None
+

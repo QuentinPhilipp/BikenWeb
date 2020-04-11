@@ -4,17 +4,17 @@ import utils
 import Node
 import Way
 from bisect import bisect_left 
-from math import pi,cos,sin,sqrt,atan2
+from math import pi,cos,sin,sqrt,atan2,inf
 from operator import attrgetter
 
-MAX_DISTANCE_FROM_START = 100
+MAX_DISTANCE_FROM_START = 1000
 
 class itineraryCreator(object):
     def __init__(self,startLat,startLon):
         self._startLat=startLat
         self._startLon=startLon
-        self._nodeList=[]
-        self._nodeIdList=[]     #same order than nodeList but contain only id. Faster to iterate
+        self._nodesList=[]
+        self._nodesIdList=[]     #same order than nodeList but contain only id. Faster to iterate
         self._waysList=[]
         
         self.createAllNodesObject()
@@ -40,29 +40,29 @@ class itineraryCreator(object):
    
     # Node List
     @property
-    def nodeList(self):
-        return self._nodeList
+    def nodesList(self):
+        return self._nodesList
     
-    @nodeList.getter
-    def nodeList(self):
-        return self._nodeList  
+    @nodesList.getter
+    def nodesList(self):
+        return self._nodesList  
     
-    @nodeList.setter
-    def nodeList(self,value):
-        self._nodeList = value
+    @nodesList.setter
+    def nodesList(self,value):
+        self._nodesList = value
     
     # NodeId List
     @property
-    def nodeIdList(self):
-        return self._nodeIdList
+    def nodesIdList(self):
+        return self._nodesIdList
     
-    @nodeIdList.getter
-    def nodeIdList(self):
-        return self._nodeIdList  
+    @nodesIdList.getter
+    def nodesIdList(self):
+        return self._nodesIdList  
     
-    @nodeIdList.setter
-    def nodeIdList(self,value):
-        self._nodeIdList = value
+    @nodesIdList.setter
+    def nodesIdList(self,value):
+        self._nodesIdList = value
 
     # Way List
     @property
@@ -109,8 +109,8 @@ class itineraryCreator(object):
             localNodeList.append(node)
             localNodeIdList.append(idNode)
         print("",len(localNodeList)," nodes created in ",time.time() - startTimeCreation, "seconds")
-        self.nodeList = localNodeList
-        self.nodeIdList= localNodeIdList
+        self.nodesList = localNodeList
+        self.nodesIdList= localNodeIdList
 
 
     def createAllWaysObject(self):
@@ -187,8 +187,8 @@ class itineraryCreator(object):
         # All node should be store ordered by id
         # Search into the list of id for the index and then take the good element in the node list
         # Use binary search
-        index = bisect_left(self.nodeIdList, nodeId, lo=0, hi=len(self.nodeIdList))
-        return self.nodeList[index]
+        index = bisect_left(self.nodesIdList, nodeId, lo=0, hi=len(self.nodesIdList))
+        return self.nodesList[index]
 
 
 
@@ -203,49 +203,59 @@ class itineraryCreator(object):
         db = databaseManager.DatabaseManager()
 
 
-        startNodeId = db.getClosestNodes(startPosition["lat"],startPosition["lon"])[0][0]   #[0][0] only take id
-        finishNodeId = db.getClosestNodes(finishPosition["lat"],finishPosition["lon"])[0][0]
+        # startNodeId = db.getClosestNodes(startPosition["lat"],startPosition["lon"])[0][0]   #[0][0] only take id
+        # finishNodeId = db.getClosestNodes(finishPosition["lat"],finishPosition["lon"])[0][0]
 
 
-        print("closest node from start : ",startNodeId)
-        print("closest node from end : ",finishNodeId)
 
-        startNodeId = 287305291
+        # Get closest crossroad bc the current algorythm use only crossroads and not all node to optimize performance
+        startLat = float(startPosition["lat"])
+        startLon = float(startPosition["lon"])
+
+        goalLat = float(finishPosition["lat"])
+        goalLon = float(finishPosition["lon"])
+
+        closestDistanceToStart=inf
+        closestDistanceToGoal=inf
+        closestNodeToStart = None
+        closestNodeToGoal = None
+
+        for node in self.nodesList:
+            # reseting the node before every new requests
+            node.resetNode()
+            # print("testDistance")
+            distanceToStart = (startLat-node.latitude)**2 +(startLon-node.longitude)**2
+            distanceToGoal = (goalLat-node.latitude)**2 +(goalLon-node.longitude)**2
+
+            if (distanceToStart < closestDistanceToStart) and len(node.ways)>1:
+                closestDistanceToStart = distanceToStart
+                closestNodeToStart = node
+
+            if (distanceToGoal < closestDistanceToGoal) and len(node.ways)>1:
+                closestDistanceToGoal = distanceToGoal
+                closestNodeToGoal = node
+
+
+
+
+        # print("closest node from start : ",closestNodeToStart.id)
+        # print("closest node from end : ",closestNodeToGoal.id)
+
+        # startNodeId = 287305291
         # finishNodeId = 841874221     #work
         # finishNodeId=5843835950      #work
         # finishNodeId=1248703954    #work
-        finishNodeId = 2432131729
+        # finishNodeId = 2432131729
 
-        # creator.djikstraAlgorythm(startNodeId,finishNodeId)
+        startNodeId=closestNodeToStart.id
+        finishNodeId=closestNodeToGoal.id
+
         geoDataList = self.aStarSearch(startNodeId,finishNodeId)
         # return positionList
 
         return geoDataList
 
 
-
-
-
-    def getNodesNearby(self,node):
-
-        nodesNearby = []
-        ways = node.ways
-        # print("ways of node : ",node.ways)
-
-        for currentWay in ways:
-            nodes=currentWay.nodes
-            index = self.getPositionInWay(node,currentWay)
-
-            print("scan one way")
-
-            for n in nodes:
-                # print("numberOfWays : ",n.numberOfWays, n.id)
-                if n.numberOfWays>1 and n.id!=node.id:
-                    print("Add node nearby :",n.id)
-
-                    nodesNearby.append(n)
-
-        return nodesNearby
 
 
     def distanceBetween(self,node1,node2):
@@ -261,90 +271,6 @@ class itineraryCreator(object):
 
         return distance
 
-
-    def djikstraAlgorythm(self,startNod,endNod):
-        startNodeId = 287305190
-        endNodeId = 841874221
-        print("\n\n\n Starting Algorythm \n\n\n")
-
-        startItineraryTime = time.time()
-        # Node * start = getNodeFromNodeId(startNodeId);
-        # Node * finish = getNodeFromNodeId(finishNodeId);
-
-        startNode = self.getNodeFromNodeId(startNodeId);
-        endNode = self.getNodeFromNodeId(endNodeId);
-        # print("startNode :",startNode.id,startNode.ways)
-
-        # print("Route between node n°", startNode.id,"and node°", endNode.id)
-
-        startNode.distance=0
-        nodeToDeal = []
-
-        # print("startNode :",startNode.id,startNode.ways)
-       
-        nodeToDeal.append(startNode)
-        nodesNearby = self.getNodesNearby(nodeToDeal[0])
-
-        # print("currentNode :",nodeToDeal[0].id,nodeToDeal[0].ways)
-
-        # print("Node nearby :",nodesNearby)
-
-
-        exitFlag = False    #use to get out of encas
-        
-        # Dijkstra
-        while nodeToDeal:           #while not empty
-            print("While")
-            indexMin = 0
-
-            print("nodeToDeal :",nodeToDeal)
-
-            #which node is the closest to the start
-            for i in range(1,len(nodeToDeal)):
-                if(nodeToDeal[i].distance<nodeToDeal[indexMin].distance):
-                    indexMin=i
-
-            currentNode = nodeToDeal[indexMin]
-            nodeToDeal.pop(indexMin)
-
-            
-            print("currentNode :")
-            displayNode(currentNode)
-
-            if currentNode.id == finishNodeId:
-                print("\n\nFOUND\n\n")
-
-
-            nodesNearby=self.getNodesNearby(currentNode)
-
-            print("Node nearby :")
-            for node in nodesNearby:
-                print(node.id)
-            print("\n")
-
-            currentNode.marque=True
-
-            for node in nodesNearby:
-                if node.marque==False:
-                    #Pour chacun de ces nodes, on regarde si la distance par rapport au départ en passant par
-                    #currentNode est plus petite que l'ancienne distance par rapport au départ (stockée dans le node).
-                    distanceBetweenNodes = self.distanceBetween(node,currentNode)
-                    if node.distance>currentNode.distance+distanceBetweenNodes:
-                        node.distance=currentNode.distance+distanceBetweenNodes
-                        node.precedingNodeId=currentNode.id
-                        node.marque=True
-                        nodeToDeal.append(node)
-                        if node.id == finishNodeId:
-                            exit==True
-                            print("End point reached")
-
-
-        if exit==True:
-            print("End point reached")
-
-
-        else:
-            print("End point not reached")
 
 
 
@@ -398,15 +324,28 @@ class itineraryCreator(object):
                     return i
 
     def reconstruct_path(self,endNode,startNode):
-        nodeList = []
+        startReconstruct=time.time()
 
-        nodeListLatLon = []
+        # nodeList = []
 
-        current=endNode
-        while current != startNode:
-            nodeList.append(current)
-            nodeListLatLon.append([current.latitude,current.longitude])
-            current=current.precedingNode
+        # nodeListLatLon = []
+
+        # current=endNode
+        # while current != startNode:
+        #     nodeList.append(current)
+        #     nodeListLatLon.append([current.latitude,current.longitude])
+        #     current=current.precedingNode
+
+        # totalTimeReconstruct=time.time()-startReconstruct
+
+        while node!=nodeId:
+            pass
+
+
+
+
+            
+        print("Path reconstructed in ",totalTimeReconstruct,"secondes ")
 
         return nodeListLatLon
 

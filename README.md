@@ -16,6 +16,8 @@ To start the server, execute
 
 The web interface is located in frontend/index.html
 
+Request are working in all downloaded tiles. Check if the city you want to request is in the downloaded data by clicking on the debug button on the interface. Downloaded tiles appear in red. To modify which tiles should be downloaded, check the section "Database generation"
+
 ## Request
 
 Currently the only request available from the interface is : Enter a start and finish point (name of the city) and the interface will put a marker on those location on the map
@@ -35,9 +37,9 @@ If start and finish are latitude and longitude
 
 ## Database generation
 
- - Select which department should be downloaded : 
+ - Select which tiles should be downloaded : 
 
-> Edit data/departements.json and put download:1 to all department you need
+> Edit data/tiles.json and put download:1 to all tiles you need
  - Build the database :
 > python3 generateDatabase.py
 

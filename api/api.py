@@ -57,8 +57,8 @@ def api_itinerary():
 
         waypointList = creator.getItinerary(startPosition,finishPosition)
 
-        # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
-        # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
+        startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
+        finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
 
         val = {"type" : "itinerary", "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":waypointList}}
         return jsonify(val)
