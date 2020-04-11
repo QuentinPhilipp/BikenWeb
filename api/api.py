@@ -4,10 +4,17 @@ from flask import request, jsonify
 from flask_cors import CORS
 import sqlite3
 import databaseManager
+import itinaryCreator
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 CORS(app)
+
+creator = itinaryCreator.itineraryCreator(49.0008188, 7.3787709)
+
+
+print("itinaryCreator ready")
+
 
 @app.route('/api/docs', methods=['GET'])
 def home():
@@ -37,7 +44,23 @@ def api_itinerary():
         print("Itinerary with address")
         startPosition = geocode(start)
         finishPosition = geocode(finish)
-        val = {"type" : "itinerary", "gps" : "false", "data" : {"startName": start, "startPos": startPosition, "finishName": finish, "finishPos": finishPosition, "waypoint":[]}}
+        
+
+        # startPosition = {"lat": 49.000885, "lon": 7.378740}
+        # finishPosition = {"lat": 48.992054, "lon": 7.311381}
+        # waypointList = [[49.040371,7.427740],
+        # [49.040846,7.428406],
+        # [49.041191,7.428663],
+        # [49.041615,7.428701],
+        # [49.041982,7.428529],
+        # [49.042428,7.428310]]
+
+        waypointList = creator.getItinerary(startPosition,finishPosition)
+
+        # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
+        # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
+
+        val = {"type" : "itinerary", "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":waypointList}}
         return jsonify(val)
 
     # if the start/end is an GPS point
@@ -45,7 +68,7 @@ def api_itinerary():
         print("Itinerary with GPS points")
         startPosition = extractGPS(startPos)
         finishPosition = extractGPS(finishPos)
-        val = {"type" : "itinerary", "gps" : "true", "data" : {"startName": start, "startPos": startPosition, "finishName": finish, "finishPos": finishPosition, "waypoint":[]}}
+        val = {"type" : "itinerary", "gps" : "true", "data" : {"startName": start, "startPos": startPosition, "finishName": finish, "finishPos": finishPosition, "waypoints":[]}}
         return jsonify(val)
     else :
         print("Bad request")
@@ -65,14 +88,14 @@ def api_route():
     if start and distance:
         print("Route with address")
         startPosition = geocode(start)
-        val = {"type" : "route", "gps" : "false", "data" : {"startName": start, "startPos": startPosition, "distance": distance, "waypoint":[]}}
+        val = {"type" : "route", "gps" : "false", "data" : {"startName": start, "startPos": startPosition, "distance": distance, "waypoints":[]}}
         return jsonify(val)
 
     # If the start is a GPS point
     elif startPos and distance:
         print("Route with GPS points")
         startPosition = extractGPS(startPos)
-        val = {"type" : "route", "gps" : "true", "data" : {"startName": start, "startPos": startPosition, "distance": distance, "waypoint":[]}}
+        val = {"type" : "route", "gps" : "true", "data" : {"startName": start, "startPos": startPosition, "distance": distance, "waypoints":[]}}
         return jsonify(val)
     else :
         print("Bad request")
@@ -80,9 +103,12 @@ def api_route():
         return jsonify(val)
 
 
+
 @app.route('/api/1.0/debugDownload', methods=['GET'])
 def sendDownloadSquares():
+
     dbManager = databaseManager.DatabaseManager()
+
     valuesRaw = dbManager.getDownloadPoints()
     values = []
     for point in valuesRaw :

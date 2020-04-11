@@ -1,7 +1,7 @@
 import json
 import sys
 from string import ascii_uppercase
-from math import *
+from math import pi,cos
 
 
 data = {}
@@ -14,7 +14,7 @@ def addKmToLatitude(originalLat,kmToAdd):
 
 def addKmToLongitude(originalLat,originalLon,kmToAdd):
     r_earth = 6378
-    return originalLon + (kmToAdd / r_earth) * (180 / pi) / cos(originalLat *pi/180); #longitude to km depend on the latitude. 111km at equador but 0 in the pole
+    return originalLon + (kmToAdd / r_earth) * (180 / pi) / cos(originalLat *pi/180) #longitude to km depend on the latitude. 111km at equador but 0 in the pole
 
 def addSquare(lat,lon,indexX,indexY):
     stringId = ""+ascii_uppercase[indexY]+str(indexX)

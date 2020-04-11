@@ -5,7 +5,7 @@ import requests
 import time
 import json
 import sys
-from math import *
+from math import pi,cos
 import utils
 
 beforeData = 0
@@ -22,7 +22,7 @@ class Way(object):
     def __init__(self, id,nodesIdVector,centerNode,oneway,roundabout,maxspeed,type):
         self.nodes = nodesIdVector
         self.id = id
-        self.centerNode = centerNode;
+        self.centerNode = centerNode
         self.oneway = oneway
         self.roundabout = roundabout
         self.maxspeed = maxspeed
@@ -68,7 +68,7 @@ def createTable():
     c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
     try :
         # Create table - CLIENTS
-        c.execute('''CREATE TABLE roads (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, id_node BIGINT,oneway BOOL,roundabout BOOL, maxspeed INT, type TEXT,latitude DOUBLE, longitude DOUBLE)''')
+        c.execute('''CREATE TABLE roads (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, id_node_center BIGINT, id_node BIGINT,oneway BOOL,roundabout BOOL, maxspeed INT, type TEXT,latitude DOUBLE, longitude DOUBLE)''')
         conn.commit()
         c.execute('''CREATE TABLE downloadPoints (id TEXT, latitude DOUBLE,longitude DOUBLE)''')
         conn.commit()
@@ -91,7 +91,7 @@ def resetDatabase():
         pass
 
 def callApi(north,west,south,east):
-    resolved=False;
+    resolved=False
     overpass_url = "http://overpass-api.de/api/interpreter"
     # overpass_query = f"[out:json];\n(\nnode[highway=tertiary]({south},{west},{north},{east});\nway[highway=tertiary]({south},{west},{north},{east});\nnode[highway=secondary]({south},{west},{north},{east});\nway[highway=secondary]({south},{west},{north},{east});\nnode[highway=primary]({south},{west},{north},{east});\nway[highway=primary]({south},{west},{north},{east});\nway[highway=cycleway]({south},{west},{north},{east});\n);\nout body;\n>;\nout skel qt;\n"
 
@@ -121,14 +121,16 @@ out skel asc;
         # print("API response :",response)
 
         if (response.status_code==429):
-            print("Try again later. Limit reached");
+            print("Try again later. Limit reached")
 
             # "Hack to get the waiting time"
             timeBlocked = requests.get("http://overpass-api.de/api/status")
+            print("Request GET ok")
+
             # return a text explaining how many time you need to wait
             index = timeBlocked.text.rfind("seconds")
             # cut the string at the last "seconds" in the text
-            newString = result[:index]
+            newString = timeBlocked[:index]
             # get all the digits in the text.
             intList = [int(s) for s in newString.split() if s.isdigit()]
 
@@ -147,8 +149,6 @@ out skel asc;
 
 def getData(tile):
     global requestTime,stockageTime,fetchingTime
-
-    startRequestTime = time.time()
     squareSize = 70
 
     north = utils.addKmToLatitude(tile["lat"],-squareSize/2)
@@ -157,9 +157,7 @@ def getData(tile):
     east = utils.addKmToLongitude(tile["lat"],tile["lon"],squareSize/2)
 
 
-    data = callApi(north,west,south,east);
-
-    endRequestTime = time.time()
+    data = callApi(north,west,south,east)
 
     #parse elements
     elems = data["elements"]
@@ -183,6 +181,8 @@ def getData(tile):
             try :
                 if elem["tags"]["junction"] == "roundabout":
                     roundabout = True
+                else :
+                    roundabout = False
             except :
                 roundabout = False
 
@@ -191,12 +191,12 @@ def getData(tile):
                     oneway = True
                 else :
                     oneway = False
-            except Exception as e:
+            except :
                 oneway = False
 
             try:
                 highway = elem["tags"]["highway"]
-            except Exception as e:
+            except :
                 highway = "None"
 
             try:
@@ -221,9 +221,11 @@ def getData(tile):
                     # print("centerNode : ",centerNode)
                 i+=1
 
-            w = Way(idWay,nodeIdVector,centerNode,oneway,roundabout,maxspeed,highway)
-            # print(w)
-            wayVector.append(w)
+            if highway!="None":
+                w = Way(idWay,nodeIdVector,centerNode,oneway,roundabout,maxspeed,highway)
+                # print(w)
+                wayVector.append(w)
+
 
     endFetchingTime = time.time()
     fetchingTime+=endFetchingTime-startFetchingTime
@@ -245,9 +247,9 @@ def getData(tile):
         for nodeId in way.getNodes():
             nodeLat = utils.findNodeInNodeVector(nodeId,nodesVector).getLat()
             nodeLon = utils.findNodeInNodeVector(nodeId,nodesVector).getLon()
-            ways.append((way.getId(),way.getCenterNode().getLat(),way.getCenterNode().getLon(),nodeId,way.getOneway(),way.getRoundabout(),way.getMaxspeed(),way.getType(),nodeLat,nodeLon))
+            ways.append((way.getId(),way.getCenterNode().getLat(),way.getCenterNode().getLon(),way.getCenterNode().getId(),nodeId,way.getOneway(),way.getRoundabout(),way.getMaxspeed(),way.getType(),nodeLat,nodeLon))
 
-    sqlInsertQuery = """INSERT INTO roads (id_way,centerLat,centerLon,id_node,oneway,roundabout,maxspeed,type,latitude,longitude) VALUES (?,?,?,?,?,?,?,?,?,?)"""
+    sqlInsertQuery = """INSERT INTO roads (id_way,centerLat,centerLon,id_node_center,id_node,oneway,roundabout,maxspeed,type,latitude,longitude) VALUES (?,?,?,?,?,?,?,?,?,?,?)"""
 
     cur.executemany(sqlInsertQuery, ways)
     conn.commit()
@@ -316,7 +318,7 @@ def addRequestedTiles():
 if len(sys.argv)>1:
     if sys.argv[1]=="clear":
         print("Clearing database")
-        resetDatabase();
+        resetDatabase()
 else :
     createTable()
-    addRequestedTiles();
+    addRequestedTiles()

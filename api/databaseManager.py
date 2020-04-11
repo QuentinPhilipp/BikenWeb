@@ -1,4 +1,7 @@
 import sqlite3
+import time
+from Node import *
+from Way import *
 
 
 class DatabaseManager():
@@ -10,46 +13,22 @@ class DatabaseManager():
         self.path = "../data/Database.db"
         self.connection = sqlite3.connect(self.path)
         self.cursor = self.connection.cursor()
-        print("Database manager created")
 
 
     def getData(self):
         for id in self.cursor.execute("SELECT DISTINCT id_node FROM roads ORDER BY id_node"):
             print(id)
 
-
-    def getClosestNodes(self):
-        # self.cursor.execute("SELECT * FROM roads ORDER BY (ABS(49.000-latitude)+ABS(7.378850-longitude)) LIMIT 1")
-        self.cursor.execute("SELECT id_node,latitude,longitude FROM roads ORDER BY ABS(-4.624981-longitude) LIMIT 1")
-        print("Closest longitude to -4.624981 : ",self.cursor.fetchall())
-
-        self.cursor.execute("SELECT id_node,latitude,longitude FROM roads ORDER BY ABS(48.3851639-latitude) LIMIT 1")
-        print("Closest latitude to : 48.3851639",self.cursor.fetchall())
-
+    def getClosestNodes(self,lat,lon):
 
         self.cursor.execute("""
         SELECT id_node,latitude,longitude FROM roads
-        ORDER BY (((48.3851642-latitude)*(48.3851642-latitude)) + ((-4.624976-longitude)*(-4.624976-longitude)))
+        ORDER BY (((?-latitude)*(?-latitude)) + ((?-longitude)*(?-longitude)))
         LIMIT 1
-        """)
-        print("Closest Point : ",self.cursor.fetchall())
-
-    def getClosestNodesTest(self):
-        # self.cursor.execute("SELECT * FROM roads ORDER BY (ABS(49.000-latitude)+ABS(7.378850-longitude)) LIMIT 1")
-        self.cursor.execute("SELECT id_node,latitude,longitude FROM roads ORDER BY ABS(7.4446-longitude) LIMIT 1")
-        print("Closest longitude to 7.4446 : ",self.cursor.fetchall())
-
-        self.cursor.execute("SELECT id_node,latitude,longitude FROM roads ORDER BY ABS(49.0478-latitude) LIMIT 1")
-        print("Closest latitude to : 49.0478",self.cursor.fetchall())
-
-
-        self.cursor.execute("""
-        SELECT id_node,latitude,longitude FROM roads
-        ORDER BY (((49.043658-latitude)*(49.043658-latitude)) + ((7.427702-longitude)*(7.427702-longitude)))
-        LIMIT 1
-        """)
-        print("Closest Point : ",self.cursor.fetchall())
-
+        """,(lat,lat,lon,lon,))
+        point = self.cursor.fetchall()
+        # print("Closest Point : ",point)
+        return point
 
     def getDownloadPoints(self):
         self.cursor.execute("SELECT * FROM downloadPoints")
@@ -57,7 +36,38 @@ class DatabaseManager():
         # print(values)
         return values
 
+    def getAllDataDB(self):
+        self.cursor.execute("""SELECT DISTINCT * FROM roads""")
+        return self.cursor.fetchall()
+
+
+    def getAllNodeInBoundingBox(self,north,west,south,east):
+        self.cursor.execute("""
+        SELECT DISTINCT id_node,latitude,longitude FROM roads
+        WHERE (latitude<?) AND (latitude>?) AND (longitude>?) AND (longitude<?)
+        ORDER BY id_node
+        """,(north,south,west,east,))
+        return self.cursor.fetchall()
+
+
+    def getAllWayInBoundingBox(self,north,west,south,east):
+        self.cursor.execute("""
+        SELECT DISTINCT id_way,centerLat,centerLon,id_node_center,id_node,oneway,roundabout,maxspeed,type,latitude,longitude FROM roads
+        WHERE (centerLat<?) AND (centerLat>?) AND (centerLon>?) AND (centerLon<?)
+        ORDER BY id_way
+        """,(north,south,west,east,))
+        return self.cursor.fetchall()
+
+
 
 if __name__ == '__main__' :
     db = DatabaseManager()
-    db.getClosestNodesTest()
+
+
+    startTimeB = time.time()
+    data = db.getAllWayInBoundingBox(49.278,6.55,48.6723,7.7917)
+    interTimeB = time.time()-startTimeB
+    print("size of data : ", len(data))    
+    finalTimeB = time.time()-interTimeB
+    print("In : ",interTimeB,"s for request and ", finalTimeB,"s for display")
+
