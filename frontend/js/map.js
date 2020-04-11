@@ -37,6 +37,7 @@ function sendRequest() {
 
   console.log("Start : ",startPos);
   console.log("Finish : ",finishPos);
+  console.log("Distance : ",response.finishPos);
 
   console.log("Waypoints : ",waypoints);
 

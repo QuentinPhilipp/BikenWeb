@@ -197,16 +197,7 @@ class itineraryCreator(object):
 
 
         # Search the closest node to the position
-        # Look in the database the id of the closest point
         # Search in the object, the corresponding object
-
-        db = databaseManager.DatabaseManager()
-
-
-        # startNodeId = db.getClosestNodes(startPosition["lat"],startPosition["lon"])[0][0]   #[0][0] only take id
-        # finishNodeId = db.getClosestNodes(finishPosition["lat"],finishPosition["lon"])[0][0]
-
-
 
         # Get closest crossroad bc the current algorythm use only crossroads and not all node to optimize performance
         startLat = float(startPosition["lat"])
@@ -219,6 +210,7 @@ class itineraryCreator(object):
         closestDistanceToGoal=inf
         closestNodeToStart = None
         closestNodeToGoal = None
+
 
         for node in self.nodesList:
             # reseting the node before every new requests
@@ -236,24 +228,16 @@ class itineraryCreator(object):
                 closestNodeToGoal = node
 
 
-
-
-        # print("closest node from start : ",closestNodeToStart.id)
-        # print("closest node from end : ",closestNodeToGoal.id)
-
-        # startNodeId = 287305291
-        # finishNodeId = 841874221     #work
-        # finishNodeId=5843835950      #work
-        # finishNodeId=1248703954    #work
-        # finishNodeId = 2432131729
-
         startNodeId=closestNodeToStart.id
         finishNodeId=closestNodeToGoal.id
 
-        geoDataList = self.aStarSearch(startNodeId,finishNodeId)
+        print("from ",startNodeId,"to",finishNodeId)
+
+        geoData = self.aStarSearch(startNodeId,finishNodeId)
         # return positionList
 
-        return geoDataList
+        returnObject = {"waypoints":geoData[0],"distance":geoData[1]}
+        return returnObject
 
 
 
@@ -294,6 +278,8 @@ class itineraryCreator(object):
             # if indexOfCurrentNode+1<len(way.nodes):
             #     neighborList.append(way.nodes[indexOfCurrentNode+1])
 
+
+
             # only add neighbor with more than one way.  
             for node in way.nodes:       
                 if len(node.ways)>1:
@@ -326,25 +312,45 @@ class itineraryCreator(object):
     def reconstruct_path(self,endNode,startNode):
         startReconstruct=time.time()
 
-        # nodeList = []
+        nodeList = []
 
-        # nodeListLatLon = []
+        nodeListLatLon = []
 
-        # current=endNode
-        # while current != startNode:
-        #     nodeList.append(current)
-        #     nodeListLatLon.append([current.latitude,current.longitude])
-        #     current=current.precedingNode
+        # the itinerary only have crossroad. We need to fill in with all the points
+        currentNode = endNode
 
-        # totalTimeReconstruct=time.time()-startReconstruct
+        while currentNode!=startNode:
+            roadsFromCurrentNode = currentNode.ways
+            precedingNode = currentNode.precedingNode
+            roadsFromPrecedingNode = precedingNode.ways
 
-        while node!=nodeId:
-            pass
+            # We need to check the common way between the two nodes
+            commonWay = roadsFromCurrentNode[0]
+            for r1 in roadsFromCurrentNode:
+                for r2 in roadsFromPrecedingNode:
+                    if r1==r2:
+                        commonWay=r1
+                    
+            pos1 = self.getPositionInWay(currentNode,commonWay)
+            pos2 = self.getPositionInWay(precedingNode,commonWay)
+
+            nodesInCommonWay = commonWay.nodes 
+            if pos1<pos2:
+                for i in range(pos1,pos2):
+                    nodeList.append(nodesInCommonWay[i])
+                    nodeListLatLon.append([nodesInCommonWay[i].latitude,nodesInCommonWay[i].longitude])
 
 
+            else:
+                for i in range(pos1,pos2+1,-1): 
+                    nodeList.append(nodesInCommonWay[i])
+                    nodeListLatLon.append([nodesInCommonWay[i].latitude,nodesInCommonWay[i].longitude])
 
+            currentNode=precedingNode
+        
 
-            
+        totalTimeReconstruct=time.time()-startReconstruct
+
         print("Path reconstructed in ",totalTimeReconstruct,"secondes ")
 
         return nodeListLatLon
@@ -382,7 +388,8 @@ class itineraryCreator(object):
                 totalTimeASearch=time.time()-startTimeASearch
 
                 print("End reached in ",totalTimeASearch,"secondes ")
-                return self.reconstruct_path(endNode,startNode)
+                itinerarySize = endNode.distanceFromStart
+                return [self.reconstruct_path(endNode,startNode),itinerarySize]
 
             closeSet.append(current)
 
