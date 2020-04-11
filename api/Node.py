@@ -8,10 +8,11 @@ class Node(object):
         self._id = id
         self._latitude = lat
         self._longitude = lon
-        self._distance = inf
-        self._precedingNodeId = 0
+        self._distanceToGoal = inf
+        self._distanceFromStart = inf
+        self._distanceTotal = inf
+        self._precedingNode = 0
         self._marque = False
-        self._numberOfWays = 0
         self._ways = []
 
 
@@ -44,32 +45,57 @@ class Node(object):
         return self._longitude
 
 
-    # Distance
+    # DistanceFromStart
     @property
-    def distance(self):
-        return self._distance
+    def distanceFromStart(self):
+        return self._distanceFromStart
     
-    @distance.getter
-    def distance(self):
-        return self._distance  
+    @distanceFromStart.getter
+    def distanceFromStart(self):
+        return self._distanceFromStart  
     
-    @distance.setter
-    def distance(self,value):
-        self._distance = value
+    @distanceFromStart.setter
+    def distanceFromStart(self,value):
+        self._distanceFromStart = value
 
+    # DistanceToGoal
+    @property
+    def distanceToGoal(self):
+        return self._distanceToGoal
+    
+    @distanceToGoal.getter
+    def distanceToGoal(self):
+        return self._distanceToGoal  
+    
+    @distanceToGoal.setter
+    def distanceToGoal(self,value):
+        self._distanceToGoal = value
+
+    # DistanceTotal
+    @property
+    def distanceTotal(self):
+        return self._distanceTotal
+    
+    @distanceTotal.getter
+    def distanceTotal(self):
+        return self._distanceTotal  
+    
+    @distanceTotal.setter
+    def distanceTotal(self,value):
+        self._distanceTotal = value
 
     # Preceding Node
     @property
-    def precedingNodeID(self):
-        return self._precedingNodeID
+    def precedingNode(self):
+        return self._precedingNode
 
-    @precedingNodeID.getter
-    def precedingNodeID(self):
-        return self._precedingNodeID
+    @precedingNode.getter
+    def precedingNode(self):
+        return self._precedingNode
 
-    @precedingNodeID.setter
-    def precedingNodeID(self,value):
-        self._precedingNodeID = value
+    @precedingNode.setter
+    def precedingNode(self,value):
+        self._precedingNode = value
 
 
     # Marque
@@ -88,19 +114,6 @@ class Node(object):
 
     #  Number of Ways
     @property
-    def numberOfWays(self):
-        return self._numberOfWays
-
-    @numberOfWays.getter
-    def numberOfWays(self):
-        return self._numberOfWays
-
-    @numberOfWays.setter
-    def numberOfWays(self,value):
-        self._numberOfWays = value
-
-    #  Number of Ways
-    @property
     def ways(self):
         return self._ways
 
@@ -113,6 +126,3 @@ class Node(object):
     def addWay(self, way):
         self._ways.append(way)
 
-
-    def addWayCount(self):
-        self._numberOfWays += 1

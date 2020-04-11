@@ -26,7 +26,9 @@ class DatabaseManager():
         ORDER BY (((?-latitude)*(?-latitude)) + ((?-longitude)*(?-longitude)))
         LIMIT 1
         """,(lat,lat,lon,lon,))
-        print("Closest Point : ",self.cursor.fetchall())
+        point = self.cursor.fetchall()
+        # print("Closest Point : ",point)
+        return point
 
     def getDownloadPoints(self):
         self.cursor.execute("SELECT * FROM downloadPoints")

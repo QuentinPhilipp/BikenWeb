@@ -10,9 +10,8 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 CORS(app)
 
-creator = itinaryCreator.itineraryCreator(49.005115, 7.373121)
-creator.createAllNodesObject()
-creator.createAllWaysObject()
+creator = itinaryCreator.itineraryCreator(49.0008188, 7.3787709)
+
 
 print("itinaryCreator ready")
 
@@ -45,7 +44,10 @@ def api_itinerary():
         print("Itinerary with address")
         startPosition = geocode(start)
         finishPosition = geocode(finish)
+        
 
+        # startPosition = {"lat": 49.000885, "lon": 7.378740}
+        # finishPosition = {"lat": 48.992054, "lon": 7.311381}
         # waypointList = [[49.040371,7.427740],
         # [49.040846,7.428406],
         # [49.041191,7.428663],
@@ -53,9 +55,12 @@ def api_itinerary():
         # [49.041982,7.428529],
         # [49.042428,7.428310]]
 
-        waypointList = creator.getItinerary()
+        waypointList = creator.getItinerary(startPosition,finishPosition)
 
-        val = {"type" : "itinerary", "gps" : "false", "data" : {"startName": start, "startPos": startPosition, "finishName": finish, "finishPos": finishPosition, "waypoints":waypointList}}
+        # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
+        # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
+
+        val = {"type" : "itinerary", "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":waypointList}}
         return jsonify(val)
 
     # if the start/end is an GPS point
