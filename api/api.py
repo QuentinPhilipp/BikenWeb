@@ -1,6 +1,6 @@
 import flask
 import requests
-from flask import request, jsonify
+from flask import request, jsonify,render_template
 from flask_cors import CORS
 import sqlite3
 import databaseManager
@@ -16,8 +16,14 @@ creator = itinaryCreator.itineraryCreator(49.0008188, 7.3787709)
 print("itinaryCreator ready")
 
 
-@app.route('/api/docs', methods=['GET'])
+@app.route('/', methods=['GET'])
 def home():
+    return render_template("index.html")
+
+
+
+@app.route('/api/docs', methods=['GET'])
+def docs():
     return '''<h1>Biken Web API</h1>
 <p>Follow the project on <a href="https://github.com/QuentinPhilipp/BikenAPI">Github</a></p>
 <hr>
@@ -44,7 +50,7 @@ def api_itinerary():
         print("Itinerary with address")
         startPosition = geocode(start)
         finishPosition = geocode(finish)
-        
+
 
         # startPosition = {"lat": 49.000885, "lon": 7.378740}
         # finishPosition = {"lat": 48.992054, "lon": 7.311381}
@@ -139,4 +145,4 @@ def extractGPS(gpsPoint):
 def page_not_found(e):
     return "<h1>404</h1><p>The resource could not be found.</p>", 404
 
-app.run()
+app.run(threaded=True)

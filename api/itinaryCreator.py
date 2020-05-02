@@ -3,11 +3,11 @@ import time
 import utils
 import Node
 import Way
-from bisect import bisect_left 
+from bisect import bisect_left
 from math import pi,cos,sin,sqrt,atan2,inf
 from operator import attrgetter
 
-MAX_DISTANCE_FROM_START = 1000
+MAX_DISTANCE_FROM_START = 50
 
 class itineraryCreator(object):
     def __init__(self,startLat,startLon):
@@ -16,7 +16,7 @@ class itineraryCreator(object):
         self._nodesList=[]
         self._nodesIdList=[]     #same order than nodeList but contain only id. Faster to iterate
         self._waysList=[]
-        
+
         self.createAllNodesObject()
         self.createAllWaysObject()
     # Getter and setter
@@ -33,33 +33,33 @@ class itineraryCreator(object):
     @property
     def startLon(self):
         return self._startLon
-    
+
     @startLon.getter
     def startLon(self):
         return self._startLon
-   
+
     # Node List
     @property
     def nodesList(self):
         return self._nodesList
-    
+
     @nodesList.getter
     def nodesList(self):
-        return self._nodesList  
-    
+        return self._nodesList
+
     @nodesList.setter
     def nodesList(self,value):
         self._nodesList = value
-    
+
     # NodeId List
     @property
     def nodesIdList(self):
         return self._nodesIdList
-    
+
     @nodesIdList.getter
     def nodesIdList(self):
-        return self._nodesIdList  
-    
+        return self._nodesIdList
+
     @nodesIdList.setter
     def nodesIdList(self,value):
         self._nodesIdList = value
@@ -90,11 +90,11 @@ class itineraryCreator(object):
         east = utils.addKmToLongitude(self.startLat,self.startLon,MAX_DISTANCE_FROM_START)
         west = utils.addKmToLongitude(self.startLat,self.startLon,-MAX_DISTANCE_FROM_START)
         south = utils.addKmToLatitude(self.startLat,-MAX_DISTANCE_FROM_START)
-  
+
         print(north,west,south,east)
 
         startTimeFetch = time.time()
-        data = db.getAllNodeInBoundingBox(north,west,south,east)     
+        data = db.getAllNodeInBoundingBox(north,west,south,east)
         print("All data fetch from database in ",time.time() - startTimeFetch, "seconds")
 
 
@@ -122,16 +122,16 @@ class itineraryCreator(object):
         east = utils.addKmToLongitude(self.startLat,self.startLon,MAX_DISTANCE_FROM_START)
         west = utils.addKmToLongitude(self.startLat,self.startLon,-MAX_DISTANCE_FROM_START)
         south = utils.addKmToLatitude(self.startLat,-MAX_DISTANCE_FROM_START)
-        
+
         print(north,west,south,east)
 
         startTimeFetch = time.time()
-        data = db.getAllWayInBoundingBox(north,west,south,east)     
+        data = db.getAllWayInBoundingBox(north,west,south,east)
         print("All data fetch from database in ",time.time() - startTimeFetch, "seconds")
 
 
         wayNodesList = []  #list of all node in a way
-        localWaysList = []      #list of all ways        
+        localWaysList = []      #list of all ways
 
         startTimeCreation = time.time()
 
@@ -140,7 +140,7 @@ class itineraryCreator(object):
             # rawNode = [id_way,centerLat,centerLon,id_node_center,id_node,oneway,roundabout,maxspeed,type,latitude,longitude]
             if rawNode[0]!=lastRawNode[0]:          # End of the road, need to store the road and make a new one
                 idWay=lastRawNode[0]                # All those data are the same for every node in the way
-                centerNodeId = lastRawNode[3]         
+                centerNodeId = lastRawNode[3]
                 oneway = lastRawNode[5]
                 roundabout = lastRawNode[6]
                 maxspeed = lastRawNode[7]
@@ -162,7 +162,7 @@ class itineraryCreator(object):
 
         # Add the last way
         idWay=lastRawNode[0]                # All those data are the same for every node in the way
-        centerNodeId = lastRawNode[3]         
+        centerNodeId = lastRawNode[3]
         oneway = lastRawNode[5]
         roundabout = lastRawNode[6]
         maxspeed = lastRawNode[7]
@@ -269,7 +269,7 @@ class itineraryCreator(object):
         neighborList = []
         for way in current.ways:
             # search in multiple ways if the current node belong to multiple ways
-            
+
 
             # indexOfCurrentNode = self.getPositionInWay(current,way)
 
@@ -280,15 +280,15 @@ class itineraryCreator(object):
 
 
 
-            # only add neighbor with more than one way.  
-            for node in way.nodes:       
+            # only add neighbor with more than one way.
+            for node in way.nodes:
                 if len(node.ways)>1:
                         neighborList.append(node)
 
         # s=""
         # for neighbor in neighborList:
-        #     s+= str(neighbor.id) 
-        #     s+= "," 
+        #     s+= str(neighbor.id)
+        #     s+= ","
         # print("neighborList:",s)
 
 
@@ -330,11 +330,11 @@ class itineraryCreator(object):
                 for r2 in roadsFromPrecedingNode:
                     if r1==r2:
                         commonWay=r1
-                    
+
             pos1 = self.getPositionInWay(currentNode,commonWay)
             pos2 = self.getPositionInWay(precedingNode,commonWay)
 
-            nodesInCommonWay = commonWay.nodes 
+            nodesInCommonWay = commonWay.nodes
             if pos1<pos2:
                 for i in range(pos1,pos2):
                     nodeList.append(nodesInCommonWay[i])
@@ -342,12 +342,12 @@ class itineraryCreator(object):
 
 
             else:
-                for i in range(pos1,pos2+1,-1): 
+                for i in range(pos1,pos2+1,-1):
                     nodeList.append(nodesInCommonWay[i])
                     nodeListLatLon.append([nodesInCommonWay[i].latitude,nodesInCommonWay[i].longitude])
 
             currentNode=precedingNode
-        
+
 
         totalTimeReconstruct=time.time()-startReconstruct
 
@@ -366,8 +366,8 @@ class itineraryCreator(object):
         endNode = self.getNodeFromNodeId(endNodeId)
 
         openSet = [startNode]
-    
-        # List of nodes already discovered and explored. 
+
+        # List of nodes already discovered and explored.
         # Starts off empty
         # Once a node has been 'current' it then goes here
         closeSet = []
@@ -375,7 +375,7 @@ class itineraryCreator(object):
 
         # For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
         # to n currently known.
-        cameFrom = [] 
+        cameFrom = []
 
         startNode.distanceFromStart = 0
 
@@ -472,5 +472,3 @@ if __name__ == "__main__" :
     # print("Node 1 lat :",node1.distance)
 
     # print("Node 1 in way :",way.nodes[0].distance,"id : ",way.nodes[0].id)
-
-
