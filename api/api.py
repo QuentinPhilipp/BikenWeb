@@ -7,13 +7,14 @@ import databaseManager
 import itinaryCreator
 from threading import Thread
 import time
+import copy
 
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 CORS(app)
 
-creator = itinaryCreator.itineraryCreator(48.381571, -3.845928)
+creator = itinaryCreator.itineraryCreator(48.467466, -4.649883)
 
 
 print("itinaryCreator ready")
@@ -40,11 +41,10 @@ class Compute(Thread):
     def __init__(self):
         Thread.__init__(self)
 
-    def resetNodes(self):
-        print("Start Reset");
-        creator.resetAllNodes();
-        time.sleep(5)
-        print("End reset");
+    def run(self):
+        print("Start Reset")
+        creator.resetAllNodes()
+        print("End reset")
 
 
 @app.route('/api/1.0/itinerary', methods=['GET'])
@@ -74,6 +74,10 @@ def api_itinerary():
 
         val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
         print("Returned")
+
+        # reset all the nodes in another thread to return the data instantly
+        thread_a = Compute()
+        thread_a.start()
 
         return jsonify(val)
 
@@ -128,6 +132,81 @@ def sendDownloadSquares():
 
     val = {"status_code": "200", "data": values}
     return jsonify(val)
+
+@app.route('/api/1.0/testThread', methods=['GET'])
+def testThread():
+    startGeolocalisationTime = time.time();
+    start = "Brest"
+    finish = "Plougonvelin"
+    startPosition = geocode(start)
+    finishPosition = geocode(finish)
+    thirdPosition = geocode("Plourin")
+
+
+    geolocalisationTime = time.time()-startGeolocalisationTime;
+
+
+    list_threads = []
+
+    for i in range(3):
+        thread = RouteThread(startPosition,finishPosition,i)
+        list_threads.append(thread)
+
+    print("Init done")
+
+    # Start computing
+    for thread in list_threads:
+        thread.start()
+
+    # Wait the result from all thread
+    for thread in list_threads:
+        thread.join() # Wait until thread terminates its task
+
+    print("\n\nAll thread complete\n\n")
+
+    # startComputationTime = time.time();
+    # itinerary = creator.getItinerary(finishPosition,startPosition)
+    # creator.resetAllNodes()
+    #
+    # itinerary2 = creator.getItinerary(finishPosition,thirdPosition)
+    # creator.resetAllNodes()
+    #
+    # itinerary3 = creator.getItinerary(startPosition,thirdPosition)
+    computationTime = time.time()-startComputationTime;
+
+    creator.resetAllNodes()
+
+
+
+    itinerary['geolocalisationTime']=geolocalisationTime;
+    itinerary['calculationTime']=computationTime;
+    print(itinerary)
+    print("\n\n\n\n")
+    print(itinerary2)
+
+
+    val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]+itinerary2["waypoints"]+itinerary3["waypoints"]}}
+
+    return val
+
+
+
+class RouteThread(Thread):
+    def __init__(self,start,finish,id):
+        Thread.__init__(self)
+        print("Starting initialisation thread",id)
+        self.id = id
+        self.creator = itinaryCreator.itineraryCreator(48.381571, -3.845928)
+        self.startPoint = start
+        self.finishPoint=finish
+        print("Finish initialisation thread",id)
+
+
+    def run(self):
+        print("Start Computation")
+        itineray = self.creator.getItinerary(self.startPoint,self.finishPoint)
+        print("End Computation")
+
 
 
 def geocode(location):
