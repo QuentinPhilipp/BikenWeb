@@ -49,7 +49,16 @@ function sendRequest() {
   // console.log("Send data");
   // console.log("Start : ",startPos," | Finish : ",finishPos);
 
-  var url = "api/1.0/itinerary?start="+start+"&finish="+finish;
+  //check if itinerary or route
+  var requestType = getRequestType();
+
+  if (requestType=="route")
+  {
+    var url = "api/1.0/route?start="+start+"&finish="+finish;
+  }
+  else {
+    var url = "api/1.0/itinerary?start="+start+"&finish="+finish;
+  }
 
 
   // var xmlHttp = new XMLHttpRequest();
