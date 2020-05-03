@@ -1,8 +1,9 @@
 
-var mymap = L.map('mapid').setView([48.8589507,2.2770202], 10);
-
+var mymap = L.map('mapid',{ zoomControl: false }).setView([48.8589507,2.2770202], 10);
 debugState = false;
 squareList = [];
+routeList = [];
+
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -10,39 +11,99 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
-    zoomControl: false,
     accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
 }).addTo(mymap);
+
+
+
+
+function geocode(location)
+{
+   // This function use nominatim to get the GPS point of an address
+  var endpoint = "https://nominatim.openstreetmap.org/search/"
+  var query = endpoint+location+"?format=json&limit=1"
+
+  var xhttp = new XMLHttpRequest();
+
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var responseRaw = JSON.parse(xhttp.responseText);
+      var response = ""+responseRaw[0].lat+","+responseRaw[0].lon;
+      console.log(response);
+      return response;
+    }
+  };
+  xhttp.open("GET", query, true);
+  xhttp.send();
+}
+
 
 
 function sendRequest() {
   var start = document.getElementById('start').value
   var finish = document.getElementById('finish').value
 
-  console.log("Send data");
-  console.log("Start : ",start," | Finish : ",finish);
+  // startPos = geocode(start);
+  // finishPos = geocode(finish);
 
-  var url = "http://127.0.0.1:5000/api/1.0/itinerary?start="+start+"&finish="+finish
+  // console.log("Send data");
+  // console.log("Start : ",startPos," | Finish : ",finishPos);
+
+  var url = "api/1.0/itinerary?start="+start+"&finish="+finish;
 
 
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.open( "GET", url, false ); // false for synchronous request
-  xmlHttp.send();
+  // var xmlHttp = new XMLHttpRequest();
+  // xmlHttp.open( "GET", url,true ); // false for synchronous request
+  // xmlHttp.send();
   //console.log("API : ",xmlHttp.responseText);
-  var response = JSON.parse(xmlHttp.responseText);
-  var startPos = response.data.startPos;
-  var finishPos = response.data.finishPos;
-  var finishPos = response.data.finishPos;
-  var waypoints = response.data.waypoints;
 
-  console.log("Start : ",startPos);
-  console.log("Finish : ",finishPos);
-  console.log("Distance : ",response.finishPos);
+  var xhttp = new XMLHttpRequest();
 
-  console.log("Waypoints : ",waypoints);
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var response = JSON.parse(xhttp.responseText);
+      var startPos = response.data.startPos;
+      var finishPos = response.data.finishPos;
+      var distance = response.distance;
+      var waypoints = response.data.waypoints;
+      var calculationTime = response.calculationTime;
+      var geolocalisationTime = response.geolocalisationTime;
 
-  displayStartFinish([startPos,finishPos]);
-  displayRoute(waypoints);
+      console.log("response : ",response);
+
+      console.log("Start : ",startPos);
+      console.log("Finish : ",finishPos);
+      console.log("Distance : ",distance);
+      console.log("Time : ",calculationTime);
+
+
+
+      routeList.forEach((route, i) => {
+        route.remove();
+      });
+
+
+      displayStartFinish([startPos,finishPos]);
+      displayRoute(waypoints);
+
+      distance = distance.toFixed(2);
+      calculationTime = calculationTime.toFixed(5);
+      geolocalisationTime = geolocalisationTime.toFixed(5);
+
+      document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
+      document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+"s";
+      document.getElementById("geolocalisationTime").innerHTML ="Position calculated in "+geolocalisationTime+"s";
+
+      document.getElementById("total-distance").hidden=false;
+      document.getElementById("itineraryTime").hidden=false;
+      document.getElementById("geolocalisationTime").hidden=false;
+
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.send();
+
+
 }
 
 
@@ -52,7 +113,7 @@ var polyline = L.polyline(waypoints, {
   color: '#F67C5A',
   weight:6
 }).addTo(mymap);
-
+routeList.push(polyline);
 }
 
 
@@ -60,11 +121,14 @@ function displayStartFinish(pointList) {
   pointList.forEach((
     point, i) => {
       var marker = L.marker([point.lat, point.lon]).addTo(mymap);
+      routeList.push(marker);
+
   });
 
   var corner1 = L.latLng(pointList[0].lat, pointList[0].lon);
   var corner2 = L.latLng(pointList[1].lat, pointList[1].lon);
   var bounds = L.latLngBounds(corner1, corner2);
+
   mymap.flyToBounds(bounds);
 }
 
@@ -113,7 +177,7 @@ function displayDebug() {
 }
 
 function getDownloadPoints() {
-  var url = "http://127.0.0.1:5000/api/1.0/debugDownload"
+  var url = "/api/1.0/debugDownload"
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.open( "GET", url, false ); // false for synchronous request
   xmlHttp.send();
@@ -127,11 +191,11 @@ function getDownloadPoints() {
 function displayDownloadedSquares() {
     var squares = getDownloadPoints();
     squares.forEach((square, i) => {
-      addSquare(square.lat,square.lon,"#ff0000")
+      addSquare(square.lat,square.lon,"#0ef92c")
     });
   }
 
-function addSquare(lat,lon,colorRectangle="#3388ff") {
+function addSquare(lat,lon,colorRectangle="rgba(77, 102, 108, 0.34)") {
   // Draw a square centered on lat,lon
   var squareSize = 70
   lat1 = addKmToLatitude(lat,-squareSize/2)

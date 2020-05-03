@@ -5,12 +5,15 @@ from flask_cors import CORS
 import sqlite3
 import databaseManager
 import itinaryCreator
+from threading import Thread
+import time
+
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 CORS(app)
 
-creator = itinaryCreator.itineraryCreator(49.0008188, 7.3787709)
+creator = itinaryCreator.itineraryCreator(48.381571, -3.845928)
 
 
 print("itinaryCreator ready")
@@ -27,55 +30,53 @@ def docs():
     return '''<h1>Biken Web API</h1>
 <p>Follow the project on <a href="https://github.com/QuentinPhilipp/BikenAPI">Github</a></p>
 <hr>
-<h3>If start and finish is an address</h3>
-<p>Endpoint : http://127.0.0.1:5000/api/1.0/itinerary?start={startPoint}&finish={finishPoint} WIP
-<p>Endpoint : http://127.0.0.1:5000/api/1.0/route?start={startPoint}&distance={km} WIP
-<hr>
 <h3>If start and finish are latitude and longitude</h3>
-<p>Endpoint : http://127.0.0.1:5000/api/1.0/itinerary?startPos=48.577043,7.759002&finishPos={finishPoint} WIP
-<p>Endpoint : http://127.0.0.1:5000/api/1.0/route?startPos=48.577043,7.759002&distance={km} WIP
+<p>Endpoint : http://127.0.0.1:5000/api/1.0/itinerary?start=48.577043,7.759002&finish=48.577043,7.759002 DONE
+<p>Endpoint : http://127.0.0.1:5000/api/1.0/route?start=48.577043,7.759002&distance={km} WIP
 
 '''
+
+class Compute(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def resetNodes(self):
+        print("Start Reset");
+        creator.resetAllNodes();
+        time.sleep(5)
+        print("End reset");
+
 
 @app.route('/api/1.0/itinerary', methods=['GET'])
 def api_itinerary():
     query_parameters = request.args
     start = query_parameters.get('start')
     finish = query_parameters.get('finish')
-    startPos = query_parameters.get('startPos')
-    finishPos = query_parameters.get('finishPos')
+
+    print(start)
+    print(finish)
 
     # If the start/end is an adress
     if start and finish:
         print("Itinerary with address")
+
+        startGeolocalisationTime = time.time();
         startPosition = geocode(start)
         finishPosition = geocode(finish)
-
-
-        # startPosition = {"lat": 49.000885, "lon": 7.378740}
-        # finishPosition = {"lat": 48.992054, "lon": 7.311381}
-        # waypointList = [[49.040371,7.427740],
-        # [49.040846,7.428406],
-        # [49.041191,7.428663],
-        # [49.041615,7.428701],
-        # [49.041982,7.428529],
-        # [49.042428,7.428310]]
+        geolocalisationTime = time.time()-startGeolocalisationTime;
 
         itinerary = creator.getItinerary(startPosition,finishPosition)
+        itinerary['geolocalisationTime']=geolocalisationTime;
 
+        print("Time : ",itinerary['calculationTime'])
         # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
         # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
 
-        val = {"type" : "itinerary","distance":itinerary['distance'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
+        val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
+        print("Returned")
+
         return jsonify(val)
 
-    # if the start/end is an GPS point
-    elif startPos and finishPos:
-        print("Itinerary with GPS points")
-        startPosition = extractGPS(startPos)
-        finishPosition = extractGPS(finishPos)
-        val = {"type" : "itinerary", "gps" : "true", "data" : {"startName": start, "startPos": startPosition, "finishName": finish, "finishPos": finishPosition, "waypoints":[]}}
-        return jsonify(val)
     else :
         print("Bad request")
         val = {"error_code": "01", "error_desc": "Endpoint not defined"}
@@ -145,4 +146,4 @@ def extractGPS(gpsPoint):
 def page_not_found(e):
     return "<h1>404</h1><p>The resource could not be found.</p>", 404
 
-app.run(threaded=True)
+app.run(host='0.0.0.0',port=6060)

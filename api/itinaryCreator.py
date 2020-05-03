@@ -7,7 +7,7 @@ from bisect import bisect_left
 from math import pi,cos,sin,sqrt,atan2,inf
 from operator import attrgetter
 
-MAX_DISTANCE_FROM_START = 50
+MAX_DISTANCE_FROM_START = 10000
 
 class itineraryCreator(object):
     def __init__(self,startLat,startLon):
@@ -192,12 +192,20 @@ class itineraryCreator(object):
 
 
 
+    def resetAllNodes(self):
+        # Reset points to allow a new request.
+        for node in self.nodesList:
+            # reseting the node before every new requests
+            node.resetNode()
+
+        print("All node reset, ready for a new request")
 
     def getItinerary(self,startPosition,finishPosition):
-
+        startTime=time.time()
 
         # Search the closest node to the position
         # Search in the object, the corresponding object
+
 
         # Get closest crossroad bc the current algorythm use only crossroads and not all node to optimize performance
         startLat = float(startPosition["lat"])
@@ -213,9 +221,9 @@ class itineraryCreator(object):
 
 
         for node in self.nodesList:
-            # reseting the node before every new requests
-            node.resetNode()
             # print("testDistance")
+            node.resetNode()
+
             distanceToStart = (startLat-node.latitude)**2 +(startLon-node.longitude)**2
             distanceToGoal = (goalLat-node.latitude)**2 +(goalLon-node.longitude)**2
 
@@ -233,10 +241,16 @@ class itineraryCreator(object):
 
         print("from ",startNodeId,"to",finishNodeId)
 
+        interTime=time.time()-startTime
+        print("intertime :",interTime);
+
+
         geoData = self.aStarSearch(startNodeId,finishNodeId)
         # return positionList
 
-        returnObject = {"waypoints":geoData[0],"distance":geoData[1]}
+        totalTime=time.time()-startTime
+
+        returnObject = {"waypoints":geoData[0],"distance":geoData[1],"calculationTime":totalTime}
         return returnObject
 
 

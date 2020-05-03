@@ -4,11 +4,22 @@
     <meta charset="utf-8">
     <title>Biken Web</title>
 
+    <!-- CSS -->
+    <!-- Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
    crossorigin=""/>
+   <!-- Our files -->
    <link rel="stylesheet" href="../static/main.css">
+
+
+   <!-- Javascript -->
+   <!-- JQuery -->
+   <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+   <!-- Bootstrap -->
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
@@ -17,18 +28,28 @@
   <body>
     <div id="mapid"></div>
 
-
-    <div class="searchBar">
-      <form id="requestForm">
-        <label for="start">Start</label><br>
-        <input type="text" id="start" name="start"><br>
-        <label for="finish">Finish</label><br>
-        <input type="text" id="finish" name="finish">
-        <div class="buttonSend" onclick="sendRequest()">Ride</div>
-        <div class="buttonSend" onclick="displayDebug()">Display Debug</div>
-
+    <div class="searchBar px-2 py-3 border border-primary rounded">
+      <form >
+        <div class="">
+          <div class="form-group">
+            <input type="text" class="form-control" id="start" placeholder="Choose starting point">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="finish" placeholder="Choose destination">
+          </div>
+        </div>
       </form>
+      <div class="route-info">
+        <div id="total-distance"  hidden></div>
+        <div id="itineraryTime" hidden></div>
+        <div id="geolocalisationTime" hidden></div>
+
+      </div>
+      <button class="btn btn-primary" onclick="sendRequest()">Let's Go !</button>
+      <button class="btn btn-primary" onclick="displayDebug()">Debug Button</button>
     </div>
+
+
 
 
     <script src="../static/map.js" charset="utf-8"></script>
