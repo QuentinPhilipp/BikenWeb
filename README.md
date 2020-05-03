@@ -1,3 +1,4 @@
+
 # Biken Web
 
 Web version of Biken in Python using Flask. Biken was a school project of pathfinding. This was originally a software in C++ using Qt. This project is to transform the old project into a web based application.
@@ -6,13 +7,10 @@ Web version of Biken in Python using Flask. Biken was a school project of pathfi
 
 # Development instruction
 
-Setup Flask : [Setup Flask for a Python API](https://programminghistorian.org/en/lessons/creating-apis-with-python-and-flask)
-
 Install requirements. 
 > pip3 install -r requirements.txt
 
 To start the server, execute 
-> cd api
 > python3 api.py
 
 The local web interface is located in http://127.0.0.1:6060
