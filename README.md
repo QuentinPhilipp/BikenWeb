@@ -1,6 +1,6 @@
-# Biken API
+# Biken Web
 
-REST API in Python Flask for Biken, a school project of pathfinding. This was originally a software in C++ using Qt. This project is to transform the old project into a web based application.
+Web version of Biken in Python using Flask. Biken was a school project of pathfinding. This was originally a software in C++ using Qt. This project is to transform the old project into a web based application.
 
 
 
@@ -8,32 +8,25 @@ REST API in Python Flask for Biken, a school project of pathfinding. This was or
 
 Setup Flask : [Setup Flask for a Python API](https://programminghistorian.org/en/lessons/creating-apis-with-python-and-flask)
 
-Install flask_cors module. 
-> pip3 install -U flask-cors
+Install requirements. 
+> pip3 install -r requirements.txt
 
 To start the server, execute 
-> python3 api/api.py
+> cd api
+> python3 api.py
 
-The web interface is located in frontend/index.html
+The local web interface is located in http://127.0.0.1:6060
+The online version is http://176.31.51.157:6060
 
-Request are working in all downloaded tiles. Check if the city you want to request is in the downloaded data by clicking on the debug button on the interface. Downloaded tiles appear in red. To modify which tiles should be downloaded, check the section "Database generation"
-
-## Request
-
-Currently the only request available from the interface is : Enter a start and finish point (name of the city) and the interface will put a marker on those location on the map
+Request are working only in all downloaded tiles. Check if the city you want to request is in the downloaded data by clicking on the debug button on the interface. Downloaded tiles appear in green. To modify which tiles should be downloaded, check the section "Database generation"
 
 ## Endpoint
 
 We call **Itinerary** a path between two town and **Route** a circular path that goes back to the start point after n km
 
-When you specify an address :
- - Itinerary : http://127.0.0.1:5000/api/1.0/itinerary?start={startPoint}&finish={endPoint}
- - Route http://127.0.0.1:5000/api/1.0/route?start={startPoint}&distance={km}
+ - Itinerary : /api/1.0/itinerary?start={start}&finish={destination}
+ - Route /api/1.0/route?start={start}&distance={km}
 
-If start and finish are latitude and longitude 
-
- - Itinerary :  http://127.0.0.1:5000/api/1.0/itinerary?startPos=48.577043,7.759002&finishPos={endPoint}
- - Route :http://127.0.0.1:5000/api/1.0/route?startPos=48.577043,7.759002&distance={km}
 
 ## Database generation
 
