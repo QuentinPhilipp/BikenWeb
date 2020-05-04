@@ -10,12 +10,12 @@ import time
 import copy
 import queue
 import random
-from math import sin,cos,radians
+from math import sin,cos,radians,pi
 import utils
 
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 CORS(app)
 
 creator = itinaryCreator.itineraryCreator(48.467466, -4.649883)
@@ -23,7 +23,7 @@ creator = itinaryCreator.itineraryCreator(48.467466, -4.649883)
 # creator3 = itinaryCreator.itineraryCreator(48.467466, -4.649883)
 #
 #
-# creatorList = [creator,creator2,creator3]
+creatorList = [creator]
 
 print("itinaryCreator ready")
 
@@ -114,62 +114,71 @@ def api_route():
         points=3
         pointList=generateCircle(startPosition,distance,points)
 
+        waypointList=[]
 
-        geolocalisationTime = time.time()-startGeolocalisationTime;
-
-
-        list_threads = []
-        my_queue = queue.Queue()
-
-        startComputationTime = time.time();
-        print("Starting threads")
-
-        thread1 = Thread(target=testFunction, args=(0, my_queue,finishPosition,startPosition))
-        list_threads.append(thread1)
-        thread2 = Thread(target=testFunction, args=(1, my_queue,thirdPosition,finishPosition))
-        list_threads.append(thread2)
-        thread3 = Thread(target=testFunction, args=(2, my_queue,startPosition,thirdPosition))
-        list_threads.append(thread3)
-
-        print("\nStart Threads\n\n")
+        for waypoint in pointList:
+            waypointList.append([waypoint["lat"],waypoint["lon"]])
 
 
-        # Start computing
-        for thread in list_threads:
-            thread.start()
-
-        print("\nWait Threads\n\n")
-
-        # Wait the result from all thread
-        for thread in list_threads:
-            thread.join() # Wait until thread terminates its task
-
-        print("\n\nAll thread complete\n\n")
-
-
-        itinerary = {}
-        itinerary['distance']=0
-        itinerary["waypoints"]=[]
-
-        # Check thread's return value
-        while not my_queue.empty():
-            result = my_queue.get()
-            itinerary["distance"] +=result['distance']
-            itinerary["waypoints"] += result["waypoints"]
-
-        computationTime = time.time()-startComputationTime;
-
-        # reset all the nodes in another thread to return the data instantly
-        thread_a = Compute()
-        thread_a.start()
-
-        itinerary['geolocalisationTime']=geolocalisationTime;
-        itinerary['calculationTime']=computationTime;
-
-
-        val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
+        val = {"type" : "route","distance":0,"geolocalisationTime":0,"calculationTime":0, "gps" : "false", "data" : {"startName": "test", "startPos": startPosition , "finishName": "test", "finishPos": startPosition, "waypoints":waypointList}}
 
         return jsonify(val)
+
+        # geolocalisationTime = time.time()-startGeolocalisationTime;
+        #
+        #
+        # list_threads = []
+        # my_queue = queue.Queue()
+        #
+        # startComputationTime = time.time();
+        # print("Starting threads")
+        #
+        # thread1 = Thread(target=testFunction, args=(0, my_queue,finishPosition,startPosition))
+        # list_threads.append(thread1)
+        # thread2 = Thread(target=testFunction, args=(1, my_queue,thirdPosition,finishPosition))
+        # list_threads.append(thread2)
+        # thread3 = Thread(target=testFunction, args=(2, my_queue,startPosition,thirdPosition))
+        # list_threads.append(thread3)
+        #
+        # print("\nStart Threads\n\n")
+        #
+        #
+        # # Start computing
+        # for thread in list_threads:
+        #     thread.start()
+        #
+        # print("\nWait Threads\n\n")
+        #
+        # # Wait the result from all thread
+        # for thread in list_threads:
+        #     thread.join() # Wait until thread terminates its task
+        #
+        # print("\n\nAll thread complete\n\n")
+        #
+        #
+        # itinerary = {}
+        # itinerary['distance']=0
+        # itinerary["waypoints"]=[]
+        #
+        # # Check thread's return value
+        # while not my_queue.empty():
+        #     result = my_queue.get()
+        #     itinerary["distance"] +=result['distance']
+        #     itinerary["waypoints"] += result["waypoints"]
+        #
+        # computationTime = time.time()-startComputationTime;
+        #
+        # # reset all the nodes in another thread to return the data instantly
+        # thread_a = Compute()
+        # thread_a.start()
+        #
+        # itinerary['geolocalisationTime']=geolocalisationTime;
+        # itinerary['calculationTime']=computationTime;
+        #
+        #
+        # val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
+        #
+        # return jsonify(val)
 
 
     else :
@@ -200,7 +209,7 @@ def sendDownloadSquares():
 @app.route('/api/1.0/testThread', methods=['GET'])
 def testThread():
     startGeolocalisationTime = time.time();
-    start = "Lorient"
+    start = "Brest"
     finish = "Rennes"
     startPosition = geocode(start)
 
@@ -287,6 +296,16 @@ def testThread():
     # return jsonify(val)
 
 
+    waypointList=[]
+
+    for waypoint in rep:
+        waypointList.append([waypoint["lat"],waypoint["lon"]])
+
+
+    val = {"type" : "route","distance":0,"geolocalisationTime":0,"calculationTime":0, "gps" : "false", "data" : {"startName": "test", "startPos": startPosition , "finishName": "test", "finishPos": startPosition, "waypoints":waypointList}}
+
+    return jsonify(val)
+
 def testFunction(ts,queue,start,finish):
 
     print("Starting function for thread",ts)
@@ -326,14 +345,17 @@ def extractGPS(gpsPoint):
     return {"lat": position[0], "lon": position[1]}
 
 
-def generateCircle(start,radius,points):
+def generateCircle(start,distance,points):
     # Generate a circle for the route
     angleBetween = 360/points
-
+    radius = float(distance)/(2*pi)
     waypointList = []
     isDirectionOk = False
+    nbRetry = 20   #Only allow 20 retry
 
-    while (isDirectionOk==False):
+    while (isDirectionOk==False and nbRetry>0):
+        nbRetry-=1
+        print("Try n°",nbRetry)
         waypointList = []   #clear the list
         isDirectionOk = True  #reset for another  test
 
@@ -351,8 +373,16 @@ def generateCircle(start,radius,points):
         for i in range(points):
             print("Angle :",startAngle+angleBetween*i)
             coord = addKmWithAngle(radius,startAngle+angleBetween*i,centerPoint)
-            waypointList.append(coord)
+            result = creator.getClosestNode(coord["lat"],coord["lon"])
 
+            if result[1]>3 :
+                isDirectionOk=False
+            else :
+                coords = {}
+                coords["lat"] = result[0].latitude
+                coords["lon"] = result[0].longitude
+
+                waypointList.append(coords)
 
 
     coord = addKmWithAngle(radius,startAngle,centerPoint)

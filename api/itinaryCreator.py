@@ -7,7 +7,7 @@ from bisect import bisect_left
 from math import pi,cos,sin,sqrt,atan2,inf
 from operator import attrgetter
 
-MAX_DISTANCE_FROM_START = 50
+MAX_DISTANCE_FROM_START = 1000
 
 class itineraryCreator(object):
     def __init__(self,startLat,startLon):
@@ -207,7 +207,6 @@ class itineraryCreator(object):
         # Search in the object, the corresponding object
 
 
-        # Get closest crossroad bc the current algorythm use only crossroads and not all node to optimize performance
         startLat = float(startPosition["lat"])
         startLon = float(startPosition["lon"])
 
@@ -226,6 +225,7 @@ class itineraryCreator(object):
             distanceToStart = (startLat-node.latitude)**2 +(startLon-node.longitude)**2
             distanceToGoal = (goalLat-node.latitude)**2 +(goalLon-node.longitude)**2
 
+            # Get closest crossroad bc the current algorythm use only crossroads and not all node to optimize performance
             if (distanceToStart < closestDistanceToStart) and len(node.ways)>1:
                 closestDistanceToStart = distanceToStart
                 closestNodeToStart = node
@@ -254,6 +254,22 @@ class itineraryCreator(object):
 
 
 
+
+    def getClosestNode(self,lat,lon):
+        
+        bestDistance = inf
+        bestNode = None
+        for node in self.nodesList:
+            newDistance = (lat-node.latitude)**2 +(lon-node.longitude)**2
+
+            if(newDistance<bestDistance):
+                bestDistance = newDistance
+                bestNode = node
+
+
+        print("Best Distance : ",bestDistance)
+
+        return [bestNode,bestDistance]
 
     def distanceBetween(self,node1,node2):
         r=6371  #earth radius in km
