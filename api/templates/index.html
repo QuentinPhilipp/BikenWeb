@@ -28,7 +28,12 @@
   <body>
     <div id="mapid"></div>
 
-    <div class="searchBar px-2 py-3 border border-primary rounded">
+    <div class="searchBar px-2 border border-primary rounded">
+            <!-- Default switch -->
+      <div class="custom-control custom-switch py-2">
+        <input type="checkbox" name="checkbox-mode" class="custom-control-input" id="customSwitches">
+        <label class="custom-control-label" id="switch-type-label" for="customSwitches">Itinerary</label>
+      </div>
       <form >
         <div class="">
           <div class="form-group">
@@ -36,6 +41,10 @@
           </div>
           <div class="form-group">
             <input type="text" class="form-control" id="finish" placeholder="Choose destination">
+          </div>
+          <div class="form-group">
+            <input type="range" min="1" max="300" value="50" class="slider" id="distanceSlider" hidden>
+            <p id="slider-value" hidden></p>
           </div>
         </div>
       </form>
@@ -45,13 +54,14 @@
         <div id="geolocalisationTime" hidden></div>
 
       </div>
-      <button class="btn btn-primary" onclick="sendRequest()">Let's Go !</button>
-      <button class="btn btn-primary" onclick="displayDebug()">Debug Button</button>
+      <button class="btn btn-primary my-2" onclick="sendRequest()">Let's Go !</button>
+      <button class="btn btn-primary my-2" onclick="displayDebug()">Debug Button</button>
     </div>
 
 
 
 
     <script src="../static/map.js" charset="utf-8"></script>
+    <script src="../static/main.js" charset="utf-8"></script>
   </body>
 </html>

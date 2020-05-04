@@ -40,8 +40,7 @@ function geocode(location)
 
 
 function sendRequest() {
-  var start = document.getElementById('start').value
-  var finish = document.getElementById('finish').value
+
 
   // startPos = geocode(start);
   // finishPos = geocode(finish);
@@ -49,8 +48,22 @@ function sendRequest() {
   // console.log("Send data");
   // console.log("Start : ",startPos," | Finish : ",finishPos);
 
-  var url = "api/1.0/itinerary?start="+start+"&finish="+finish;
+  //check if itinerary or route
+  var requestType = getRequestType();
 
+  if (requestType=="route")
+  {
+    var start = document.getElementById('start').value
+    var distance = document.getElementById('distanceSlider').value
+    var url = "api/1.0/route?start="+start+"&distance="+distance;
+  }
+  else {
+    var start = document.getElementById('start').value
+    var finish = document.getElementById('finish').value
+    var url = "api/1.0/itinerary?start="+start+"&finish="+finish;
+  }
+
+  // var url = "api/1.0/testThread";
 
   // var xmlHttp = new XMLHttpRequest();
   // xmlHttp.open( "GET", url,true ); // false for synchronous request
