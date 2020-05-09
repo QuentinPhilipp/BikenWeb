@@ -355,7 +355,7 @@ def generateCircle(start,distance,points):
 
     while (isDirectionOk==False and nbRetry>0):
         nbRetry-=1
-        print("Try n°",nbRetry)
+        print("Try n",nbRetry)
         waypointList = []   #clear the list
         isDirectionOk = True  #reset for another  test
 

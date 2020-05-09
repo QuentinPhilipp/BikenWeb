@@ -2,6 +2,7 @@ import sqlite3
 import time
 from Node import *
 from Way import *
+import os.path
 
 
 class DatabaseManager():
@@ -10,7 +11,8 @@ class DatabaseManager():
      with the database"""
 
     def __init__(self):
-        self.path = "../data/Database.db"
+        my_path = os.path.abspath(os.path.dirname(__file__))
+        self.path = os.path.join(my_path, "../data/Database.db")
         self.connection = sqlite3.connect(self.path)
         self.cursor = self.connection.cursor()
 
@@ -67,7 +69,6 @@ if __name__ == '__main__' :
     startTimeB = time.time()
     data = db.getAllWayInBoundingBox(49.278,6.55,48.6723,7.7917)
     interTimeB = time.time()-startTimeB
-    print("size of data : ", len(data))    
+    print("size of data : ", len(data))
     finalTimeB = time.time()-interTimeB
     print("In : ",interTimeB,"s for request and ", finalTimeB,"s for display")
-
