@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Biken Web</title>
+
+    <!-- CSS -->
+    <!-- Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Favicon -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+   <!-- Our files -->
+   <link rel="stylesheet" href="../static/main.css">
+
+
+   <!-- Javascript -->
+   <!-- JQuery -->
+   <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+   <!-- Bootstrap -->
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+   <!-- Leaflet JS -->
+   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+      integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      crossorigin=""></script>
+
+   <!-- Github button -->
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  </head>
+  <body>
+    <div id="mapid"></div>
+
+    <button id="searchShowButton" class="btn btn-primary my-2 show-button" onclick="showSearchBar()">></button>
+
+
+    <div id="searchBar"class="searchBar px-2 border border-primary rounded">
+            <!-- Default switch -->
+      <div class="custom-control custom-switch py-2">
+        <input type="checkbox" name="checkbox-mode" class="custom-control-input" id="customSwitches">
+        <label class="custom-control-label" id="switch-type-label" for="customSwitches">Itinerary</label>
+      </div>
+      <form >
+        <div class="">
+          <div class="form-group">
+            <input type="text" class="form-control" id="start" placeholder="Choose starting point">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="finish" placeholder="Choose destination">
+          </div>
+          <div class="form-group">
+            <input type="range" min="1" max="300" value="50" class="slider" id="distanceSlider" hidden>
+            <p id="slider-value" hidden></p>
+          </div>
+        </div>
+      </form>
+      <div class="route-info">
+        <div id="total-distance"  hidden></div>
+        <div id="itineraryTime" hidden></div>
+        <div id="geolocalisationTime" hidden></div>
+
+      </div>
+      <button class="btn btn-primary my-2" onclick="sendRequest()">Let's Go !</button>
+      <button class="btn btn-primary my-2" onclick="displayDebug()">Debug Button</button>
+      <button id="searchHideButton" class="btn btn-primary my-2 hide-button" onclick="hideSearchBar()"><</button>
+
+    </div>
+
+
+
+    <!--Footer -->
+    <footer id="footer" class="page-footer font-small unique-color-dark">
+      <div class="big-container">
+        <div class="cyan">
+          <div class="container">
+            <div class="row text-center">
+              <div class="col-12">
+                <p class="white-text mt-2 mb-1">Love this website? Support our work by giving a star on our repository&nbsp;</p>
+                <!-- Place this tag where you want the button to render. -->
+                <a class="github-button" href="https://github.com/QuentinPhilipp/BikenWeb" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star QuentinPhilipp/BikenWeb on GitHub">Star</a>
+              </div>
+              </div>
+            </div>
+        </div>
+
+
+        <!-- Footer Links -->
+        <div class="container-flex text-center text-md-left cyan-dark">
+
+          <!-- Grid row -->
+          <div class="row pt-3">
+
+            <!-- Grid column -->
+            <div class="spec-container text-center col-sm-4 col-md-4 col-lg-4 col-xl-2 mx-auto mb-4">
+
+              <!-- Content -->
+              <h6 class="white-text text-center text-uppercase font-weight-bold">Info</h6>
+              <hr class="white-text text-center accent-2 mb-4 mt-0 d-inline-block mx-auto white" style="width: 40px;">
+              <p class="white-text">This project is the web version of a School project originally developed in C++ on Qt.</p>
+            </div>
+
+            <!-- Grid column -->
+            <!-- <div class="col-md-3 col-lg-2 col-xl-2 mx-auto text-center mb-4"> -->
+            <div class=" col-sm-4 col-md-4 col-lg-4 col-xl-2 mx-auto text-center mb-4">
+
+              <!-- Original developers -->
+              <h6 class="text-uppercase text-center font-weight-bold white-text text-center m">Original Developers</h6>
+              <hr class="accent-2 mb-4 text-center mt-0 d-inline-block mx-auto white" style="width: 190px;">
+
+              <p class="white-text">
+                <a class="white-text social-link" href="https://github.com/CharlesBeuzet">
+                <i class="fa fa-github mr-3"></i></a>Beuzet Charles</p>
+              <p class="white-text">
+                <a class="white-text social-link" href="https://github.com/TitouanLepoittevin">
+                <i class="fa fa-github mr-3"></i></a>Lepoittevin Titouan</p>
+              <p class="white-text">
+                <a class="white-text social-link" href="https://github.com/leomerel">
+                <i class="fa fa-github mr-3"></i></a>Mérel Léo</p>
+              <p class="white-text">
+                <a class="white-text social-link" href="https://gitlab.com/gui.mesnage">
+                <i class="fa fa-gitlab mr-3"></i></a>Mesnage Guillaume</p>
+              <p class="white-text">
+                <a class="white-text social-link" href="https://github.com/QuentinPhilipp/">
+                <i class="fa fa-github mr-3"></i></a>Philipp Quentin</p>
+            </div>
+
+            <!-- Grid column -->
+            <div id="contact" class="text-center col-sm-4 col-md-4 col-lg-4 col-xl-2 mx-auto ">
+
+
+              <!-- Current developers -->
+              <h6 class="text-uppercase text-center font-weight-bold white-text text-center m">Current Developers</h6>
+              <hr class="accent-2 mb-4 text-center mt-0 d-inline-block mx-auto white" style="width: 190px;">
+
+              <p class="white-text">
+                <a class="white-text social-link" href="https://github.com/QuentinPhilipp/">
+                <i class="fa fa-github mr-3"></i></a>Philipp Quentin</p>
+
+            </div>
+            <!-- Grid column -->
+
+          </div>
+          <!-- Grid row -->
+
+        </div>
+        <!-- Footer Links -->
+
+      </div>
+    </footer>
+    <!-- Footer -->
+
+
+    <script src="../static/map.js" charset="utf-8"></script>
+    <script src="../static/main.js" charset="utf-8"></script>
+  </body>
+</html>

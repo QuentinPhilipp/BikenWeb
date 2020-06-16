@@ -7,7 +7,7 @@ from bisect import bisect_left
 from math import pi,cos,sin,sqrt,atan2,inf
 from operator import attrgetter
 
-MAX_DISTANCE_FROM_START = 1000
+MAX_DISTANCE_FROM_START = 1
 
 class itineraryCreator(object):
     def __init__(self,startLat,startLon):
@@ -256,7 +256,7 @@ class itineraryCreator(object):
 
 
     def getClosestNode(self,lat,lon):
-        
+
         bestDistance = inf
         bestNode = None
         for node in self.nodesList:

@@ -2,6 +2,7 @@
 body {
   margin-left: 0;
   margin-top:0;
+  overflow-x: hidden;
 }
 
 #mapid {
@@ -10,10 +11,26 @@ body {
   width: 100vw;
 }
 
-#time-request {
-  padding-bottom: 10px;
-  font-size: 11px;
+.hide-button {
+
 }
+
+.show-button {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 9;
+}
+
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
 
 .route-info {
   color: rgb(107, 107, 107)
@@ -26,8 +43,15 @@ body {
   left: 15px;
   background: white;
   border-radius: 3px;
+  display: none;
+  animation-name: slideMenu;
+  animation-duration: 0.3s;
 }
 
+@keyframes slideMenu {
+  from {left: -300px;}
+  to {left: 15px;}
+}
 .fa{
     font-family: FontAwesome;
   }
@@ -63,3 +87,21 @@ body {
     background: #59add1;
     cursor: pointer;
   }
+
+.cyan {
+  background:rgb(0, 116, 128);
+}
+.cyan-dark {
+  background:rgb(3, 90, 99);
+}
+.white-text {
+  color: white;
+}
+.white {
+  color: white;
+  background: white;
+}
+
+.social-link:hover {
+  color: white
+}
