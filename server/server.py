@@ -12,6 +12,19 @@ import queue
 import random
 from math import sin,cos,radians,pi
 import utils
+import sys,os
+
+
+
+
+def disablePrint(value):
+    if value==True:
+        sys.stdout=open(os.devnull,"w")
+    else:
+        sys.stdout=sys.__stdout__
+# enable or disable all the logs
+disablePrint(False)
+
 
 
 app = flask.Flask(__name__)
@@ -50,10 +63,9 @@ class Compute(Thread):
         Thread.__init__(self)
 
     def run(self):
-        print("Start Reset")
+        print("Start reseting all nodes")
         for c in creatorList :
             c.resetAllNodes()
-        print("End reset")
 
 
 @app.route('/api/1.0/itinerary', methods=['GET'])
@@ -70,6 +82,7 @@ def api_itinerary():
         print("Itinerary with address")
 
         startGeolocalisationTime = time.time();
+        # Get lat and lon for the start and end point
         startPosition = geocode(start)
         finishPosition = geocode(finish)
         geolocalisationTime = time.time()-startGeolocalisationTime;
@@ -77,12 +90,12 @@ def api_itinerary():
         itinerary = creator.getItinerary(startPosition,finishPosition)
         itinerary['geolocalisationTime']=geolocalisationTime;
 
-        print("Time : ",itinerary['calculationTime'])
+        print("Total time : ",itinerary['calculationTime'])
         # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
         # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
 
         val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
-        print("Returned")
+        print("Data returned to client")
 
         # reset all the nodes in another thread to return the data instantly
         thread_a = Compute()
@@ -305,31 +318,6 @@ def testThread():
     val = {"type" : "route","distance":0,"geolocalisationTime":0,"calculationTime":0, "gps" : "false", "data" : {"startName": "test", "startPos": startPosition , "finishName": "test", "finishPos": startPosition, "waypoints":waypointList}}
 
     return jsonify(val)
-
-def testFunction(ts,queue,start,finish):
-
-    print("Starting function for thread",ts)
-    itinerary = creatorList[ts].getItinerary(start,finish)
-    print("Ending function for thread",ts)
-    queue.put(itinerary)
-
-
-class RouteThread(Thread):
-    def __init__(self,start,finish,id,queue):
-        Thread.__init__(self)
-        print("Starting initialisation thread",id)
-        self.id = id
-        self.startPoint = start
-        self.finishPoint=finish
-        print("Finish initialisation thread",id)
-
-
-    def run(self):
-        print("Start Computation")
-        itineray = creatorList[self.id].getItinerary(self.startPoint,self.finishPoint)
-        print("End Computation")
-        queue.put(itinerary)
-
 
 
 def geocode(location):

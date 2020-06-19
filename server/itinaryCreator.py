@@ -1,13 +1,16 @@
-import databaseManager
+## Library ##
 import time
+from math import inf
+
+## My modules ##
+import databaseManager
 import utils
+import search
 import Node
 import Way
-from bisect import bisect_left
-from math import pi,cos,sin,sqrt,atan2,inf
-from operator import attrgetter
 
-MAX_DISTANCE_FROM_START = 1
+
+MAX_DISTANCE_FROM_START = 1000
 
 class itineraryCreator(object):
     def __init__(self,startLat,startLon):
@@ -79,7 +82,6 @@ class itineraryCreator(object):
 
 
     # Methods
-
     def createAllNodesObject(self):
         print("Create Node")
 
@@ -111,7 +113,6 @@ class itineraryCreator(object):
         print("",len(localNodeList)," nodes created in ",time.time() - startTimeCreation, "seconds")
         self.nodesList = localNodeList
         self.nodesIdList= localNodeIdList
-
 
     def createAllWaysObject(self):
         print("Create Way")
@@ -145,7 +146,7 @@ class itineraryCreator(object):
                 roundabout = lastRawNode[6]
                 maxspeed = lastRawNode[7]
                 roadType = lastRawNode[8]
-                centerNode=self.getNodeFromNodeId(centerNodeId)
+                centerNode=utils.getNodeFromNodeId(self.nodesIdList,self.nodesList,centerNodeId)
                 way = Way.Way(idWay,wayNodesList,centerNode,oneway,roundabout,maxspeed,roadType)
                 localWaysList.append(way)
                 currentWayId=idWay
@@ -155,7 +156,7 @@ class itineraryCreator(object):
 
             # For each data we need to create the node
             idNode = rawNode[4]
-            node = self.getNodeFromNodeId(idNode)
+            node = utils.getNodeFromNodeId(self.nodesIdList,self.nodesList,idNode)
             wayNodesList.append(node)
             # node.addWayCount()      #+1 in the way counter
 
@@ -167,7 +168,7 @@ class itineraryCreator(object):
         roundabout = lastRawNode[6]
         maxspeed = lastRawNode[7]
         roadType = lastRawNode[8]
-        centerNode=self.getNodeFromNodeId(centerNodeId)
+        centerNode=utils.getNodeFromNodeId(self.nodesIdList,self.nodesList,centerNodeId)
         way = Way.Way(idWay,wayNodesList,centerNode,oneway,roundabout,maxspeed,roadType)
         localWaysList.append(way)
 
@@ -182,23 +183,13 @@ class itineraryCreator(object):
 
         self.waysList=localWaysList
 
-
-    def getNodeFromNodeId(self,nodeId):
-        # All node should be store ordered by id
-        # Search into the list of id for the index and then take the good element in the node list
-        # Use binary search
-        index = bisect_left(self.nodesIdList, nodeId, lo=0, hi=len(self.nodesIdList))
-        return self.nodesList[index]
-
-
-
     def resetAllNodes(self):
         # Reset points to allow a new request.
         for node in self.nodesList:
             # reseting the node before every new requests
             node.resetNode()
 
-        print("All node reset, ready for a new request")
+        print("All nodes ready for a new request")
 
     def getItinerary(self,startPosition,finishPosition):
         startTime=time.time()
@@ -241,204 +232,18 @@ class itineraryCreator(object):
         print("from ",startNodeId,"to",finishNodeId)
 
         interTime=time.time()-startTime
-        print("intertime :",interTime);
+        print("Start and endpoint localised :",interTime);
 
+        startNode = utils.getNodeFromNodeId(self.nodesIdList,self.nodesList,startNodeId)
+        finishNode = utils.getNodeFromNodeId(self.nodesIdList,self.nodesList,finishNodeId)
 
-        geoData = self.aStarSearch(startNodeId,finishNodeId)
+        geoData = search.aStarSearch(startNode,finishNode) #[waypoints, distance]
         # return positionList
 
         totalTime=time.time()-startTime
 
         returnObject = {"waypoints":geoData[0],"distance":geoData[1],"calculationTime":totalTime}
         return returnObject
-
-
-
-
-    def getClosestNode(self,lat,lon):
-
-        bestDistance = inf
-        bestNode = None
-        for node in self.nodesList:
-            newDistance = (lat-node.latitude)**2 +(lon-node.longitude)**2
-
-            if(newDistance<bestDistance):
-                bestDistance = newDistance
-                bestNode = node
-
-
-        print("Best Distance : ",bestDistance)
-
-        return [bestNode,bestDistance]
-
-    def distanceBetween(self,node1,node2):
-        r=6371  #earth radius in km
-        lat1 = node1.latitude*pi/180
-        lon1 = node1.longitude*pi/180
-        lat2 = node2.latitude*pi/180
-        lon2 = node2.longitude*pi/180
-
-        a = sin((lat2-lat1)/2)*sin((lat2-lat1)/2) + cos(lat1)*cos(lat2)*sin((lon2-lon1)/2)*sin((lon2-lon1)/2)
-        c = 2*atan2(sqrt(a),sqrt(1-a))
-        distance = r*c
-
-        return distance
-
-
-
-
-
-    def smallestDistanceToGoalInList(self,openSet):
-        node = min(openSet, key=attrgetter('distanceTotal'))
-        return node
-
-
-
-    def nodeNeighbor(self,current):
-        neighborList = []
-        for way in current.ways:
-            # search in multiple ways if the current node belong to multiple ways
-
-
-            # indexOfCurrentNode = self.getPositionInWay(current,way)
-
-            # if indexOfCurrentNode-1>=0:
-            #     neighborList.append(way.nodes[indexOfCurrentNode-1])
-            # if indexOfCurrentNode+1<len(way.nodes):
-            #     neighborList.append(way.nodes[indexOfCurrentNode+1])
-
-
-
-            # only add neighbor with more than one way.
-            for node in way.nodes:
-                if len(node.ways)>1:
-                        neighborList.append(node)
-
-        # s=""
-        # for neighbor in neighborList:
-        #     s+= str(neighbor.id)
-        #     s+= ","
-        # print("neighborList:",s)
-
-
-        return neighborList
-
-
-
-    def getPositionInWay(self,nodeToSearch,way):
-        #return the index of a node in a way
-        nodes = way.nodes
-        wantedId=nodeToSearch.id
-        if(nodes[0].id==wantedId):
-            return 0
-        elif nodes[-1].id == wantedId:
-            return len(nodes)-1
-        else:
-            for i in range(len(nodes)):
-                if nodes[i].id==wantedId:
-                    return i
-
-    def reconstruct_path(self,endNode,startNode):
-        startReconstruct=time.time()
-
-        nodeList = []
-
-        nodeListLatLon = []
-
-        # the itinerary only have crossroad. We need to fill in with all the points
-        currentNode = endNode
-
-        while currentNode!=startNode:
-            roadsFromCurrentNode = currentNode.ways
-            precedingNode = currentNode.precedingNode
-            roadsFromPrecedingNode = precedingNode.ways
-
-            # We need to check the common way between the two nodes
-            commonWay = roadsFromCurrentNode[0]
-            for r1 in roadsFromCurrentNode:
-                for r2 in roadsFromPrecedingNode:
-                    if r1==r2:
-                        commonWay=r1
-
-            pos1 = self.getPositionInWay(currentNode,commonWay)
-            pos2 = self.getPositionInWay(precedingNode,commonWay)
-
-            nodesInCommonWay = commonWay.nodes
-            if pos1<pos2:
-                for i in range(pos1,pos2):
-                    nodeList.append(nodesInCommonWay[i])
-                    nodeListLatLon.append([nodesInCommonWay[i].latitude,nodesInCommonWay[i].longitude])
-
-
-            else:
-                for i in range(pos1,pos2+1,-1):
-                    nodeList.append(nodesInCommonWay[i])
-                    nodeListLatLon.append([nodesInCommonWay[i].latitude,nodesInCommonWay[i].longitude])
-
-            currentNode=precedingNode
-
-
-        totalTimeReconstruct=time.time()-startReconstruct
-
-        print("Path reconstructed in ",totalTimeReconstruct,"secondes ")
-
-        return nodeListLatLon
-
-    def aStarSearch(self,startNodeId,endNodeId):
-        # The set of discovered nodes that may need to be (re-)expanded.
-        # Initially, only the start node is known.
-        # This is usually implemented as a min-heap or priority queue rather than a hash-set.
-
-        startTimeASearch=time.time()
-
-        startNode = self.getNodeFromNodeId(startNodeId)
-        endNode = self.getNodeFromNodeId(endNodeId)
-
-        openSet = [startNode]
-
-        # List of nodes already discovered and explored.
-        # Starts off empty
-        # Once a node has been 'current' it then goes here
-        closeSet = []
-
-
-        # For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
-        # to n currently known.
-        cameFrom = []
-
-        startNode.distanceFromStart = 0
-
-        startNode.distanceTotalEstimated = self.distanceBetween(startNode,endNode)
-
-        while openSet:
-            current = self.smallestDistanceToGoalInList(openSet)
-
-            if current==endNode:
-                totalTimeASearch=time.time()-startTimeASearch
-
-                print("End reached in ",totalTimeASearch,"secondes ")
-                itinerarySize = endNode.distanceFromStart
-                return [self.reconstruct_path(endNode,startNode),itinerarySize]
-
-            closeSet.append(current)
-
-            openSet.remove(current)
-
-
-            for neighbor in self.nodeNeighbor(current):
-                # d(current,neighbor) is the weight of the edge from current to neighbor
-                # tentative_gScore is the distance from start to the neighbor through current
-                nextDistanceFromStart = current.distanceFromStart + self.distanceBetween(current, neighbor)
-
-                if nextDistanceFromStart<neighbor.distanceFromStart:
-                    neighbor.precedingNode = current
-                    neighbor.distanceFromStart=nextDistanceFromStart
-                    neighbor.distanceTotal = neighbor.distanceFromStart + self.distanceBetween(neighbor,endNode)
-                    if neighbor not in closeSet :
-                        openSet.append(neighbor)
-
-
-        print("End not reached")
 
 
     # DEBUG FUNCTION
@@ -478,7 +283,7 @@ if __name__ == "__main__" :
     # finishNodeId = 841874221
     finishNodeId=5843835950
 
-    geoDataList = creator.aStarSearch(startNodeId,finishNodeId)
+    geoDataList = search.aStarSearch(startNodeId,finishNodeId)
 
     # print("id : ",creator.waysList[0].nodes[0].id," : ",creator.waysList[0].nodes[0].marque)
 
