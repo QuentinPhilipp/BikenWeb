@@ -12,31 +12,18 @@ import queue
 import random
 from math import sin,cos,radians,pi
 import utils
-import sys,os
-
-
-
-
-def disablePrint(value):
-    if value==True:
-        sys.stdout=open(os.devnull,"w")
-    else:
-        sys.stdout=sys.__stdout__
-# enable or disable all the logs
-disablePrint(False)
-
-
+import routing
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = False
 CORS(app)
 
-creator = itinaryCreator.itineraryCreator(48.467466, -4.649883)
-# creator2 = itinaryCreator.itineraryCreator(48.467466, -4.649883)
-# creator3 = itinaryCreator.itineraryCreator(48.467466, -4.649883)
-#
-#
-creatorList = [creator]
+# creator = itinaryCreator.itineraryCreator(48.467466, -4.649883)
+# # creator2 = itinaryCreator.itineraryCreator(48.467466, -4.649883)
+# # creator3 = itinaryCreator.itineraryCreator(48.467466, -4.649883)
+# #
+# #
+# creatorList = [creator]
 
 print("itinaryCreator ready")
 
@@ -63,9 +50,10 @@ class Compute(Thread):
         Thread.__init__(self)
 
     def run(self):
-        print("Start reseting all nodes")
+        print("Start Reset")
         for c in creatorList :
             c.resetAllNodes()
+        print("End reset")
 
 
 @app.route('/api/1.0/itinerary', methods=['GET'])
@@ -82,24 +70,26 @@ def api_itinerary():
         print("Itinerary with address")
 
         startGeolocalisationTime = time.time();
-        # Get lat and lon for the start and end point
         startPosition = geocode(start)
         finishPosition = geocode(finish)
         geolocalisationTime = time.time()-startGeolocalisationTime;
 
-        itinerary = creator.getItinerary(startPosition,finishPosition)
+        # itinerary = creator.getItinerary(startPosition,finishPosition)
+        itinerary = routing.route(startPosition,finishPosition,"bike")
+
+
         itinerary['geolocalisationTime']=geolocalisationTime;
 
-        print("Total time : ",itinerary['calculationTime'])
+        print("Time : ",itinerary['calculationTime'])
         # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
         # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
 
         val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
-        print("Data returned to client")
+        print("Returned")
 
         # reset all the nodes in another thread to return the data instantly
-        thread_a = Compute()
-        thread_a.start()
+        # thread_a = Compute()
+        # thread_a.start()
 
         return jsonify(val)
 
@@ -319,6 +309,31 @@ def testThread():
 
     return jsonify(val)
 
+def testFunction(ts,queue,start,finish):
+
+    print("Starting function for thread",ts)
+    itinerary = creatorList[ts].getItinerary(start,finish)
+    print("Ending function for thread",ts)
+    queue.put(itinerary)
+
+
+class RouteThread(Thread):
+    def __init__(self,start,finish,id,queue):
+        Thread.__init__(self)
+        print("Starting initialisation thread",id)
+        self.id = id
+        self.startPoint = start
+        self.finishPoint=finish
+        print("Finish initialisation thread",id)
+
+
+    def run(self):
+        print("Start Computation")
+        itineray = creatorList[self.id].getItinerary(self.startPoint,self.finishPoint)
+        print("End Computation")
+        queue.put(itinerary)
+
+
 
 def geocode(location):
     # This function use nominatim to get the GPS point of an address
@@ -396,4 +411,4 @@ def addKmWithAngle(radius, direction, startPos):
 def page_not_found(e):
     return "<h1>404</h1><p>The resource could not be found.</p>", 404
 
-app.run(host='0.0.0.0',port=6060)
+app.run(host='127.0.0.1',port=6001)

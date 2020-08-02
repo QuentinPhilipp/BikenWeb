@@ -30,16 +30,16 @@ class Node(object):
     @property
     def latitude(self):
         return self._latitude
-
+    
     @latitude.getter
     def latitude(self):
         return self._latitude
-
+   
     # Longitude
     @property
     def longitude(self):
         return self._longitude
-
+    
     @longitude.getter
     def longitude(self):
         return self._longitude
@@ -49,11 +49,11 @@ class Node(object):
     @property
     def distanceFromStart(self):
         return self._distanceFromStart
-
+    
     @distanceFromStart.getter
     def distanceFromStart(self):
-        return self._distanceFromStart
-
+        return self._distanceFromStart  
+    
     @distanceFromStart.setter
     def distanceFromStart(self,value):
         self._distanceFromStart = value
@@ -62,11 +62,11 @@ class Node(object):
     @property
     def distanceToGoal(self):
         return self._distanceToGoal
-
+    
     @distanceToGoal.getter
     def distanceToGoal(self):
-        return self._distanceToGoal
-
+        return self._distanceToGoal  
+    
     @distanceToGoal.setter
     def distanceToGoal(self,value):
         self._distanceToGoal = value
@@ -75,11 +75,11 @@ class Node(object):
     @property
     def distanceTotal(self):
         return self._distanceTotal
-
+    
     @distanceTotal.getter
     def distanceTotal(self):
-        return self._distanceTotal
-
+        return self._distanceTotal  
+    
     @distanceTotal.setter
     def distanceTotal(self,value):
         self._distanceTotal = value
@@ -102,11 +102,11 @@ class Node(object):
     @property
     def marque(self):
         return self._marque
-
+    
     @marque.getter
     def marque(self):
-        return self._marque
-
+        return self._marque  
+    
     @marque.setter
     def marque(self,value):
         self._marque = value
@@ -133,13 +133,3 @@ class Node(object):
         self._distanceFromStart=inf
         self._precedingNode=None
 
-
-    def getNeighbor(self):
-        neighborList = []
-        # search in multiple ways if the current node belong to multiple ways
-        for way in self.ways:
-            # only add neighbor with more than one way.
-            for node in way.nodes:
-                if len(node.ways)>1:
-                        neighborList.append(node)
-        return neighborList

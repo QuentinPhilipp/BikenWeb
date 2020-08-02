@@ -99,12 +99,12 @@ function sendRequest() {
       displayStartFinish([startPos,finishPos]);
       displayRoute(waypoints);
 
-      distance = distance.toFixed(2);
+      distance = (distance/1000).toFixed(2);
       calculationTime = calculationTime.toFixed(5);
       geolocalisationTime = geolocalisationTime.toFixed(5);
 
       document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-      document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+"s";
+      document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
       document.getElementById("geolocalisationTime").innerHTML ="Position calculated in "+geolocalisationTime+"s";
 
       document.getElementById("total-distance").hidden=false;

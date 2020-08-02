@@ -16,7 +16,7 @@ class Way(object):
     @property
     def id(self):
         return self._id
-
+    
     @id.getter
     def id(self):
         return self._id
@@ -25,7 +25,7 @@ class Way(object):
     @property
     def nodes(self):
         return self._nodes
-
+    
     @nodes.getter
     def nodes(self):
         return self._nodes
@@ -38,18 +38,8 @@ class Way(object):
     @centerNode.getter
     def centerNode(self):
         return self._centerNode
-
+   
     # Methods
 
-    def getNodePosition(self,node):
-        #return the index of a node in a way
-        nodes = self.nodes
-        wantedId=node.id
-        if(nodes[0].id==wantedId):
-            return 0
-        elif nodes[-1].id == wantedId:
-            return len(nodes)-1
-        else:
-            for i in range(len(nodes)):
-                if nodes[i].id==wantedId:
-                    return i
+
+
