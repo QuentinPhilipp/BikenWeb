@@ -7,23 +7,7 @@ function showSearchBar()
   searchToggleButton.hidden=true;
   console.log("Show");
 }
-//
-// function showAnimation() {
-//   var elem = document.getElementById("searchBar");
-//   var pos = -300;
-//   var id = setInterval(frame, 1);
-//   function frame() {
-//     if (pos >= 15) {
-//       clearInterval(id);
-//       elem.style.left = "15px";
-//
-//     } else {
-//       pos= pos+10;
-//       elem.style.left = pos + "px";
-//     }
-//   }
-// }
-//
+
 function hideSearchBar()
 {
   var searchBar = document.getElementById("searchBar");
@@ -64,7 +48,6 @@ slider.oninput = function() {
 
 function getRequestType()
 {
-  console.log(document.getElementById("customSwitches"));
   if (document.getElementById("customSwitches").checked)
   {
     return "route";

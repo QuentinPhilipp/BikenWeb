@@ -2,20 +2,16 @@ import flask
 import requests
 from flask import request, jsonify,render_template
 from flask_cors import CORS
-import sqlite3
-import databaseManager
-import itinaryCreator
-from threading import Thread
 import time
-import copy
-import queue
 import random
 from math import sin,cos,radians,pi
 import utils
 import routing
+import re
+
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = False
+app.config["DEBUG"] = True
 CORS(app)
 
 
@@ -27,32 +23,25 @@ def home():
 @app.route('/api/1.0/itinerary', methods=['GET'])
 def api_itinerary():
     query_parameters = request.args
-    start = query_parameters.get('start')
-    finish = query_parameters.get('finish')
-
-    print(start)
-    print(finish)
+    coords = query_parameters.get('coords')
+    # regular expression to extract the coords
+    result = re.findall("(.+?),(.+?);(.+?),(.+?)$",coords)
+    # The result come like this : [('48.9589708', '7.3350752', '49.0508729', '7.4254577')] and we need to create two dictionnary
+    start = {"lat":result[0][0],"lon":result[0][1]}
+    finish = {"lat":result[0][2],"lon":result[0][3]}
 
     # If the start/end is an adress
     if start and finish:
-        print("Itinerary with address")
-
-        startGeolocalisationTime = time.time();
-        startPosition = geocode(start)
-        finishPosition = geocode(finish)
-        geolocalisationTime = time.time()-startGeolocalisationTime;
+        print("Itinerary")
 
         # itinerary = creator.getItinerary(startPosition,finishPosition)
-        itinerary = routing.route(startPosition,finishPosition,"bike")
-
-
-        itinerary['geolocalisationTime']=geolocalisationTime;
+        itinerary = routing.route(start,finish,"bike")
 
         print("Time : ",itinerary['calculationTime'])
         # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
         # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
 
-        val = {"type" : "itinerary","distance":itinerary['distance'],"geolocalisationTime":itinerary['geolocalisationTime'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startName": start, "startPos": startPosition , "finishName": finish, "finishPos": finishPosition, "waypoints":itinerary["waypoints"]}}
+        val = {"type" : "itinerary","distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
         print("Returned")
 
         # reset all the nodes in another thread to return the data instantly
