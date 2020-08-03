@@ -27,7 +27,6 @@ function geocode(location)
     if (this.readyState == 4 && this.status == 200) {
       var responseRaw = JSON.parse(xhttp.responseText);
       var response = ""+responseRaw[0].lat+","+responseRaw[0].lon;
-      console.log(response);
       return response;
     }
   };
@@ -42,7 +41,6 @@ function sendRequest() {
   var finish = document.getElementById('finish').value;
 
   getLocations(start,finish).then(data =>  {
-    console.log(data);
     // check if itinerary or route
     if (getRequestType()=="route")
     {
@@ -54,47 +52,41 @@ function sendRequest() {
     }
 
 
-      var xhttp = new XMLHttpRequest();
+    getItinerary(url).then(dataItinerary => {
 
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          var response = JSON.parse(xhttp.responseText);
-          var startPos = response.data.startPos;
-          var finishPos = response.data.finishPos;
-          var distance = response.distance;
-          var waypoints = response.data.waypoints;
-          var calculationTime = response.calculationTime;
-
-          console.log("response : ",response);
-
-          console.log("Start : ",startPos);
-          console.log("Finish : ",finishPos);
-          console.log("Distance : ",distance);
-          console.log("Time : ",calculationTime);
-
-          routeList.forEach((route, i) => {
+      // Remove old routes
+      routeList.forEach((route, i) => {
             route.remove();
-          });
+      });
 
+      // display the cursor at the start and finish position
+      displayStartFinish([dataItinerary.data.startPos,dataItinerary.data.finishPos]);
 
-          displayStartFinish([startPos,finishPos]);
-          displayRoute(waypoints);
+      // display the new route
+      displayRoute(dataItinerary.data.waypoints);
 
-          distance = (distance/1000).toFixed(2);
-          calculationTime = calculationTime.toFixed(5);
+      // Round the values
+      distance = (dataItinerary.distance/1000).toFixed(2);
+      calculationTime = dataItinerary.calculationTime.toFixed(5);
 
-          document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-          document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
+      // Display the distance and calculation time
+      document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
+      document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
+      document.getElementById("total-distance").hidden=false;
+      document.getElementById("itineraryTime").hidden=false;
 
-          document.getElementById("total-distance").hidden=false;
-          document.getElementById("itineraryTime").hidden=false;
-          document.getElementById("").hidden=false;
+    });
 
-        }
-      };
-      xhttp.open("GET", url, true);
-      xhttp.send();
   });
+}
+
+
+async function getItinerary(url){
+  let response = await fetch(url);
+
+  let data = await response.json();
+
+  return data
 }
 
 
@@ -102,8 +94,6 @@ async function getLocations(location1,location2){
   var endpoint = "https://nominatim.openstreetmap.org/search/"
   var query1 = endpoint+location1+"?format=json&limit=1"
   var query2 = endpoint+location2+"?format=json&limit=1"
-  console.log("query1:",query1);
-  console.log("query2:",query2);
   let response1 = await fetch(query1);
   let response2 = await fetch(query2);
 
@@ -117,7 +107,6 @@ async function getLocations(location1,location2){
 
 
 function displayRoute(waypoints) {
-
 var polyline = L.polyline(waypoints, {
   color: '#F67C5A',
   weight:6

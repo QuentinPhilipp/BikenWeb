@@ -30,23 +30,11 @@ def api_itinerary():
     start = {"lat":result[0][0],"lon":result[0][1]}
     finish = {"lat":result[0][2],"lon":result[0][3]}
 
-    # If the start/end is an adress
+    # If the start/end are defined
     if start and finish:
-        print("Itinerary")
-
-        # itinerary = creator.getItinerary(startPosition,finishPosition)
         itinerary = routing.route(start,finish,"bike")
 
-        print("Time : ",itinerary['calculationTime'])
-        # startPosition={"lat": waypointList[0][0], "lon": waypointList[0][1]}
-        # finishPosition={"lat": waypointList[-1][0], "lon": waypointList[-1][1]}
-
         val = {"type" : "itinerary","distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
-        print("Returned")
-
-        # reset all the nodes in another thread to return the data instantly
-        # thread_a = Compute()
-        # thread_a.start()
 
         return jsonify(val)
 
