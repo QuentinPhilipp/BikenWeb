@@ -60,7 +60,7 @@ def api_route():
     if start and distance:
         print("Route with distance")
         route = routing.route(start,distance)
-        print("Route :",route)
+        # print("Route :",route)
 
         startPosition= route["waypoints"][0]
         val = {"type" : "route","distance":route["distance"],"calculationTime":route['calculationTime'], "gps" : "false", "data" : {"startName": "test", "startPos": startPosition, "waypoints":route["waypoints"]}}

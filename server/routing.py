@@ -48,7 +48,7 @@ def route(startPoint,distance) :
     numberOfPoints = 5
     waypointList = generateCircle(startPoint,distance,numberOfPoints)
 
-    baseUrl = 'http://router.project-osrm.org/trip/v1/driving/'
+    baseUrl = 'http://router.project-osrm.org/trip/v1/cycling/'
     for waypoint in waypointList:
         baseUrl += str(waypoint["lon"]) + "," + str(waypoint["lat"]) + ";"
 
@@ -64,7 +64,7 @@ def route(startPoint,distance) :
     for leg in data['trips'][0]["legs"]:
         for step in leg["steps"]:
             path += step["geometry"]["coordinates"]
-    # print(path)
+    #       print(path)
     # Switch from lon,lat to lat,lon for leaflet
     returnedPath = [(coord[1], coord[0]) for coord in path]
     endTime = time.time()

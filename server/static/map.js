@@ -89,6 +89,8 @@ function sendRequest() {
               route.remove();
         });
 
+        // Display start point
+        displayStart(dataItinerary.data.waypoints[0])
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
 
@@ -170,6 +172,14 @@ function displayStartFinish(pointList) {
   mymap.flyToBounds(bounds);
 }
 
+
+function displayStart(point) {
+  console.log(point)
+  var marker = L.marker([point[0], point[1]]).addTo(mymap);
+  routeList.push(marker);
+  var zoomPoint = L.latLng(point[0], point[1]);
+  mymap.flyTo(zoomPoint);
+}
 
 function addKmToLatitude(originalLat,kmToAdd) {
     return originalLat + kmToAdd/111.1;
