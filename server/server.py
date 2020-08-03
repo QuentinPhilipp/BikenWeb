@@ -32,7 +32,7 @@ def api_itinerary():
 
     # If the start/end are defined
     if start and finish:
-        itinerary = routing.route(start,finish,"bike")
+        itinerary = routing.itinerary(start,finish,"bike")
 
         val = {"type" : "itinerary","distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
 
@@ -48,27 +48,22 @@ def api_itinerary():
 @app.route('/api/1.0/route', methods=['GET'])
 def api_route():
     query_parameters = request.args
-    start = query_parameters.get('start')
+    startCoord = query_parameters.get('start')
     distance = query_parameters.get('distance')
+
+    # regular expression to extract the coords
+    result = re.findall("(.+?),(.+?)$",startCoord)
+    # The result come like this : [('48.9589708', '7.3350752', '49.0508729', '7.4254577')] and we need to create two dictionnary
+    start = {"lat":result[0][0],"lon":result[0][1]}
 
     # If the start is an adress
     if start and distance:
         print("Route with distance")
-        startGeolocalisationTime = time.time();
+        route = routing.route(start,distance)
+        print("Route :",route)
 
-        startPosition = geocode(start)
-
-
-        points=3
-        pointList=generateCircle(startPosition,distance,points)
-
-        waypointList=[]
-
-        for waypoint in pointList:
-            waypointList.append([waypoint["lat"],waypoint["lon"]])
-
-
-        val = {"type" : "route","distance":0,"geolocalisationTime":0,"calculationTime":0, "gps" : "false", "data" : {"startName": "test", "startPos": startPosition , "finishName": "test", "finishPos": startPosition, "waypoints":waypointList}}
+        startPosition= route["waypoints"][0]
+        val = {"type" : "route","distance":route["distance"],"calculationTime":route['calculationTime'], "gps" : "false", "data" : {"startName": "test", "startPos": startPosition, "waypoints":route["waypoints"]}}
 
         return jsonify(val)
 

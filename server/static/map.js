@@ -39,43 +39,71 @@ function sendRequest() {
 
   var start = document.getElementById('start').value;
   var finish = document.getElementById('finish').value;
+  var distance = document.getElementById('distanceSlider').value;
+  var url = "";
+
+  if (getRequestType()=="route")
+  {
+    finish = "None";
+  }
+
 
   getLocations(start,finish).then(data =>  {
     // check if itinerary or route
-    if (getRequestType()=="route")
+
+    if (getRequestType()=="itinerary")
     {
-      var distance = document.getElementById('distanceSlider').value
-      var url = "api/1.0/route?start="+startCoords+"&distance="+distance;
+      url = "api/1.0/itinerary?coords="+data;
+      getItinerary(url).then(dataItinerary => {
+
+        // Remove old routes
+        routeList.forEach((route, i) => {
+              route.remove();
+        });
+
+        // display the cursor at the start and finish position
+        displayStartFinish([dataItinerary.data.startPos,dataItinerary.data.finishPos]);
+
+        // display the new route
+        displayRoute(dataItinerary.data.waypoints);
+
+        // Round the values
+        distance = (dataItinerary.distance/1000).toFixed(2);
+        calculationTime = dataItinerary.calculationTime.toFixed(5);
+
+        // Display the distance and calculation time
+        document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
+        document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
+        document.getElementById("total-distance").hidden=false;
+        document.getElementById("itineraryTime").hidden=false;
+
+      });
     }
     else {
-      var url = "api/1.0/itinerary?coords="+data;
-    }
+      url = "api/1.0/route?start="+data+"&distance="+distance;
+      // console.log('Not implemented',url);
+      getItinerary(url).then(dataItinerary => {
 
+        // Remove old routes
+        routeList.forEach((route, i) => {
+              route.remove();
+        });
 
-    getItinerary(url).then(dataItinerary => {
+        // display the new route
+        displayRoute(dataItinerary.data.waypoints);
 
-      // Remove old routes
-      routeList.forEach((route, i) => {
-            route.remove();
+        // Round the values
+        distance = (dataItinerary.distance/1000).toFixed(2);
+        calculationTime = dataItinerary.calculationTime.toFixed(5);
+
+        // Display the distance and calculation time
+        document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
+        document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
+        document.getElementById("total-distance").hidden=false;
+        document.getElementById("itineraryTime").hidden=false;
+
       });
-
-      // display the cursor at the start and finish position
-      displayStartFinish([dataItinerary.data.startPos,dataItinerary.data.finishPos]);
-
-      // display the new route
-      displayRoute(dataItinerary.data.waypoints);
-
-      // Round the values
-      distance = (dataItinerary.distance/1000).toFixed(2);
-      calculationTime = dataItinerary.calculationTime.toFixed(5);
-
-      // Display the distance and calculation time
-      document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-      document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
-      document.getElementById("total-distance").hidden=false;
-      document.getElementById("itineraryTime").hidden=false;
-
-    });
+    }
 
   });
 }
@@ -91,18 +119,30 @@ async function getItinerary(url){
 
 
 async function getLocations(location1,location2){
-  var endpoint = "https://nominatim.openstreetmap.org/search/"
-  var query1 = endpoint+location1+"?format=json&limit=1"
-  var query2 = endpoint+location2+"?format=json&limit=1"
-  let response1 = await fetch(query1);
-  let response2 = await fetch(query2);
+  if (location2 != "None") {
+    var endpoint = "https://nominatim.openstreetmap.org/search/";
+    var query1 = endpoint+location1+"?format=json&limit=1";
+    var query2 = endpoint+location2+"?format=json&limit=1";
+    let response1 = await fetch(query1);
+    let response2 = await fetch(query2);
 
-  let data1 = await response1.json();
-  let data2 = await response2.json();
+    let data1 = await response1.json();
+    let data2 = await response2.json();
 
-  var coords = ""+data1[0].lat+","+data1[0].lon+";"+data2[0].lat+","+data2[0].lon
+    var coords = ""+data1[0].lat+","+data1[0].lon+";"+data2[0].lat+","+data2[0].lon;
 
-  return coords
+    return coords;
+  }
+  else {
+    // Route mode
+    var endpoint = "https://nominatim.openstreetmap.org/search/";
+    var query1 = endpoint+location1+"?format=json&limit=1";
+    let response1 = await fetch(query1);
+    let data1 = await response1.json();
+    var coords = ""+data1[0].lat+","+data1[0].lon;
+    return coords;
+  }
+
 }
 
 
