@@ -1,37 +1,5 @@
 from math import cos,pi
 
-def findNodeInNodeVector(idNode,nodeVector):
-    # print("Find node ", idNode, "in nodeVector")
-    i = len(nodeVector)-1
-    prev_i=0
-    temporaryValue=0
-    valueToSubstract=0
-    while(True):
-        # print("Search for nodeID",temporaryValue," ",valueToSubstract," ",i," ",prev_i)
-        node = nodeVector[i]
-        id =node.getId()
-        if(id==idNode):
-            return node
-        else :
-            temporaryValue=i
-            if(i>prev_i):
-                valueToSubstract=int((i-prev_i)/2)
-            else :
-                valueToSubstract=int((prev_i-i)/2)
-
-            if(valueToSubstract==0): #I had to add this because in the last operation we can have: (prev_i-i=1), so valueToSubstract would be 1/2=0
-                valueToSubstract=1
-
-            if(id>idNode):
-                i-=valueToSubstract
-
-            else :
-                i+=valueToSubstract
-
-            prev_i=temporaryValue
-
-
-
 def addKmToLatitude(originalLat,kmToAdd):
     # print(type(originalLat))
     # print(type(kmToAdd))
