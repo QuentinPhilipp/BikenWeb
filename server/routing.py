@@ -34,12 +34,13 @@ def itinerary(startCoord,endCoord,mode) :
 
     print("\nNumber of point in the path :",len(path))
 
-    print(f"~~~~~~~~~~~~\nTime for the request : {endTime-startTime} seconds")
 
     # Switch from lon,lat to lat,lon for leaflet
     returnedPath = [(coord[1], coord[0]) for coord in path]
     endTime = time.time()
-    returnObject = {"waypoints":returnedPath,"distance":data["routes"][0]['distance'],"calculationTime":endTime-startTime}
+    print(f"~~~~~~~~~~~~\nTime for the request : {endTime-startTime} seconds")
+
+    returnObject = {"waypoints":returnedPath,"distance":data["routes"][0]['distance'],"calculationTime":endTime-startTime,"estimatedTime":}
 
     return returnObject
 
