@@ -10,13 +10,13 @@ Install requirements.
 > pip3 install -r requirements.txt
 
 To start the server, execute
-> python3 server/server.py
+> python3 server/app.py
 
 The local web interface is located in http://127.0.0.1:6001
 
 # Next features
 
-Account creations.
+Authenticate with google.
 
 Possibility to save itinerary/routes.
 

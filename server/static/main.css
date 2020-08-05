@@ -11,13 +11,22 @@ body {
   width: 100vw;
 }
 
+/* #profile-name {
+  text-align: center;
+} */
 
-.profile_pic {
+.profile-pic {
     border-radius: 50%;
 }
 
 .hide-button {
+}
 
+.blue {
+  background: blue;
+}
+.red {
+  background: red;
 }
 
 .show-button {

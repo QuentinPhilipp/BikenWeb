@@ -72,19 +72,26 @@ def get_google_provider_cfg():
 @app.route('/', methods=['GET'])
 def index():
     return render_template("index.html")
-# @app.route("/")
-# def index():
-#     if current_user.is_authenticated:
-#         return (
-#             "<p>Hello, {}! You're logged in! Email: {}</p>"
-#             "<div><p>Google Profile Picture:</p>"
-#             '<img src="{}" alt="Google profile pic"></img></div>'
-#             '<a class="button" href="/logout">Logout</a>'.format(
-#                 current_user.name, current_user.email, current_user.profile_pic
-#             )
-#         )
-#     else:
-#         return '<a class="button" href="/login">Google Login</a>'
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    return render_template("profile.html")
+
+@app.route('/activities', methods=['GET'])
+@login_required
+def activities():
+    return render_template("activities.html")
+
+@app.route('/settings', methods=['GET'])
+@login_required
+def preferences():
+    return render_template("preferences.html")
+
+
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return redirect('/login?next=' + request.path)
 
 @app.route("/login")
 def login():
