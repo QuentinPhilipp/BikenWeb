@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}Biken - Profile{% endblock %}
+
+
+{% block content %}
+
+<div class="row my-4 mx-4">
+  <div class="col-4 profile-pic-container justify-content">
+    <div class="d-flex flex-column align-content-center">
+      <div class="p-2 text-center">
+        <img src="{{current_user.profile_pic}}" width="150" height="150" class="profile-pic" alt="profile_pic">
+      </div>
+      <div id="profile-name" class="p-2 text-center">{{current_user.name}}</div>
+    </div>
+  </div>
+  <div class="col-8">
+
+  </div>
+</div>
+{% endblock %}

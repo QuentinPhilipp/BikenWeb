@@ -11,13 +11,27 @@ body {
   width: 100vw;
 }
 
-.hide-button {
+/* #profile-name {
+  text-align: center;
+} */
 
+.profile-pic {
+    border-radius: 50%;
+}
+
+.hide-button {
+}
+
+.blue {
+  background: blue;
+}
+.red {
+  background: red;
 }
 
 .show-button {
   position: absolute;
-  top: 15px;
+  top: 65px;
   left: 15px;
   z-index: 9;
 }
@@ -39,7 +53,7 @@ body {
 .searchBar {
   z-index: 10;
   position: absolute;
-  top: 15px;
+  top: 65px;
   left: 15px;
   background: white;
   border-radius: 3px;
