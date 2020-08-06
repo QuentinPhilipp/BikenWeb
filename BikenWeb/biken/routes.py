@@ -1,19 +1,57 @@
-from biken import app
 import requests
-from flask import Flask, redirect, request, jsonify,render_template ,url_for
 import biken.routing as routing
 import re
 import json
 
 
 
-@app.route('/')
-@app.route('/home')
-def index():
-    return render_template("index.html")
+"""Logged-in page routes."""
+from flask import Blueprint, render_template, redirect, url_for
+from flask_login import current_user, login_required, logout_user
 
 
-@app.route('/api/1.0/itinerary', methods=['GET'])
+# Blueprint Configuration
+main_bp = Blueprint(
+    'main_bp', __name__,
+    template_folder='templates',
+    static_folder='static'
+)
+
+
+@main_bp.route('/', methods=['GET'])
+@login_required
+def home():
+    """Logged-in User."""
+    return render_template(
+        'index.html',
+        title='Biken Home page.',
+        current_user=current_user
+    )
+
+
+@main_bp.route("/logout")
+@login_required
+def logout():
+    """User log-out logic."""
+    logout_user()
+    return redirect(url_for('auth_bp.login'))
+
+
+@main_bp.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    """Logged-in User."""
+    return render_template(
+        'profile.html',
+        title='Biken - Your profile.',
+        current_user=current_user
+    )
+
+
+
+
+
+@main_bp.route('/api/1.0/itinerary', methods=['GET'])
 def api_itinerary():
     query_parameters = request.args
     coords = query_parameters.get('coords')
@@ -37,7 +75,7 @@ def api_itinerary():
         return jsonify(val)
 
 # Route
-@app.route('/api/1.0/route', methods=['GET'])
+@main_bp.route('/api/1.0/route', methods=['GET'])
 def api_route():
     query_parameters = request.args
     startCoord = query_parameters.get('start')
@@ -86,112 +124,4 @@ def api_route():
 # @login_manager.unauthorized_handler
 # def unauthorized_callback():
 #     return redirect('/login?next=' + request.path)
-#
-# @app.route("/login")
-# def login():
-#     # Find out what URL to hit for Google login
-#     google_provider_cfg = get_google_provider_cfg()
-#     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
-#
-#     # Use library to construct the request for Google login and provide
-#     # scopes that let you retrieve user's profile from Google
-#     request_uri = client.prepare_request_uri(
-#         authorization_endpoint,
-#         redirect_uri=request.base_url + "/callback",
-#         scope=["openid", "email", "profile"],
-#     )
-#     return redirect(request_uri)
-#
-#
-# @app.route("/login/callback")
-# def callback():
-#     # Get authorization code Google sent back to you
-#     code = request.args.get("code")
-#
-#     # Find out what URL to hit to get tokens that allow you to ask for
-#     # things on behalf of a user
-#     google_provider_cfg = get_google_provider_cfg()
-#     token_endpoint = google_provider_cfg["token_endpoint"]
-#
-#     # Prepare and send a request to get tokens! Yay tokens!
-#     token_url, headers, body = client.prepare_token_request(
-#         token_endpoint,
-#         authorization_response=request.url,
-#         redirect_url=request.base_url,
-#         code=code
-#     )
-#     token_response = requests.post(
-#         token_url,
-#         headers=headers,
-#         data=body,
-#         auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
-#     )
-#
-#     # Parse the tokens!
-#     client.parse_request_body_response(json.dumps(token_response.json()))
-#
-#     # Now that you have tokens (yay) let's find and hit the URL
-#     # from Google that gives you the user's profile information,
-#     # including their Google profile image and email
-#     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-#     uri, headers, body = client.add_token(userinfo_endpoint)
-#     userinfo_response = requests.get(uri, headers=headers, data=body)
-#
-#     # You want to make sure their email is verified.
-#     # The user authenticated with Google, authorized your
-#     # app, and now you've verified their email through Google!
-#     if userinfo_response.json().get("email_verified"):
-#         unique_id = userinfo_response.json()["sub"]
-#         users_email = userinfo_response.json()["email"]
-#         picture = userinfo_response.json()["picture"]
-#         users_name = userinfo_response.json()["given_name"]
-#     else:
-#         return "User email not available or not verified by Google.", 400
-#
-#     # Create a user in your db with the information provided
-#     # by Google
-#     user = User(
-#         id_=unique_id, name=users_name, email=users_email, profile_pic=picture
-#     )
-#
-#     # Doesn't exist? Add it to the database.
-#     if not User.get(unique_id):
-#         User.create(unique_id, users_name, users_email, picture)
-#
-#     # Begin user session by logging the user in
-#     login_user(user)
-#
-#     # Send user back to homepage
-#     return redirect(url_for("index"))
-#
-# @app.route("/logout")
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for("index"))
-#
-#
-# @app.route('/api/1.0/itinerary', methods=['GET'])
-# def api_itinerary():
-#     query_parameters = request.args
-#     coords = query_parameters.get('coords')
-#     # regular expression to extract the coords
-#     result = re.findall("(.+?),(.+?);(.+?),(.+?)$",coords)
-#     # The result come like this : [('48.9589708', '7.3350752', '49.0508729', '7.4254577')] and we need to create two dictionnary
-#     start = {"lat":result[0][0],"lon":result[0][1]}
-#     finish = {"lat":result[0][2],"lon":result[0][3]}
-#
-#     # If the start/end are defined
-#     if start and finish:
-#         itinerary = routing.itinerary(start,finish,"bike")
-#
-#         val = {"type" : "itinerary","distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
-#
-#         return jsonify(val)
-#
-#     else :
-#         print("Bad request")
-#         val = {"error_code": "01", "error_desc": "Endpoint not defined"}
-#         return jsonify(val)
-#
 #
