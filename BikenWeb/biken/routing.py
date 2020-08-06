@@ -3,7 +3,7 @@ import json
 import time
 from math import pi,cos,sin,radians
 import random
-import utils
+import biken.utils as utils
 
 
 def itinerary(startCoord,endCoord,mode) :
@@ -14,7 +14,7 @@ def itinerary(startCoord,endCoord,mode) :
 
     startTime = time.time()
 
-    url = f"https://routing.openstreetmap.de/routed-{mode}/route/v1/driving/{startLon},{startLat};{endLon},{endLat}?overview=false&alternatives=false&steps=true&geometries=geojson"
+    url = f"https://routing.openstreetmap.de/routed-{mode}/route/v1/cycling/{startLon},{startLat};{endLon},{endLat}?overview=false&alternatives=false&steps=true&geometries=geojson"
     print("Url:",url)
 
     r = requests.get(url)
