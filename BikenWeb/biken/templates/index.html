@@ -6,6 +6,12 @@
 
 <button id="searchShowButton" class="btn btn-primary my-2 show-button" onclick="showSearchBar()">></button>
 
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+  </div>
+{% endfor %}
 
 <div id="searchBar"class="searchBar px-2 border border-primary rounded">
   <!-- Default switch -->

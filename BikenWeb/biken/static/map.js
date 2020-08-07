@@ -37,21 +37,19 @@ function geocode(location)
 function saveItinerary() {
   console.log(routeList);
 
+  if (routeList.length==0) {
+    alert("You need to create an itinerary before saving")
+  }
+
   routeList.forEach((route, i) => {
 
     if (route._path!=undefined) {
       console.log(route._latlngs);
 
-      var url = "api/1.0/save";
-      var waypointsList = ["12","23","45","56","78","91"];
-      const data = { waypoints: waypointsList };
-      fetch(url, {
-        method: 'POST', // or 'PUT'
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
+      var waypointsList = ["12;23","45;56","78;91"];
+      $.post( "/api/1.0/save", {
+          waypoints: JSON.stringify(route._latlngs)
+      });
     }
 
   });

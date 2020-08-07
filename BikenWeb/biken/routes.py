@@ -2,11 +2,12 @@ import requests
 import biken.routing as routing
 import re
 import json
-
+from .models import db, User, Itinerary
+import hashlib
 
 
 """Logged-in page routes."""
-from flask import Blueprint, render_template, redirect, url_for,request,jsonify
+from flask import Blueprint,flash,render_template, redirect, url_for,request,jsonify
 from flask_login import current_user, login_required, logout_user
 
 
@@ -49,9 +50,45 @@ def profile():
 
 
 @main_bp.route("/api/1.0/save",methods=["POST"])
+@login_required
 def save():
-    print(request.form)
-    return '''OK'''
+    data = request.form['waypoints']
+
+    if not data:
+        flash('You need to create an itinerary before saving')
+        return "Error"
+
+    waypoints = json.loads(data)
+
+    stringCoord = ""
+    for waypoint in waypoints:
+        stringCoord+=str(waypoint["lat"])+","+str(waypoint["lng"])+";"
+
+    # Remove last semi colon
+    stringCoord = stringCoord[:-1]
+
+    hash_object = hashlib.md5(stringCoord.encode())
+
+    hashValue = hash_object.hexdigest()
+
+    existingItinerary = Itinerary.query.filter_by(hash=hashValue,user_id=current_user.id).first()
+
+    if not existingItinerary:
+        itinerary = Itinerary(
+            user_id=current_user.id,
+            waypoints=stringCoord,
+            hash=hashValue
+        )
+        db.session.add(itinerary)
+        db.session.commit()  #
+        flash('Itinerary stored')
+        print("Itinerary stored")
+        return '''OK'''
+    else:
+        flash('Itinerary already stored')
+        print("Itinerary already stored")
+        return "Error"
+
 
 
 @main_bp.route('/api/1.0/itinerary', methods=['GET'])
