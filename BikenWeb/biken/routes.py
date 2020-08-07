@@ -6,7 +6,7 @@ import json
 
 
 """Logged-in page routes."""
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for,request,jsonify
 from flask_login import current_user, login_required, logout_user
 
 
@@ -19,9 +19,7 @@ main_bp = Blueprint(
 
 
 @main_bp.route('/', methods=['GET'])
-@login_required
 def home():
-    """Logged-in User."""
     return render_template(
         'index.html',
         title='Biken Home page.',
@@ -49,6 +47,11 @@ def profile():
 
 
 
+
+@main_bp.route("/api/1.0/save",methods=["POST"])
+def save():
+    print(request.form)
+    return '''OK'''
 
 
 @main_bp.route('/api/1.0/itinerary', methods=['GET'])
