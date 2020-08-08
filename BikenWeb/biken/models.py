@@ -72,3 +72,16 @@ class Itinerary(db.Model):
 	waypoints=db.Column(
 		db.String()
 	)
+	distance=db.Column(
+		db.Float(),
+        unique=False,
+        nullable=True
+	)
+	name=db.Column(
+		db.String(100),
+        unique=False,
+        nullable=True
+	)
+	duration=db.Column(
+		db.Integer
+	)

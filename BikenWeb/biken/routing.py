@@ -40,7 +40,7 @@ def itinerary(startCoord,endCoord,mode) :
     endTime = time.time()
     print(f"~~~~~~~~~~~~\nTime for the request : {endTime-startTime} seconds")
 
-    returnObject = {"waypoints":returnedPath,"distance":data["routes"][0]['distance'],"calculationTime":endTime-startTime,"estimatedTime":0}
+    returnObject = {"waypoints":returnedPath,"duration":data['routes'][0]['duration'],"distance":data["routes"][0]['distance'],"calculationTime":endTime-startTime,"estimatedTime":0}
 
     return returnObject
 

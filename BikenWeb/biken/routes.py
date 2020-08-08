@@ -5,7 +5,8 @@ import re
 import json
 from .models import db, User, Itinerary
 import hashlib
-
+import random
+import string
 
 """Logged-in page routes."""
 from flask import Blueprint,flash,render_template, redirect, url_for,request,jsonify
@@ -23,13 +24,13 @@ main_bp = Blueprint(
 @main_bp.route('/', methods=['GET'])
 def home():
     query_parameters = request.args
-    itineraryHash = query_parameters.get('itinerary')
+    itineraryID = query_parameters.get('itinerary')
 
-    if itineraryHash==None :
+    if itineraryID==None :
         itinerary=None
     else:
         # Load itinerary from db
-        itineraryObject = Itinerary.query.filter_by(hash=itineraryHash).first()
+        itineraryObject = Itinerary.query.filter_by(id=itineraryID).first()
 
         if itineraryObject:
             itinerary=utils.strToWaypoints(itineraryObject.waypoints)
@@ -69,31 +70,78 @@ def profile():
     print("Itineraries :",itineraries)
     return render_template(
         'profile.html',
-        title='Biken - Your profile.',
+        title='Biken - Your profile',
         current_user=current_user,
         itineraries=itineraries
     )
 
+
+@main_bp.route("/api/1.0/itineraries",methods=["POST"])
+@login_required
+def editName():
+    query_parameters = request.args
+    itineraryID = query_parameters.get('itinerary')
+
+    itinerary = Itinerary.query.filter_by(id=itineraryID).first();
+    name = request.form['name']
+
+    if itinerary.user_id==current_user.id:
+        # Edit the itinerary
+        if name!="" :
+            if len(name)<=100:
+                print("New name :",name)
+                itinerary.name = name
+                db.session.commit()
+                return redirect(url_for("main_bp.profile"))
+            else:
+                flash("The name of the itinerary can't exceed 100 characters")
+        else:
+            flash("You can't set an empty name")
+    else :
+        flash("You can't edit the itinerary of another person")
+    return redirect(url_for("main_bp.profile"))
+
+@main_bp.route("/api/1.0/itineraries",methods=["DELETE"])
+@login_required
+def deleteItinerary():
+    query_parameters = request.args
+    itineraryID = query_parameters.get('itinerary')
+    itinerary = Itinerary.query.filter_by(id=itineraryID).first();
+
+    if itinerary.user_id==current_user.id:
+        Itinerary.query.filter_by(id=itineraryID).delete()
+        db.session.commit()
+        print("Route deleted")
+        return "Success"
+
+        # return redirect(url_for("main_bp.profile"))
+
+    else :
+        flash("You can't delete the itinerary of another person")
+
+    return "Success"
 
 
 
 @main_bp.route("/api/1.0/save",methods=["POST"])
 @login_required
 def save():
-    data = request.form['waypoints']
+    dataWaypoints = request.form['waypoints']
+    distance = float(request.form['distance'])
+    duration = float(request.form['duration'])
 
-    if not data:
+    print("Duration:",duration)
+    print("Distance:",distance)
+
+    if not dataWaypoints:
         flash('You need to create an itinerary before saving')
         return "Error"
 
-    waypoints = json.loads(data)
+    waypoints = json.loads(dataWaypoints)
 
     stringCoord = ""
     for waypoint in waypoints:
         stringCoord+=str(waypoint["lat"])+","+str(waypoint["lng"])+";"
-
-    # Remove last semi colon
-    stringCoord = stringCoord[:-1]
 
     hash_object = hashlib.md5(stringCoord.encode())
 
@@ -105,7 +153,10 @@ def save():
         itinerary = Itinerary(
             user_id=current_user.id,
             waypoints=stringCoord,
-            hash=hashValue
+            hash=hashValue,
+            distance=int(distance),
+            name= "Itinerary "+ ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)),
+            duration=int(duration)
         )
         db.session.add(itinerary)
         db.session.commit()  #
@@ -133,7 +184,7 @@ def api_itinerary():
     if start and finish:
         itinerary = routing.itinerary(start,finish,"bike")
 
-        val = {"type" : "itinerary","distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
+        val = {"type" : "itinerary","duration":itinerary["duration"],"distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
 
         return jsonify(val)
 

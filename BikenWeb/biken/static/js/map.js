@@ -3,7 +3,8 @@ var mymap = L.map('mapid',{ zoomControl: false }).setView([48.8589507,2.2770202]
 debugState = false;
 squareList = [];
 routeList = [];
-
+currentDistance = 0;
+currentDuration = 0;
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -50,7 +51,9 @@ function saveItinerary() {
 
       var waypointsList = ["12;23","45;56","78;91"];
       $.post( "/api/1.0/save", {
-          waypoints: JSON.stringify(route._latlngs)
+          waypoints: JSON.stringify(route._latlngs),
+          distance: currentDistance,
+          duration:currentDuration
       });
     }
 
@@ -58,10 +61,6 @@ function saveItinerary() {
 
 }
 
-
-function loadItinerary() {
-
-}
 
 function sendRequest() {
 
@@ -99,6 +98,9 @@ function sendRequest() {
         // Round the values
         distance = (dataItinerary.distance/1000).toFixed(2);
         calculationTime = dataItinerary.calculationTime.toFixed(5);
+
+        currentDistance=distance;
+        currentDuration=dataItinerary.duration;
 
         // Display the distance and calculation time
         document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
@@ -183,6 +185,8 @@ var polyline = L.polyline(waypoints, {
   weight:6
 }).addTo(mymap);
 routeList.push(polyline);
+
+console.log("RouteList after push:",routeList);
 }
 
 

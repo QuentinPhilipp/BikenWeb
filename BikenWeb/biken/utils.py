@@ -17,11 +17,15 @@ def addKmToLongitude(originalLat,originalLon,kmToAdd):
 
 def strToWaypoints(itineraryString):
     # transform a string of coords to a list of waypoints
+    print(itineraryString)
     result = re.findall("((.+?),(.+?);)",itineraryString)
 
     waypoints = []
     for wp in result:
         waypoint = [float(wp[1]),float(wp[2])]
         waypoints.append(waypoint)
+
+    print("Waypoints :",len(waypoints))
+    print(waypoints[-1])
 
     return waypoints
