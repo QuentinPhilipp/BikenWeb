@@ -4,6 +4,8 @@
 
 <div id="mapid"></div>
 
+
+
 <button id="searchShowButton" class="btn btn-primary my-2 show-button" onclick="showSearchBar()">></button>
 
 {% for message in get_flashed_messages() %}
@@ -46,4 +48,22 @@
 
 <script src="../static/map.js" charset="utf-8"></script>
 <script src="../static/main.js" charset="utf-8"></script>
+
+<script>
+  itineraryData = {{itinerary|tojson}};
+
+  if(itineraryData!=undefined) {
+    console.log(itineraryData);
+    displayRoute(itineraryData);
+
+    startPoint = {lat : itineraryData[0][0],lon : itineraryData[0][1]}
+    finishPoint = {lat : itineraryData[itineraryData.length -1][0],lon : itineraryData[itineraryData.length - 1][1]}
+
+    pointList = [startPoint,finishPoint];
+
+    displayStartFinish(pointList);
+  }
+</script>
+
+
 {% endblock %}

@@ -1,5 +1,6 @@
 import requests
 import biken.routing as routing
+import biken.utils as utils
 import re
 import json
 from .models import db, User, Itinerary
@@ -18,13 +19,35 @@ main_bp = Blueprint(
     static_folder='static'
 )
 
-
+@main_bp.route('/home', methods=['GET'])
 @main_bp.route('/', methods=['GET'])
 def home():
+    query_parameters = request.args
+    itineraryHash = query_parameters.get('itinerary')
+
+    if itineraryHash==None :
+        itinerary=None
+    else:
+        # Load itinerary from db
+        itineraryObject = Itinerary.query.filter_by(hash=itineraryHash).first()
+
+        if itineraryObject:
+            itinerary=utils.strToWaypoints(itineraryObject.waypoints)
+            # itinerary=itineraryObject.waypoints
+
+
+
+        else:
+            itinerary=None
+
+    # itinerary="Test"
+
+
     return render_template(
         'index.html',
-        title='Biken Home page.',
-        current_user=current_user
+        title='Biken Home page',
+        current_user=current_user,
+        itinerary=itinerary
     )
 
 
@@ -40,10 +63,15 @@ def logout():
 @login_required
 def profile():
     """Logged-in User."""
+
+    itineraries = Itinerary.query.filter_by(user_id=current_user.id).all()
+
+    print("Itineraries :",itineraries)
     return render_template(
         'profile.html',
         title='Biken - Your profile.',
-        current_user=current_user
+        current_user=current_user,
+        itineraries=itineraries
     )
 
 

@@ -9,12 +9,14 @@
   <p>Hello {{current_user.name}}</p>
 
   <h2>My saved itineraries</h2>
+    {% for itinerary in itineraries %}
     <div class="row">
       <div class="col-6">
-        Itinerary2
+        Itinerary {{itinerary.id}}
       </div>
       <div class="col-2">
-        <button type="button" name="button">Load itinerary</button>
+        <!-- <button type="button" name="button" href="/home/?itinerary={{itinerary.id}}">Load itinerary</button> -->
+        <a href="/home?itinerary={{itinerary.hash}}" class="btn btn-primary">Load Itinerary</a>
       </div>
       <div class="col-2">
         <button type="button" name="button">Change Name</button>
@@ -23,21 +25,9 @@
         <button type="button" name="button">Delete</button>
       </div>
     </div>
-    <div class="row">
-      <div class="col-6">
-        Itinerary2
-      </div>
-      <div class="col-2">
-        <button type="button" name="button">Load itinerary</button>
-      </div>
-      <div class="col-2">
-        <button type="button" name="button">Change Name</button>
-      </div>
-      <div class="col-2">
-        <button type="button" name="button">Delete</button>
-      </div>
-    </div>
+    {%endfor%}
 </div>
+
 
 
 

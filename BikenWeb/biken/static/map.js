@@ -15,6 +15,8 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 }).addTo(mymap);
 
 
+
+
 function geocode(location)
 {
    // This function use nominatim to get the GPS point of an address
@@ -54,7 +56,10 @@ function saveItinerary() {
 
   });
 
+}
 
+
+function loadItinerary() {
 
 }
 
@@ -89,6 +94,7 @@ function sendRequest() {
 
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
+        console.log(dataItinerary.data.waypoints);
 
         // Round the values
         distance = (dataItinerary.distance/1000).toFixed(2);
