@@ -1,11 +1,3 @@
-function showSearchBar()
-{
-  var searchBar = document.getElementById("searchBar");
-  var searchToggleButton = document.getElementById("searchShowButton");
-  // showAnimation();
-  searchBar.style.display="block";
-  searchToggleButton.hidden=true;
-}
 
 $(document).ready(function() {
 
@@ -18,13 +10,7 @@ $(document).ready(function() {
   });
 
 });
-function hideSearchBar()
-{
-  var searchBar = document.getElementById("searchBar");
-  var searchToggleButton = document.getElementById("searchShowButton");
-  searchBar.style.display="none";
-  searchToggleButton.hidden=false;
-}
+
 
 $('input[name=checkbox-mode]').change(function(){
     if($(this).is(':checked')) {

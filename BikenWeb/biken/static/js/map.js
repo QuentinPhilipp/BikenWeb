@@ -38,7 +38,6 @@ function geocode(location)
 }
 
 function saveItinerary() {
-  console.log(routeList);
 
   if (routeList.length==0) {
     alert("You need to create an itinerary before saving")
@@ -69,7 +68,6 @@ function sendRequest() {
   var distance = document.getElementById('distance').value;
   var url = "";
 
-  console.log('Start:',start,"Finish",finish);
 
   if (getRequestType()=="route")
   {
@@ -95,7 +93,6 @@ function sendRequest() {
 
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
-        console.log(dataItinerary.data.waypoints);
 
         // Round the values
         distance = (dataItinerary.distance/1000).toFixed(2);
@@ -105,10 +102,10 @@ function sendRequest() {
         currentDuration=dataItinerary.duration;
 
         // Display the distance and calculation time
-        document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-        document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
-        document.getElementById("total-distance").hidden=false;
-        document.getElementById("itineraryTime").hidden=false;
+        // document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
+        // document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
+        // document.getElementById("total-distance").hidden=false;
+        // document.getElementById("itineraryTime").hidden=false;
 
       });
     }
@@ -165,7 +162,6 @@ async function getLocations(location1,location2){
     let data2 = await response2.json();
 
     var coords = ""+data1[0].lat+","+data1[0].lon+";"+data2[0].lat+","+data2[0].lon;
-    console.log("Coords");
     return coords;
   }
   else {
@@ -176,7 +172,6 @@ async function getLocations(location1,location2){
     let data1 = await response1.json();
     var coords = ""+data1[0].lat+","+data1[0].lon;
     return coords;
-    console.log("Coords");
 
   }
 
@@ -190,7 +185,6 @@ var polyline = L.polyline(waypoints, {
 }).addTo(mymap);
 routeList.push(polyline);
 
-console.log("RouteList after push:",routeList);
 }
 
 
@@ -211,7 +205,6 @@ function displayStartFinish(pointList) {
 
 
 function displayStart(point) {
-  console.log(point)
   var marker = L.marker([point[0], point[1]]).addTo(mymap);
   routeList.push(marker);
   var zoomPoint = L.latLng(point[0], point[1]);
