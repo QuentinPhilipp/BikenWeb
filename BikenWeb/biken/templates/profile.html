@@ -25,10 +25,10 @@
         <a href="/home?itinerary={{itinerary.id}}" class="btn btn-primary">Load Itinerary</a>
       </div>
       <div class="col-2">
-        <button type="button" name="button" onclick="editName({{itinerary.id}})">Change Name</button>
+        <button type="button" class="btn btn-primary" name="button" onclick="editName({{itinerary.id}})">Change Name</button>
       </div>
       <div class="col-2">
-        <button type="button" name="button" onclick="deleteItinerary({{itinerary.id}})" >Delete</button>
+        <button type="button" class="btn btn-danger" name="button" onclick="deleteItinerary({{itinerary.id}})" >Delete</button>
       </div>
     </div>
     {%endfor%}

@@ -46,12 +46,12 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav ml-auto">
+      {% if current_user.is_authenticated %}
 
       <li class="nav-item">
         <button class="" onclick="saveItinerary()">Save</button>
 
       </li>
-      {% if current_user.is_authenticated %}
       <li class="nav-item dropdown ">
         <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <img src="{{url_for('static', filename='profile_unknown.svg')}}" width="30" height="30" class="d-inline-block align-middle profile-pic" alt="profile_pic">
