@@ -15,6 +15,20 @@
 {% endfor %}
 
 
+<div id="info-bottom" class="row text-center" hidden>
+  <div id="itinerary-distance" class="col-sm-6 col-md-3">
+    Distance
+  </div>
+  <div id="itinerary-time" class="col-sm-6 col-md-3">
+  </div>
+  <div id="itinerary-calculation-time" class="col-sm-6 col-md-3">
+    Itineraire calculé en x secondes
+  </div>
+  <div class="col-1">
+    <button type="button" name="button" class="btn btn-primary" onclick="closeInfo()">X</button>
+  </div>
+</div>
+
 
 <script>
   itineraryData = {{itinerary|tojson}};

@@ -94,18 +94,7 @@ function sendRequest() {
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
 
-        // Round the values
-        distance = (dataItinerary.distance/1000).toFixed(2);
-        calculationTime = dataItinerary.calculationTime.toFixed(5);
-
-        currentDistance=distance;
-        currentDuration=dataItinerary.duration;
-
-        // Display the distance and calculation time
-        // document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-        // document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
-        // document.getElementById("total-distance").hidden=false;
-        // document.getElementById("itineraryTime").hidden=false;
+        showSummary(dataItinerary);
 
       });
     }
@@ -124,20 +113,34 @@ function sendRequest() {
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
 
-        // Round the values
-        distance = (dataItinerary.distance/1000).toFixed(2);
-        calculationTime = dataItinerary.calculationTime.toFixed(5);
+        showSummary(dataItinerary);
 
-        // Display the distance and calculation time
-        document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-        document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
-        document.getElementById("total-distance").hidden=false;
-        document.getElementById("itineraryTime").hidden=false;
+
 
       });
     }
 
   });
+}
+
+function closeInfo() {
+  document.getElementById("info-bottom").hidden = true;
+}
+
+
+function showSummary(data) {
+  console.log(data);
+  document.getElementById("info-bottom").hidden = false;
+  // Round the values
+  distance = (data.distance/1000).toFixed(2);
+  calculationTime = data.calculationTime.toFixed(5);
+  estimatedTime = (data.duration/60).toFixed(0);
+
+  // Display the distance and calculation time
+  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+"km";
+  document.getElementById("itinerary-calculation-time").innerHTML ="Route calculated in: "+calculationTime+" s";
+  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+estimatedTime+" minutes";
+
 }
 
 
