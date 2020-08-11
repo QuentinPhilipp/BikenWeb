@@ -32,7 +32,6 @@ $('input[name=checkbox-mode]').change(function(){
         document.getElementById("distanceSlider").hidden=true;
         document.getElementById("slider-value").hidden=true;
 
-
     }
 });
 
@@ -55,6 +54,5 @@ function getRequestType()
   else {
     return "itinerary";
   }
-
 
 }

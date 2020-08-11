@@ -6,7 +6,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin, db.Model):
 	"""User account model."""
-
 	__tablename__ = 'flasklogin-users'
 	id = db.Column(
 		db.Integer,
@@ -40,6 +39,7 @@ class User(UserMixin, db.Model):
         unique=False,
         nullable=True
     )
+	itinerary = db.relationship("Itinerary")
 
 	def set_password(self, password):
 		"""Create hashed password."""
@@ -51,3 +51,37 @@ class User(UserMixin, db.Model):
 
 	def __repr__(self):
 		return '<User {}>'.format(self.username)
+
+
+
+
+class Itinerary(db.Model):
+	"""User account model."""
+	__tablename__ = 'itinerary'
+	id = db.Column(
+		db.Integer,
+		primary_key=True
+	)
+	hash = db.Column(
+		db.String(100),
+	)
+	user_id=db.Column(
+		db.Integer,
+		db.ForeignKey("flasklogin-users.id")
+	)
+	waypoints=db.Column(
+		db.String()
+	)
+	distance=db.Column(
+		db.Float(),
+        unique=False,
+        nullable=True
+	)
+	name=db.Column(
+		db.String(100),
+        unique=False,
+        nullable=True
+	)
+	duration=db.Column(
+		db.Integer
+	)

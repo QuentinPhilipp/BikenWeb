@@ -2,44 +2,39 @@
 
 {% block content %}
 
-
+<!-- Error handling -->
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+    </div>
+  {% endfor %}
 <div class="container">
   <h1>Profile Page</h1>
 
   <p>Hello {{current_user.name}}</p>
 
   <h2>My saved itineraries</h2>
+    {% for itinerary in itineraries %}
     <div class="row">
-      <div class="col-6">
-        Itinerary2
+      <div class="col-6" id="itinerary-name">
+        {{itinerary.name}}
       </div>
       <div class="col-2">
-        <button type="button" name="button">Load itinerary</button>
+        <!-- <button type="button" name="button" href="/home/?itinerary={{itinerary.id}}">Load itinerary</button> -->
+        <a href="/home?itinerary={{itinerary.id}}" class="btn btn-primary">Load Itinerary</a>
       </div>
       <div class="col-2">
-        <button type="button" name="button">Change Name</button>
+        <button type="button" class="btn btn-primary" name="button" onclick="editName({{itinerary.id}})">Change Name</button>
       </div>
       <div class="col-2">
-        <button type="button" name="button">Delete</button>
+        <button type="button" class="btn btn-danger" name="button" onclick="deleteItinerary({{itinerary.id}})" >Delete</button>
       </div>
     </div>
-    <div class="row">
-      <div class="col-6">
-        Itinerary2
-      </div>
-      <div class="col-2">
-        <button type="button" name="button">Load itinerary</button>
-      </div>
-      <div class="col-2">
-        <button type="button" name="button">Change Name</button>
-      </div>
-      <div class="col-2">
-        <button type="button" name="button">Delete</button>
-      </div>
-    </div>
+    {%endfor%}
 </div>
 
-
+<script src="../static/js/profile.js" charset="utf-8"></script>
 
 
 

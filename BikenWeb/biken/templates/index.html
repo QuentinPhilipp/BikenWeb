@@ -2,42 +2,68 @@
 
 {% block content %}
 
-  <div id="mapid"></div>
-
-  <button id="searchShowButton" class="btn btn-primary my-2 show-button" onclick="showSearchBar()">></button>
+<div id="mapid"></div>
 
 
-  <div id="searchBar"class="searchBar px-2 border border-primary rounded">
-          <!-- Default switch -->
-    <div class="custom-control custom-switch py-2">
-      <input type="checkbox" name="checkbox-mode" class="custom-control-input" id="customSwitches">
-      <label class="custom-control-label" id="switch-type-label" for="customSwitches">Itinerary</label>
-    </div>
-    <form >
-      <div class="">
-        <div class="form-group">
-          <input type="text" class="form-control" id="start" placeholder="Choose starting point">
-        </div>
-        <div class="form-group">
-          <input type="text" class="form-control" id="finish" placeholder="Choose destination">
-        </div>
-        <div class="form-group">
-          <input type="range" min="1" max="300" value="50" class="slider" id="distanceSlider" hidden>
-          <p id="slider-value" hidden></p>
-        </div>
+
+<button id="searchShowButton" class="btn btn-primary my-2 show-button" onclick="showSearchBar()">></button>
+
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+  </div>
+{% endfor %}
+
+<div id="searchBar"class="searchBar px-2 border border-primary rounded">
+  <!-- Default switch -->
+  <div class="custom-control custom-switch py-2">
+    <input type="checkbox" name="checkbox-mode" class="custom-control-input" id="customSwitches">
+    <label class="custom-control-label" id="switch-type-label" for="customSwitches">Itinerary</label>
+  </div>
+  <form >
+    <div class="">
+      <div class="form-group">
+        <input type="text" class="form-control" id="start" placeholder="Choose starting point">
       </div>
-    </form>
-    <div class="route-info">
-      <div id="total-distance"  hidden></div>
-      <div id="itineraryTime" hidden></div>
-      <div id="geolocalisationTime" hidden></div>
-
+      <div class="form-group">
+        <input type="text" class="form-control" id="finish" placeholder="Choose destination">
+      </div>
+      <div class="form-group">
+        <input type="range" min="1" max="300" value="50" class="slider" id="distanceSlider" hidden>
+        <p id="slider-value" hidden></p>
+      </div>
     </div>
-    <button class="btn btn-primary my-2" onclick="sendRequest()">Let's Go !</button>
-    <button id="searchHideButton" class="btn btn-primary my-2 hide-button" onclick="hideSearchBar()"><</button>
+  </form>
+  <div class="route-info">
+    <div id="total-distance"  hidden></div>
+    <div id="itineraryTime" hidden></div>
+    <div id="geolocalisationTime" hidden></div>
 
   </div>
+  <button class="btn btn-primary my-2" onclick="sendRequest()">Let's Go !</button>
+  <button id="searchHideButton" class="btn btn-primary my-2 hide-button" onclick="hideSearchBar()"><</button>
 
-  <script src="../static/map.js" charset="utf-8"></script>
-  <script src="../static/main.js" charset="utf-8"></script>
-  {% endblock %}
+</div>
+
+<script src="../static/js/map.js" charset="utf-8"></script>
+<script src="../static/js/main.js" charset="utf-8"></script>
+
+<script>
+  itineraryData = {{itinerary|tojson}};
+
+  if(itineraryData!=undefined) {
+    console.log(itineraryData);
+    displayRoute(itineraryData);
+
+    startPoint = {lat : itineraryData[0][0],lon : itineraryData[0][1]}
+    finishPoint = {lat : itineraryData[itineraryData.length -1][0],lon : itineraryData[itineraryData.length - 1][1]}
+
+    pointList = [startPoint,finishPoint];
+
+    displayStartFinish(pointList);
+  }
+</script>
+
+
+{% endblock %}

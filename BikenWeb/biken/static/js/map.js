@@ -3,7 +3,8 @@ var mymap = L.map('mapid',{ zoomControl: false }).setView([48.8589507,2.2770202]
 debugState = false;
 squareList = [];
 routeList = [];
-
+currentDistance = 0;
+currentDuration = 0;
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -13,6 +14,8 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     zoomOffset: -1,
     accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
 }).addTo(mymap);
+
+
 
 
 function geocode(location)
@@ -32,6 +35,30 @@ function geocode(location)
   };
   xhttp.open("GET", query, true);
   xhttp.send();
+}
+
+function saveItinerary() {
+  console.log(routeList);
+
+  if (routeList.length==0) {
+    alert("You need to create an itinerary before saving")
+  }
+
+  routeList.forEach((route, i) => {
+
+    if (route._path!=undefined) {
+      console.log(route._latlngs);
+
+      var waypointsList = ["12;23","45;56","78;91"];
+      $.post( "/api/1.0/save", {
+          waypoints: JSON.stringify(route._latlngs),
+          distance: currentDistance,
+          duration:currentDuration
+      });
+    }
+
+  });
+
 }
 
 
@@ -66,10 +93,14 @@ function sendRequest() {
 
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
+        console.log(dataItinerary.data.waypoints);
 
         // Round the values
         distance = (dataItinerary.distance/1000).toFixed(2);
         calculationTime = dataItinerary.calculationTime.toFixed(5);
+
+        currentDistance=distance;
+        currentDuration=dataItinerary.duration;
 
         // Display the distance and calculation time
         document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
@@ -154,6 +185,8 @@ var polyline = L.polyline(waypoints, {
   weight:6
 }).addTo(mymap);
 routeList.push(polyline);
+
+console.log("RouteList after push:",routeList);
 }
 
 

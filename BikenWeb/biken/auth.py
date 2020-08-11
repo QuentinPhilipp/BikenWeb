@@ -4,6 +4,7 @@ from flask_login import current_user, login_user
 from .forms import LoginForm, SignupForm
 from .models import db, User
 from .import login_manager
+import datetime
 
 
 # Blueprint Configuration
@@ -29,6 +30,8 @@ def signup():
             user = User(
                 name=form.name.data,
                 email=form.email.data,
+                created_on=datetime.datetime.utcnow(),
+                last_login=datetime.datetime.utcnow()
             )
             user.set_password(form.password.data)
             db.session.add(user)
@@ -64,6 +67,9 @@ def login():
         if user and user.check_password(password=form.password.data):
             login_user(user)
             next_page = request.args.get('next')
+            # Update last login date
+            user.last_login=datetime.datetime.utcnow()
+            db.session.commit()
             return redirect(next_page or url_for('main_bp.home'))
         flash('Invalid username/password combination')
         return redirect(url_for('auth_bp.login'))
