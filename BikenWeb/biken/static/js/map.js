@@ -66,8 +66,10 @@ function sendRequest() {
 
   var start = document.getElementById('start').value;
   var finish = document.getElementById('finish').value;
-  var distance = document.getElementById('distanceSlider').value;
+  var distance = document.getElementById('distance').value;
   var url = "";
+
+  console.log('Start:',start,"Finish",finish);
 
   if (getRequestType()=="route")
   {
@@ -163,7 +165,7 @@ async function getLocations(location1,location2){
     let data2 = await response2.json();
 
     var coords = ""+data1[0].lat+","+data1[0].lon+";"+data2[0].lat+","+data2[0].lon;
-
+    console.log("Coords");
     return coords;
   }
   else {
@@ -174,6 +176,8 @@ async function getLocations(location1,location2){
     let data1 = await response1.json();
     var coords = ""+data1[0].lat+","+data1[0].lon;
     return coords;
+    console.log("Coords");
+
   }
 
 }

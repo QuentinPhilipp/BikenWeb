@@ -15,9 +15,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <!-- Bootstrap -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <!-- Favicon -->
-  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-  <!-- Leaflet CSS -->
+  <!-- Fontawesome -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
  crossorigin=""/>
@@ -41,10 +41,24 @@
         <img src="{{url_for('static', filename='biken.svg')}}" width="30" height="30" class="d-inline-block align-top" alt="biken-logo">
         Biken
       </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+       <span class="navbar-toggler-icon"></span>
+   </button>
+  <div class="collapse  navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mr-auto">
+      <div class="custom-control custom-switch py-2">
+        <input type="checkbox" name="checkbox-mode" class="custom-control-input" id="customSwitches">
+        <label class="custom-control-label" id="switch-type-label" for="customSwitches"></label>
+      </div>
+      <form class="form-inline" onsubmit="sendRequest();return false;">
+        <input class="form-control mr-sm-2" id="start" placeholder="Start">
+        <input class="form-control mr-sm-2" id="finish" placeholder="Destination" required>
+        <input class="form-control mr-sm-2" id="distance" placeholder="Distance" hidden>
+        <button class="btn btn-outline-success my-2 my-sm-0" >Search</button>
+      </form>
+    </ul>
+
+
     <ul class="navbar-nav ml-auto">
       {% if current_user.is_authenticated %}
 
@@ -79,6 +93,8 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 
+  <script src="../static/js/map.js" charset="utf-8"></script>
+  <script src="../static/js/main.js" charset="utf-8"></script>
 </body>
 
 </html>
