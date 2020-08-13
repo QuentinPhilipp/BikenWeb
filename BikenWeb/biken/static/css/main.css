@@ -32,10 +32,29 @@ body {
 #info-bottom {
   position: fixed;
   z-index: 100;
-  bottom: 0;
-  left: 0;
+  bottom: 10px;
   width: 100vw;
-  background: red;
+  margin:0;
+}
+
+#close-info-cross {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    border:none;
+    background: none;
+}
+
+.close-button {
+  color: rgb(171, 171, 171);
+}
+
+#info-container {
+  background: white;
+  border: 1px solid rgb(187, 187, 187);
+  border-radius: 15px;
+  box-shadow: 2px 2px 2px #888888;
+
 }
 
 /* #profile-name {

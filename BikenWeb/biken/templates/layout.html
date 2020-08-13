@@ -56,7 +56,7 @@
           <input class="form-control my-1  mr-sm-2" id="start" placeholder="Start">
           <input class="form-control my-1  mr-sm-2" id="finish" placeholder="Destination" required>
           <input class="form-control my-1  mr-sm-2" id="distance" placeholder="Distance" type="number" max="999" hidden>
-          <button class="btn btn-outline-success  mx-auto my-2 sm" >Search</button>
+          <button class="btn btn-outline-success  mx-auto my-2 sm" data-toggle="collapse" data-target=".navbar-collapse.show">Search</button>
         </form>
       </div>
     </ul>
@@ -67,7 +67,7 @@
 
       <div class="row text-center">
         {% if current_user.is_authenticated %}
-        <button class="nav-item btn btn-outline-success col" onclick="saveItinerary()">Save</button>
+        <button class="nav-item btn btn-outline-success col mx-4" onclick="saveItinerary()">Save</button>
         <li class="dropdown col">
           <a class="nav-link nav-item " href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="{{url_for('static', filename='profile_unknown.svg')}}" width="30" height="30" class="d-inline-block align-middle profile-pic" alt="profile_pic">

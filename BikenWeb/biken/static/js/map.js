@@ -138,7 +138,6 @@ function showSummary(data) {
 
   // Display the distance and calculation time
   document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+"km";
-  document.getElementById("itinerary-calculation-time").innerHTML ="Route calculated in: "+calculationTime+" s";
   document.getElementById("itinerary-time").innerHTML = "Estimated time: "+estimatedTime+" minutes";
 
 }
@@ -203,7 +202,12 @@ function displayStartFinish(pointList) {
   var corner2 = L.latLng(pointList[1].lat, pointList[1].lon);
   var bounds = L.latLngBounds(corner1, corner2);
 
-  mymap.flyToBounds(bounds);
+  // Padding to show the itiinerary even with the infos displayed
+  mymap.flyToBounds(bounds,{
+        animate: true,
+        duration: 1,
+        padding: [90,90]
+});
 }
 
 
