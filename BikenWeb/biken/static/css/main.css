@@ -2,15 +2,59 @@
 body {
   margin-left: 0;
   margin-top:0;
-  overflow-x: hidden;
+  overflow: hidden;
   background-color: rgb(196, 196, 196);
   font-family: 'Roboto', sans-serif;
 }
 
 #mapid {
+  position: relative;
   z-index: 0;
   height: 100vh;
   width: 100vw;
+}
+
+.dropdown-divider {
+  color: rgb(236, 0, 0) !important;
+  background: rgb(235, 226, 32) !important;
+  background-color: rgb(233, 14, 188) !important;
+}
+
+/* .warning-box {
+  position: fixed;
+  top:70px;
+  width: 100%;
+  background: rgb(14, 205, 142);
+  height: 100px;
+} */
+
+
+#info-bottom {
+  position: fixed;
+  z-index: 100;
+  bottom: 10px;
+  width: 100vw;
+  margin:0;
+}
+
+#close-info-cross {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    border:none;
+    background: none;
+}
+
+.close-button {
+  color: rgb(171, 171, 171);
+}
+
+#info-container {
+  background: white;
+  border: 1px solid rgb(187, 187, 187);
+  border-radius: 15px;
+  box-shadow: 2px 2px 2px #888888;
+
 }
 
 /* #profile-name {

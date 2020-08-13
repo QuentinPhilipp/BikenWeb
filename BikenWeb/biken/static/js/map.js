@@ -38,7 +38,6 @@ function geocode(location)
 }
 
 function saveItinerary() {
-  console.log(routeList);
 
   if (routeList.length==0) {
     alert("You need to create an itinerary before saving")
@@ -53,7 +52,7 @@ function saveItinerary() {
       $.post( "/api/1.0/save", {
           waypoints: JSON.stringify(route._latlngs),
           distance: currentDistance,
-          duration:currentDuration
+          duration:currentDuration,
       });
     }
 
@@ -66,8 +65,9 @@ function sendRequest() {
 
   var start = document.getElementById('start').value;
   var finish = document.getElementById('finish').value;
-  var distance = document.getElementById('distanceSlider').value;
+  var distance = document.getElementById('distance').value;
   var url = "";
+
 
   if (getRequestType()=="route")
   {
@@ -93,20 +93,8 @@ function sendRequest() {
 
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
-        console.log(dataItinerary.data.waypoints);
 
-        // Round the values
-        distance = (dataItinerary.distance/1000).toFixed(2);
-        calculationTime = dataItinerary.calculationTime.toFixed(5);
-
-        currentDistance=distance;
-        currentDuration=dataItinerary.duration;
-
-        // Display the distance and calculation time
-        document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-        document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
-        document.getElementById("total-distance").hidden=false;
-        document.getElementById("itineraryTime").hidden=false;
+        showSummary(dataItinerary);
 
       });
     }
@@ -125,20 +113,33 @@ function sendRequest() {
         // display the new route
         displayRoute(dataItinerary.data.waypoints);
 
-        // Round the values
-        distance = (dataItinerary.distance/1000).toFixed(2);
-        calculationTime = dataItinerary.calculationTime.toFixed(5);
+        showSummary(dataItinerary);
 
-        // Display the distance and calculation time
-        document.getElementById("total-distance").innerHTML = "Total distance : "+distance+"km";
-        document.getElementById("itineraryTime").innerHTML ="Route calculated in "+calculationTime+" s";
-        document.getElementById("total-distance").hidden=false;
-        document.getElementById("itineraryTime").hidden=false;
+
 
       });
     }
 
   });
+}
+
+function closeInfo() {
+  document.getElementById("info-bottom").hidden = true;
+}
+
+
+function showSummary(data) {
+  console.log(data);
+  document.getElementById("info-bottom").hidden = false;
+  // Round the values
+  distance = (data.distance/1000).toFixed(2);
+  calculationTime = data.calculationTime.toFixed(5);
+  estimatedTime = (data.duration/60).toFixed(0);
+
+  // Display the distance and calculation time
+  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+"km";
+  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+estimatedTime+" minutes";
+
 }
 
 
@@ -163,7 +164,6 @@ async function getLocations(location1,location2){
     let data2 = await response2.json();
 
     var coords = ""+data1[0].lat+","+data1[0].lon+";"+data2[0].lat+","+data2[0].lon;
-
     return coords;
   }
   else {
@@ -174,6 +174,7 @@ async function getLocations(location1,location2){
     let data1 = await response1.json();
     var coords = ""+data1[0].lat+","+data1[0].lon;
     return coords;
+
   }
 
 }
@@ -186,7 +187,6 @@ var polyline = L.polyline(waypoints, {
 }).addTo(mymap);
 routeList.push(polyline);
 
-console.log("RouteList after push:",routeList);
 }
 
 
@@ -202,12 +202,16 @@ function displayStartFinish(pointList) {
   var corner2 = L.latLng(pointList[1].lat, pointList[1].lon);
   var bounds = L.latLngBounds(corner1, corner2);
 
-  mymap.flyToBounds(bounds);
+  // Padding to show the itiinerary even with the infos displayed
+  mymap.flyToBounds(bounds,{
+        animate: true,
+        duration: 1,
+        padding: [90,90]
+});
 }
 
 
 function displayStart(point) {
-  console.log(point)
   var marker = L.marker([point[0], point[1]]).addTo(mymap);
   routeList.push(marker);
   var zoomPoint = L.latLng(point[0], point[1]);

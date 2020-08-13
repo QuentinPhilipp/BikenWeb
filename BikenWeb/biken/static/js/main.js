@@ -1,48 +1,36 @@
-function showSearchBar()
-{
-  var searchBar = document.getElementById("searchBar");
-  var searchToggleButton = document.getElementById("searchShowButton");
-  // showAnimation();
-  searchBar.style.display="block";
-  searchToggleButton.hidden=true;
-  console.log("Show");
-}
 
-function hideSearchBar()
-{
-  var searchBar = document.getElementById("searchBar");
-  var searchToggleButton = document.getElementById("searchShowButton");
-  searchBar.style.display="none";
-  searchToggleButton.hidden=false;
-  console.log("Hide");
-}
+$(document).ready(function() {
+
+  $('.submit_on_enter').keydown(function(event) {
+    // enter has keyCode = 13, change it if you want to use another button
+    if (event.keyCode == 13) {
+      this.form.submit();
+      return false;
+    }
+  });
+
+});
+
 
 $('input[name=checkbox-mode]').change(function(){
     if($(this).is(':checked')) {
-      document.getElementById("switch-type-label").innerHTML = "Route";
+      // document.getElementById("switch-type-label").innerHTML = "Route";
       document.getElementById("finish").hidden=true;
-      document.getElementById("distanceSlider").hidden=false;
-      document.getElementById("slider-value").hidden=false;
+      document.getElementById("finish").required=false;
+      document.getElementById("distance").hidden=false;
+      document.getElementById("distance").required=true;
 
     } else {
         // Checkbox is not checked..
-        document.getElementById("switch-type-label").innerHTML = "Itinerary";
+        // document.getElementById("switch-type-label").innerHTML = "Itinerary";
         document.getElementById("finish").value ="";
         document.getElementById("finish").hidden=false;
-        document.getElementById("distanceSlider").hidden=true;
-        document.getElementById("slider-value").hidden=true;
+        document.getElementById("finish").required=true;
+        document.getElementById("distance").hidden=true;
+        document.getElementById("distance").required=false;
 
     }
 });
-
-var slider = document.getElementById("distanceSlider");
-var output = document.getElementById("slider-value");
-output.innerHTML = slider.value + "km"; // Display the default slider value
-
-// Update the current slider value (each time you drag the slider handle)
-slider.oninput = function() {
-  output.innerHTML = this.value + "km";
-}
 
 
 function getRequestType()
