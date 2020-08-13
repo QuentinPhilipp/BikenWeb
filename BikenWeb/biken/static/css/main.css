@@ -14,6 +14,19 @@ body {
   width: 100vw;
 }
 
+.dropdown-divider {
+  color: rgb(236, 0, 0) !important;
+  background: rgb(235, 226, 32) !important;
+  background-color: rgb(233, 14, 188) !important;
+}
+
+/* .warning-box {
+  position: fixed;
+  top:70px;
+  width: 100%;
+  background: rgb(14, 205, 142);
+  height: 100px;
+} */
 
 
 #info-bottom {

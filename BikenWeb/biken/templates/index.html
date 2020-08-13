@@ -2,17 +2,21 @@
 
 {% block content %}
 
+
 <div id="mapid"></div>
 
 
-
-
-{% for message in get_flashed_messages() %}
-  <div class="alert alert-warning">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {{ message }}
-  </div>
-{% endfor %}
+<!-- <div class="warning-box">
+  {% for message in get_flashed_messages() %}
+    <script type="text/javascript">
+        alert("Flash")
+    </script>
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+    </div>
+  {% endfor %}
+</div> -->
 
 
 <div id="info-bottom" class="row text-center" hidden>
@@ -28,21 +32,27 @@
     <button type="button" name="button" class="btn btn-primary" onclick="closeInfo()">X</button>
   </div>
 </div>
+<script src="../static/js/map.js" charset="utf-8"></script>
 
 
 <script>
-  itineraryData = {{itinerary|tojson}};
 
-  if(itineraryData!=undefined) {
-    console.log(itineraryData);
-    displayRoute(itineraryData);
+  if ({{itinerary}}!=undefined)
+  {
+    console.log({{itinerary}});
+    itineraryData = {{itinerary|tojson}};
 
-    startPoint = {lat : itineraryData[0][0],lon : itineraryData[0][1]}
-    finishPoint = {lat : itineraryData[itineraryData.length -1][0],lon : itineraryData[itineraryData.length - 1][1]}
+    if(itineraryData!=undefined) {
+      console.log(itineraryData);
+      displayRoute(itineraryData);
 
-    pointList = [startPoint,finishPoint];
+      startPoint = {lat : itineraryData[0][0],lon : itineraryData[0][1]}
+      finishPoint = {lat : itineraryData[itineraryData.length -1][0],lon : itineraryData[itineraryData.length - 1][1]}
 
-    displayStartFinish(pointList);
+      pointList = [startPoint,finishPoint];
+
+      displayStartFinish(pointList);
+    }
   }
 </script>
 

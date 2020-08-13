@@ -42,8 +42,6 @@ def home():
             itinerary=None
 
     # itinerary="Test"
-
-
     return render_template(
         'index.html',
         title='Biken Home page',
@@ -104,6 +102,7 @@ def editName():
 @main_bp.route("/api/1.0/itineraries",methods=["DELETE"])
 @login_required
 def deleteItinerary():
+
     query_parameters = request.args
     itineraryID = query_parameters.get('itinerary')
     itinerary = Itinerary.query.filter_by(id=itineraryID).first();
@@ -126,6 +125,7 @@ def deleteItinerary():
 @main_bp.route("/api/1.0/save",methods=["POST"])
 @login_required
 def save():
+
     dataWaypoints = request.form['waypoints']
     distance = float(request.form['distance'])
     duration = float(request.form['duration'])
@@ -135,13 +135,21 @@ def save():
 
     if not dataWaypoints:
         flash('You need to create an itinerary before saving')
-        return "Error"
+        return render_template(
+            'index.html',
+            title='Biken Home page',
+            current_user=current_user,
+        )
 
+    print("Load waypoinst")
     waypoints = json.loads(dataWaypoints)
+    print("Done waypoinst")
 
     stringCoord = ""
     for waypoint in waypoints:
         stringCoord+=str(waypoint["lat"])+","+str(waypoint["lng"])+";"
+
+    itineraryRenderMap = utils.strToWaypoints(stringCoord)
 
     hash_object = hashlib.md5(stringCoord.encode())
 
@@ -160,13 +168,13 @@ def save():
         )
         db.session.add(itinerary)
         db.session.commit()  #
-        flash('Itinerary stored')
+
+
         print("Itinerary stored")
-        return '''OK'''
+        return "OK"
     else:
-        flash('Itinerary already stored')
         print("Itinerary already stored")
-        return "Error"
+        return "Fail"
 
 
 

@@ -52,7 +52,7 @@ function saveItinerary() {
       $.post( "/api/1.0/save", {
           waypoints: JSON.stringify(route._latlngs),
           distance: currentDistance,
-          duration:currentDuration
+          duration:currentDuration,
       });
     }
 
