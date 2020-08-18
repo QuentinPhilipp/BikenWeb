@@ -38,15 +38,24 @@
       <button type="button" class="btn btn-danger" name="button" onclick="deleteItinerary({{itinerary.itineraryIdentifier}})" >Delete</button>
     </div>
   </div>
+  <script src="../static/js/profile.js" charset="utf-8"></script>
+
   <script type="text/javascript">
-    console.log("{{itinerary.waypoints}}")
 
     var extractRegex = /((.+?),(.+?);)/g;
-    var extractedData = extractRegex.exec('{{itinerary.waypoints}}');
-    var longitude = extractedData[2]
-    var latitude = extractedData[3]
 
-    var mapPreview{{itinerary.itineraryIdentifier}} = L.map('mapPreview{{itinerary.itineraryIdentifier}}',{ zoomControl: false,dragging:false }).setView([longitude,latitude], 10);
+    var extractedData = strToWaypoints("{{itinerary.waypoints}}")
+
+    var longitudeStart = extractedData[0][0];
+    var latitudeStart = extractedData[0][1];
+
+    var longitudeEnd = extractedData[extractedData.length-1][0];
+    var latitudeEnd = extractedData[extractedData.length-1][1];
+
+    //Store start and end point
+    var pointList = [[longitudeStart,latitudeStart],[longitudeEnd,latitudeEnd]];
+
+    var mapPreview{{itinerary.itineraryIdentifier}} = L.map('mapPreview{{itinerary.itineraryIdentifier}}',{ zoomControl: false,dragging:false }).setView([longitudeStart,latitudeStart], 10);
 
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         maxZoom: 18,
@@ -55,6 +64,28 @@
         zoomOffset: -1,
         accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
     }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+
+    var route{{itinerary.itineraryIdentifier}} = L.polyline(extractedData, {
+      color: '#F67C5A',
+      weight:6
+    }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+
+
+    console.log("Point List :",pointList);
+
+    pointList.forEach((
+      point, i) => {
+        var marker = L.marker([point[0], point[1]]).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+    });
+
+    var corner1{{itinerary.itineraryIdentifier}} = L.latLng(pointList[0][0], pointList[0][1]);
+    var corner2{{itinerary.itineraryIdentifier}} = L.latLng(pointList[1][0], pointList[1][1]);
+    var bounds{{itinerary.itineraryIdentifier}} = L.latLngBounds(corner1{{itinerary.itineraryIdentifier}}, corner2{{itinerary.itineraryIdentifier}});
+
+    console.log(bounds{{itinerary.itineraryIdentifier}})
+
+    // Padding to show the itinerary even with the infos displayed
+    mapPreview{{itinerary.itineraryIdentifier}}.fitBounds(bounds{{itinerary.itineraryIdentifier}});
 
   </script>
 
@@ -66,7 +97,6 @@
 
 
 
-<script src="../static/js/profile.js" charset="utf-8"></script>
 
 
 

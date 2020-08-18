@@ -25,3 +25,19 @@ function deleteItinerary(itineraryID) {
    }
   })
 }
+
+
+
+function strToWaypoints(itineraryString) {
+  // transform a string of coords to a list of waypoints
+  var extractRegex = /((.+?),(.+?);)/g;
+  var waypointsList = [];
+  var result;
+  while((result = extractRegex.exec(itineraryString)) !== null) {
+      var coord = [result[2],result[3]];
+      waypointsList.push(coord);
+  }
+
+  return waypointsList
+
+}
