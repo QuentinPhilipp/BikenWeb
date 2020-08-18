@@ -60,7 +60,12 @@ class Itinerary(db.Model):
 	__tablename__ = 'itinerary'
 	id = db.Column(
 		db.Integer,
+        unique=True,
 		primary_key=True
+	)
+	itineraryIdentifier = db.Column(
+		db.String(16),
+        unique=True
 	)
 	hash = db.Column(
 		db.String(100),

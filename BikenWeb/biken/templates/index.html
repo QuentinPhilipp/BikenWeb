@@ -1,6 +1,9 @@
+
 {% extends "layout.html" %}
 
 {% block content %}
+
+
 
 
 <div id="mapid"></div>
@@ -22,36 +25,35 @@
   <div id="info-container" class="col-6" >
     <div class="row justify-content-center text-center">
       <div id="itinerary-distance" class="col-md-6 my-3 col-sm-12">
-        Distance : 55km
       </div>
       <div id="itinerary-time" class="col-md-6 my-3 col-sm-12">
-        Temps estimé : 156 minutes
       </div>
     </div>
     <button type="button" id="close-info-cross" name="button" onclick="closeInfo()"><i class="close-button fa-2x fa fa-times-circle"></i></button>
   </div>
 </div>
 
+
 <script src="../static/js/map.js" charset="utf-8"></script>
 
 
 <script>
 
-  if ({{itinerary}}!=undefined)
+  if ({{itinerary|tojson}}!=undefined)
   {
-    console.log({{itinerary}});
-    itineraryData = {{itinerary|tojson}};
+    console.log({{itinerary|tojson}});
+    itinerary = {{itinerary|tojson}};
 
-    if(itineraryData!=undefined) {
-      console.log(itineraryData);
-      displayRoute(itineraryData);
+    if(itinerary!=undefined) {
+      displayRoute(itinerary.waypoints);
 
-      startPoint = {lat : itineraryData[0][0],lon : itineraryData[0][1]}
-      finishPoint = {lat : itineraryData[itineraryData.length -1][0],lon : itineraryData[itineraryData.length - 1][1]}
+      startPoint = {lat : itinerary.waypoints[0][0],lon : itinerary.waypoints[0][1]}
+      finishPoint = {lat : itinerary.waypoints[itinerary.waypoints.length -1][0],lon : itinerary.waypoints[itinerary.waypoints.length - 1][1]}
 
       pointList = [startPoint,finishPoint];
 
       displayStartFinish(pointList);
+      showSummary(itinerary)
     }
   }
 </script>

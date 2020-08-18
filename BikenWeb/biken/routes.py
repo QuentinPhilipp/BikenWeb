@@ -27,19 +27,31 @@ def home():
     itineraryID = query_parameters.get('itinerary')
 
     if itineraryID==None :
-        itinerary=None
+        return render_template(
+            'index.html',
+            title='Biken Home page',
+            current_user=current_user,
+            itinerary=None
+        )
     else:
+        itinerary = {}
         # Load itinerary from db
-        itineraryObject = Itinerary.query.filter_by(id=itineraryID).first()
+        print("Look for Id:",itineraryID)
+        itineraryObject = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first()
 
         if itineraryObject:
-            itinerary=utils.strToWaypoints(itineraryObject.waypoints)
+            itinerary["waypoints"]=utils.strToWaypoints(itineraryObject.waypoints)
+            itinerary["distance"] = itineraryObject.distance
+            itinerary["duration"] = itineraryObject.duration
             # itinerary=itineraryObject.waypoints
 
-
-
         else:
-            itinerary=None
+            return render_template(
+                'index.html',
+                title='Biken Home page',
+                current_user=current_user,
+                itinerary=None
+            )
 
     # itinerary="Test"
     return render_template(
@@ -65,7 +77,6 @@ def profile():
 
     itineraries = Itinerary.query.filter_by(user_id=current_user.id).all()
 
-    print("Itineraries :",itineraries)
     return render_template(
         'profile.html',
         title='Biken - Your profile',
@@ -80,7 +91,7 @@ def editName():
     query_parameters = request.args
     itineraryID = query_parameters.get('itinerary')
 
-    itinerary = Itinerary.query.filter_by(id=itineraryID).first();
+    itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
     name = request.form['name']
 
     if itinerary.user_id==current_user.id:
@@ -105,10 +116,10 @@ def deleteItinerary():
 
     query_parameters = request.args
     itineraryID = query_parameters.get('itinerary')
-    itinerary = Itinerary.query.filter_by(id=itineraryID).first();
+    itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
 
     if itinerary.user_id==current_user.id:
-        Itinerary.query.filter_by(id=itineraryID).delete()
+        Itinerary.query.filter_by(itineraryIdentifier=itineraryID).delete()
         db.session.commit()
         print("Route deleted")
         return "Success"
@@ -158,12 +169,15 @@ def save():
     existingItinerary = Itinerary.query.filter_by(hash=hashValue,user_id=current_user.id).first()
 
     if not existingItinerary:
+        randomString = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+
         itinerary = Itinerary(
+            itineraryIdentifier=randomString,
             user_id=current_user.id,
             waypoints=stringCoord,
             hash=hashValue,
             distance=int(distance),
-            name= "Itinerary "+ ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)),
+            name= "Itinerary "+ randomString,
             duration=int(duration)
         )
         db.session.add(itinerary)
@@ -192,7 +206,7 @@ def api_itinerary():
     if start and finish:
         itinerary = routing.itinerary(start,finish,"bike")
 
-        val = {"type" : "itinerary","duration":itinerary["duration"],"distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "gps" : "false", "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
+        val = {"type" : "itinerary","duration":itinerary["duration"],"distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
 
         return jsonify(val)
 
@@ -218,11 +232,11 @@ def api_route():
     # If the start is an adress
     if start and distance:
         print("Route with distance")
-        route = routing.route(start,distance)
+        route = routing.route(start,distance,"bike")
         # print("Route :",route)
 
         startPosition= route["waypoints"][0]
-        val = {"type" : "route","distance":route["distance"],"calculationTime":route['calculationTime'], "gps" : "false", "data" : {"startName": "test", "startPos": startPosition, "waypoints":route["waypoints"]}}
+        val = {"type" : "route","distance":route["distance"],"duration":route["duration"],"calculationTime":route['calculationTime'], "data" : {"startName": "test", "startPos": startPosition, "waypoints":route["waypoints"]}}
 
         return jsonify(val)
 
