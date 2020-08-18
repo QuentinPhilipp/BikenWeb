@@ -70,7 +70,6 @@ def profile():
 
     itineraries = Itinerary.query.filter_by(user_id=current_user.id).all()
 
-    print("Itineraries :",itineraries)
     return render_template(
         'profile.html',
         title='Biken - Your profile',

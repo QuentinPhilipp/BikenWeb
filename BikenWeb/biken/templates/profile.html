@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 
 <!-- Error handling -->
   {% for message in get_flashed_messages() %}
@@ -9,29 +10,61 @@
       {{ message }}
     </div>
   {% endfor %}
-<div class="container">
-  <h1>Profile Page</h1>
 
-  <p>Hello {{current_user.name}}</p>
-
-  <h2>My saved itineraries</h2>
-    {% for itinerary in itineraries %}
-    <div class="row">
-      <div class="col-6" id="itinerary-name">
-        {{itinerary.name}}
-      </div>
-      <div class="col-2">
-        <a href="/home?itinerary={{itinerary.itineraryIdentifier}}" class="btn btn-primary">Load Itinerary</a>
-      </div>
-      <div class="col-2">
-        <button type="button" class="btn btn-primary" name="button" onclick="editName({{itinerary.itineraryIdentifier}})">Change Name</button>
-      </div>
-      <div class="col-2">
-        <button type="button" class="btn btn-danger" name="button" onclick="deleteItinerary({{itinerary.itineraryIdentifier}})" >Delete</button>
+<section id="profile">
+  <div class="container">
+    <div class="row py-4">
+      <div class="col-12 text-center">
+        <h1>Hello {{current_user.name}} !</h1>
       </div>
     </div>
-    {%endfor%}
-</div>
+
+    <h2 class="pt-4">My saved itineraries</h2>
+    <hr>
+
+  </div>
+  {% for itinerary in itineraries %}
+  <div class="row py-2 mx-3 justify-content-center itinerary-container">
+    <a href="/home?itinerary={{itinerary.itineraryIdentifier}}">
+      <div class="col mapPreview" id="mapPreview{{itinerary.itineraryIdentifier}}"></div>
+    </a>
+    <!-- <div class="col-3" id="itinerary-name">
+      {{itinerary.name}}
+    </div> -->
+    <div class="col">
+      <button type="button" class="btn btn-primary" name="button" onclick="editName({{itinerary.itineraryIdentifier}})">Change Name</button>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-danger" name="button" onclick="deleteItinerary({{itinerary.itineraryIdentifier}})" >Delete</button>
+    </div>
+  </div>
+  <script type="text/javascript">
+    console.log("{{itinerary.waypoints}}")
+
+    var extractRegex = /((.+?),(.+?);)/g;
+    var extractedData = extractRegex.exec('{{itinerary.waypoints}}');
+    var longitude = extractedData[2]
+    var latitude = extractedData[3]
+
+    var mapPreview{{itinerary.itineraryIdentifier}} = L.map('mapPreview{{itinerary.itineraryIdentifier}}',{ zoomControl: false,dragging:false }).setView([longitude,latitude], 10);
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        maxZoom: 18,
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
+    }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+
+  </script>
+
+
+  {%endfor%}
+
+
+</section>
+
+
 
 <script src="../static/js/profile.js" charset="utf-8"></script>
 

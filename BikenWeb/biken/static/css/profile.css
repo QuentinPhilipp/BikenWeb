@@ -1,0 +1,13 @@
+
+
+.itinerary-container {
+  background-color: white;
+  border-radius: 5px;
+  min-height: 300px;
+}
+
+
+.mapPreview {
+  height: 180px;
+  width: 180px;
+}
