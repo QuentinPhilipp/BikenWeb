@@ -52,7 +52,7 @@ function saveItinerary() {
       $.post( "/api/1.0/save", {
           waypoints: JSON.stringify(route._latlngs),
           distance: currentDistance,
-          duration:currentDuration,
+          duration: currentDuration,
       });
     }
 
@@ -131,17 +131,42 @@ function closeInfo() {
 function showSummary(data) {
   console.log(data);
   document.getElementById("info-bottom").hidden = false;
-  // Round the values
-  distance = (data.distance/1000).toFixed(2);
-  calculationTime = data.calculationTime.toFixed(5);
-  estimatedTime = (data.duration/60).toFixed(0);
+  var distance = data.distance;
+  var estimatedTime = data.duration;
+
+
+  currentDistance=distance;
+  currentDuration=estimatedTime;
 
   // Display the distance and calculation time
-  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+"km";
-  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+estimatedTime+" minutes";
+  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+" km";
+  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+timeConvert(estimatedTime);
 
 }
 
+
+function timeConvert(n) {
+var num = n;
+var hours = (num / 60);
+var rhours = Math.floor(hours);
+var minutes = (hours - rhours) * 60;
+var rminutes = Math.round(minutes);
+var str = "" + rhours;
+
+if (rhours>1) {
+  str += " hours and ";
+}
+else {
+  str += " hour and ";
+}
+if (rminutes>1) {
+  str += rminutes + " minutes";
+}
+else {
+  str += rminutes + "minute";
+}
+return str;
+}
 
 async function getItinerary(url){
   let response = await fetch(url);

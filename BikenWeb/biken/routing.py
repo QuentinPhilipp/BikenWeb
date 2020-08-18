@@ -23,7 +23,7 @@ def itinerary(startCoord,endCoord,mode) :
     endWaypoint = data['waypoints'][1]
 
 
-    print(f"\nDistance :{data['routes'][0]['distance']} meters")
+    print(f"\nDistance :{data['routes'][0]['distance']//1000} meters")
     print(f"\nDuration :{data['routes'][0]['duration']//60} minutes")
 
 
@@ -35,21 +35,22 @@ def itinerary(startCoord,endCoord,mode) :
     print("\nNumber of point in the path :",len(path))
 
 
+
     # Switch from lon,lat to lat,lon for leaflet
     returnedPath = [(coord[1], coord[0]) for coord in path]
     endTime = time.time()
     print(f"~~~~~~~~~~~~\nTime for the request : {endTime-startTime} seconds")
 
-    returnObject = {"waypoints":returnedPath,"duration":data['routes'][0]['duration'],"distance":data["routes"][0]['distance'],"calculationTime":endTime-startTime,"estimatedTime":0}
+    returnObject = {"waypoints":returnedPath,"duration":data['routes'][0]['duration']//60,"distance":round(data["routes"][0]['distance']/1000,2),"calculationTime":endTime-startTime,"estimatedTime":0}
 
     return returnObject
 
 
-def route(startPoint,distance) :
+def route(startPoint,distance,mode) :
     numberOfPoints = 5
     waypointList = generateCircle(startPoint,distance,numberOfPoints)
 
-    baseUrl = 'http://router.project-osrm.org/trip/v1/cycling/'
+    baseUrl = f'https://routing.openstreetmap.de/routed-{mode}/trip/v1/cycling/'
     for waypoint in waypointList:
         baseUrl += str(waypoint["lon"]) + "," + str(waypoint["lat"]) + ";"
 
@@ -69,7 +70,7 @@ def route(startPoint,distance) :
     # Switch from lon,lat to lat,lon for leaflet
     returnedPath = [(coord[1], coord[0]) for coord in path]
     endTime = time.time()
-    returnObject = {"waypoints":returnedPath,"distance":data["trips"][0]['distance'],"calculationTime":endTime-startTime}
+    returnObject = {"waypoints":returnedPath,"duration":data['trips'][0]['duration']//60,"distance": round(data["trips"][0]['distance']/1000,2),"calculationTime":endTime-startTime}
     return returnObject
 
 def generateCircle(start,distance,points):
