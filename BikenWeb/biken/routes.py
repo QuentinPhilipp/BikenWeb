@@ -27,15 +27,17 @@ def home():
     itineraryID = query_parameters.get('itinerary')
 
     if itineraryID==None :
-        itinerary=None
+        return render_template(
+            'index.html',
+            title='Biken Home page',
+            current_user=current_user,
+            itinerary=None
+        )
     else:
-
         itinerary = {}
         # Load itinerary from db
         print("Look for Id:",itineraryID)
         itineraryObject = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first()
-
-        print(itineraryObject.duration)
 
         if itineraryObject:
             itinerary["waypoints"]=utils.strToWaypoints(itineraryObject.waypoints)
@@ -44,7 +46,12 @@ def home():
             # itinerary=itineraryObject.waypoints
 
         else:
-            itinerary=None
+            return render_template(
+                'index.html',
+                title='Biken Home page',
+                current_user=current_user,
+                itinerary=None
+            )
 
     # itinerary="Test"
     return render_template(

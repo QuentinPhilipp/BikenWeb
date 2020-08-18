@@ -1,18 +1,22 @@
 
 function editName(itineraryID) {
   // Replace the name div with an input field
-  nameField = document.getElementById('itinerary-name');
-  console.log(nameField);
+
+  // If click on the edit button to confirm
+  if ($("#new-title").value != "") {
+    console.log("Validate with the button")
+    $("#name-form").submit();
+  }
 
 
+  var strID = "#activityName"+itineraryID;
   var url = "api/1.0/itineraries?itinerary="+itineraryID;
+  $( strID ).replaceWith( '<form id="name-form" method="POST" action='+url+'><input id="new-title" class="submit_on_enter" type="text" name="name" placeholder="New name"></form>' );
 
-  $( "#itinerary-name" ).replaceWith( '<form method="POST" action='+url+'><input class="submit_on_enter" type="text" name="name" placeholder="New name"></form>' );
+  $("#new-title").focus();
 
   //set the name
 }
-
-
 
 
 
@@ -23,7 +27,7 @@ function deleteItinerary(itineraryID) {
   success: function(response) {
      location.reload();
    }
-  })
+ });
 }
 
 
