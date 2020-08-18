@@ -24,6 +24,15 @@
 
     <script src="../static/js/profile.js" charset="utf-8"></script>
 
+
+    {% if not itineraries %}
+    <div class="text-center py-4">
+      <h2>You haven't saved any itinerary.</h2>
+      <p>To save an itinerary, just click on the save button in the menu bar when you have created an itinerary</p>
+    </div>
+
+    {% else %}
+
     {% for itinerary in itineraries %}
     <div class="row my-3 mx-3 py-3 justify-content-center itinerary-container">
       <a class="col-lg-6 col-sm-12" href="/home?itinerary={{itinerary.itineraryIdentifier}}">
@@ -131,6 +140,8 @@
     {%endfor%}
 
   </div>
+
+  {%endif%}
 
 
 
