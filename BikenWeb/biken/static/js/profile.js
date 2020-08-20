@@ -10,7 +10,7 @@ function editName(itineraryID) {
 
 
   var strID = "#activityName"+itineraryID;
-  var url = "api/1.0/itineraries?itinerary="+itineraryID;
+  var url = "itineraries?itinerary="+itineraryID;
   $( strID ).replaceWith( '<form id="name-form" method="POST" action='+url+'><input id="new-title" class="submit_on_enter" type="text" name="name" placeholder="New name"></form>' );
 
   $("#new-title").focus();
@@ -22,7 +22,7 @@ function editName(itineraryID) {
 
 function deleteItinerary(itineraryID) {
   $.ajax({
-  url: '/api/1.0/itineraries?itinerary='+itineraryID,
+  url: 'itineraries?itinerary='+itineraryID,
   method: 'DELETE',
   success: function(response) {
      location.reload();

@@ -85,7 +85,7 @@ def profile():
     )
 
 
-@main_bp.route("/api/1.0/itineraries",methods=["POST"])
+@main_bp.route("/itineraries",methods=["POST"])
 @login_required
 def editName():
     query_parameters = request.args
@@ -110,7 +110,7 @@ def editName():
         flash("You can't edit the itinerary of another person")
     return redirect(url_for("main_bp.profile"))
 
-@main_bp.route("/api/1.0/itineraries",methods=["DELETE"])
+@main_bp.route("/itineraries",methods=["DELETE"])
 @login_required
 def deleteItinerary():
 
@@ -133,7 +133,7 @@ def deleteItinerary():
 
 
 
-@main_bp.route("/api/1.0/save",methods=["POST"])
+@main_bp.route("/save",methods=["POST"])
 @login_required
 def save():
 
@@ -192,10 +192,12 @@ def save():
 
 
 
-@main_bp.route('/api/1.0/itinerary', methods=['GET'])
+@main_bp.route('/itinerary', methods=['GET'])
 def api_itinerary():
     query_parameters = request.args
     coords = query_parameters.get('coords')
+    render = query_parameters.get('render')
+
     # regular expression to extract the coords
     result = re.findall("(.+?),(.+?);(.+?),(.+?)$",coords)
     # The result come like this : [('48.9589708', '7.3350752', '49.0508729', '7.4254577')] and we need to create two dictionnary
@@ -205,10 +207,17 @@ def api_itinerary():
     # If the start/end are defined
     if start and finish:
         itinerary = routing.itinerary(start,finish,"bike")
-
-        val = {"type" : "itinerary","duration":itinerary["duration"],"distance":itinerary['distance'],"calculationTime":itinerary['calculationTime'], "data" : {"startPos": start , "finishPos": finish, "waypoints":itinerary["waypoints"]}}
-
-        return jsonify(val)
+        if render=='false':
+            # return only the data
+            return jsonify(itinerary)
+        else :
+            # Return the template
+            return render_template(
+                'index.html',
+                title='Biken Home page',
+                current_user=current_user,
+                itinerary=itinerary
+            )
 
     else :
         print("Bad request")
@@ -216,11 +225,13 @@ def api_itinerary():
         return jsonify(val)
 
 # Route
-@main_bp.route('/api/1.0/route', methods=['GET'])
+@main_bp.route('/route', methods=['GET'])
 def api_route():
     query_parameters = request.args
     startCoord = query_parameters.get('start')
     distance = query_parameters.get('distance')
+    render = query_parameters.get('render')
+
 
     # regular expression to extract the coords
     result = re.findall("(.+?),(.+?)$",startCoord)
@@ -231,14 +242,19 @@ def api_route():
     distance = float(distance) - float(distance)*0.1
     # If the start is an adress
     if start and distance:
-        print("Route with distance")
         route = routing.route(start,distance,"bike")
-        # print("Route :",route)
 
-        startPosition= route["waypoints"][0]
-        val = {"type" : "route","distance":route["distance"],"duration":route["duration"],"calculationTime":route['calculationTime'], "data" : {"startName": "test", "startPos": startPosition, "waypoints":route["waypoints"]}}
-
-        return jsonify(val)
+        if render=='false':
+            # return only the data
+            return jsonify(route)
+        else :
+            # Return the template
+            return render_template(
+                'index.html',
+                title='Biken Home page',
+                current_user=current_user,
+                itinerary=route
+            )
 
     else :
         print("Bad request")

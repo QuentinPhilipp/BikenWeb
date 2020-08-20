@@ -35,13 +35,13 @@
 
 
 <script src="../static/js/map.js" charset="utf-8"></script>
+<script src="../static/js/main.js" charset="utf-8"></script>
 
 
 <script>
 
   if ({{itinerary|tojson}}!=undefined)
   {
-    console.log({{itinerary|tojson}});
     itinerary = {{itinerary|tojson}};
 
     if(itinerary!=undefined) {
@@ -56,8 +56,8 @@
         displayStartFinish(pointList);
       }
       else {
-        displayStart(startPoint);
-        
+        displayMarker(startPoint);
+
         // Fit the itinerary in the screen
         fitItinerary(itinerary.waypoints);
       }
