@@ -37,176 +37,7 @@ function geocode(location)
   xhttp.send();
 }
 
-function saveItinerary() {
 
-  if (routeList.length==0) {
-    alert("You need to create an itinerary before saving")
-  }
-
-  routeList.forEach((route, i) => {
-
-    if (route._path!=undefined) {
-      console.log(route._latlngs);
-
-      var waypointsList = ["12;23","45;56","78;91"];
-      $.post( "/api/1.0/save", {
-          waypoints: JSON.stringify(route._latlngs),
-          distance: currentDistance,
-          duration: currentDuration,
-      });
-    }
-
-  });
-
-}
-
-
-function sendRequest() {
-
-  var start = document.getElementById('start').value;
-  var finish = document.getElementById('finish').value;
-  var distance = document.getElementById('distance').value;
-  var url = "";
-
-
-  if (getRequestType()=="route")
-  {
-    finish = "None";
-  }
-
-
-  getLocations(start,finish).then(data =>  {
-    // check if itinerary or route
-
-    if (getRequestType()=="itinerary")
-    {
-      url = "api/1.0/itinerary?coords="+data;
-      getItinerary(url).then(dataItinerary => {
-
-        // Remove old routes
-        routeList.forEach((route, i) => {
-              route.remove();
-        });
-
-        // display the cursor at the start and finish position
-        displayStartFinish([dataItinerary.data.startPos,dataItinerary.data.finishPos]);
-
-        // display the new route
-        displayRoute(dataItinerary.data.waypoints);
-
-
-
-        showSummary(dataItinerary);
-
-      });
-    }
-    else {
-      url = "api/1.0/route?start="+data+"&distance="+distance;
-      // console.log('Not implemented',url);
-      getItinerary(url).then(dataItinerary => {
-
-        // Remove old routes
-        routeList.forEach((route, i) => {
-              route.remove();
-        });
-
-        // Display start point
-        startPoint = {lat : dataItinerary.data.waypoints[0][0],lon : dataItinerary.data.waypoints[0][1]}
-        displayStart(startPoint)
-        // display the new route
-        displayRoute(dataItinerary.data.waypoints);
-
-        showSummary(dataItinerary);
-
-        // Fit the itinerary in the screen
-        fitItinerary(dataItinerary.data.waypoints);
-
-      });
-    }
-
-  });
-}
-
-function closeInfo() {
-  document.getElementById("info-bottom").hidden = true;
-}
-
-
-function showSummary(data) {
-  console.log(data);
-  document.getElementById("info-bottom").hidden = false;
-  var distance = data.distance;
-  var estimatedTime = data.duration;
-
-
-  currentDistance=distance;
-  currentDuration=estimatedTime;
-
-  // Display the distance and calculation time
-  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+" km";
-  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+timeConvert(estimatedTime);
-
-}
-
-
-function timeConvert(n) {
-var num = n;
-var hours = (num / 60);
-var rhours = Math.floor(hours);
-var minutes = (hours - rhours) * 60;
-var rminutes = Math.round(minutes);
-var str = "" + rhours;
-
-if (rhours>1) {
-  str += " hours and ";
-}
-else {
-  str += " hour and ";
-}
-if (rminutes>1) {
-  str += rminutes + " minutes";
-}
-else {
-  str += rminutes + "minute";
-}
-return str;
-}
-
-async function getItinerary(url){
-  let response = await fetch(url);
-
-  let data = await response.json();
-
-  return data
-}
-
-
-async function getLocations(location1,location2){
-  if (location2 != "None") {
-    var endpoint = "https://nominatim.openstreetmap.org/search/";
-    var query1 = endpoint+location1+"?format=json&limit=1";
-    var query2 = endpoint+location2+"?format=json&limit=1";
-    let response1 = await fetch(query1);
-    let response2 = await fetch(query2);
-
-    let data1 = await response1.json();
-    let data2 = await response2.json();
-
-    var coords = ""+data1[0].lat+","+data1[0].lon+";"+data2[0].lat+","+data2[0].lon;
-    return coords;
-  }
-  else {
-    // Route mode
-    var endpoint = "https://nominatim.openstreetmap.org/search/";
-    var query1 = endpoint+location1+"?format=json&limit=1";
-    let response1 = await fetch(query1);
-    let data1 = await response1.json();
-    var coords = ""+data1[0].lat+","+data1[0].lon;
-    return coords;
-
-  }
-
-}
 
 
 function displayRoute(waypoints) {
@@ -240,10 +71,10 @@ function displayStartFinish(pointList) {
 }
 
 
-function displayStart(point) {
+function displayMarker(point) {
+  console.log(point);
   var marker = L.marker([point.lat, point.lon]).addTo(mymap);
   routeList.push(marker);
-
 }
 
 function addKmToLatitude(originalLat,kmToAdd) {
@@ -259,16 +90,10 @@ function addKmToLongitude(originalLat,originalLon,kmToAdd) {
 
 function fitItinerary(waypoints) {
   //Fit an itinerary on the screen
-  console.log("Fit",waypoints);
-
 
 
   // Get 6 points splited on the itinerary
-
   var waypointsLen = waypoints.length;
-
-  console.log("waypoints :",waypointsLen);
-
   var coords0 = waypoints[0];
   var coords1 = waypoints[parseInt(waypointsLen/6)];
   var coords2 = waypoints[parseInt(2*waypointsLen/6)];
@@ -276,24 +101,10 @@ function fitItinerary(waypoints) {
   var coords4 = waypoints[parseInt(4*waypointsLen/6)];
   var coords5 = waypoints[parseInt(5*waypointsLen/6)];
 
-
-  // var marker0 = L.marker([coords0[0], coords0[1]]).addTo(mymap);
-  // var marker1 = L.marker([coords1[0], coords1[1]]).addTo(mymap);
-  // var marker2 = L.marker([coords2[0], coords2[1]]).addTo(mymap);
-  // var marker3 = L.marker([coords3[0], coords3[1]]).addTo(mymap);
-  // var marker4 = L.marker([coords4[0], coords4[1]]).addTo(mymap);
-  // var marker5 = L.marker([coords5[0], coords5[1]]).addTo(mymap);
-
-
   //get the max distance between all the coords
   var distance1 = distance(coords0[0],coords0[1],coords3[0],coords3[1]);
   var distance2 = distance(coords1[0],coords1[1],coords4[0],coords4[1]);
   var distance3 = distance(coords2[0],coords2[1],coords5[0],coords5[1]);
-
-  console.log("Distance 1:",distance1);
-  console.log("Distance 2:",distance2);
-  console.log("Distance 3:",distance3);
-
 
   if (distance1>distance2 && distance1>distance3) {
     var corner1 = L.latLng(coords0[0], coords0[1]);
@@ -308,7 +119,6 @@ function fitItinerary(waypoints) {
     var corner2 = L.latLng(coords5[0],coords5[1]);
   }
 
-
   var bounds = L.latLngBounds(corner1, corner2);
 
   // Padding to show the itiinerary even with the infos displayed
@@ -317,10 +127,6 @@ function fitItinerary(waypoints) {
         duration: 1,
         padding: [90,90]
 });
-
-  // var corner1 = L.latLng(pointList[0].lat, pointList[0].lon);
-  // var corner2 = L.latLng(pointList[1].lat, pointList[1].lon);
-  // var bounds = L.latLngBounds(corner1, corner2);
 
 }
 

@@ -44,3 +44,192 @@ function getRequestType()
   }
 
 }
+
+
+function saveItinerary() {
+
+  if (routeList.length==0) {
+    alert("You need to create an itinerary before saving")
+  }
+
+  routeList.forEach((route, i) => {
+
+    if (route._path!=undefined) {
+      console.log(route._latlngs);
+
+      var waypointsList = ["12;23","45;56","78;91"];
+      $.post( "/api/1.0/save", {
+          waypoints: JSON.stringify(route._latlngs),
+          distance: currentDistance,
+          duration: currentDuration,
+      });
+    }
+
+  });
+
+}
+
+
+function sendRequest() {
+
+  var start = document.getElementById('start').value;
+  var finish = document.getElementById('finish').value;
+  var distance = document.getElementById('distance').value;
+  var url = "";
+
+
+  if (getRequestType()=="route")
+  {
+    finish = "None";
+  }
+
+
+  getLocations(start,finish).then(data =>  {
+    // check if itinerary or route
+
+    if (getRequestType()=="itinerary")
+    {
+      if (window.location.pathname=="/" || window.location.pathname=="/home") {
+        url = "itinerary?coords="+data+"&render=false";
+        getItinerary(url).then(dataItinerary => {
+
+          // Remove old routes
+          routeList.forEach((route, i) => {
+                route.remove();
+          });
+          // display the cursor at the start and finish position
+          var start = {"lat":dataItinerary.waypoints[0][0],"lon":dataItinerary.waypoints[0][1]}
+          var finish = {"lat":dataItinerary.waypoints[dataItinerary.waypoints.length-1][0],"lon":dataItinerary.waypoints[dataItinerary.waypoints.length-1][1]}
+
+          displayStartFinish([start,finish]);
+
+          // display the new route
+          displayRoute(dataItinerary.waypoints);
+          showSummary(dataItinerary);
+        });
+      }
+      else {
+        url = "itinerary?coords="+data+"&render=true";
+        window.location.href=url;
+      }
+
+      //
+      // url = "itinerary?coords="+data;
+      // window.location.href = url;
+
+
+    }
+    else {
+      if (window.location.pathname=="/" || window.location.pathname=="/home") {
+        url = "route?start="+data+"&distance="+distance+"&render=false";
+        // console.log('Not implemented',url);
+        getItinerary(url).then(dataItinerary => {
+
+          // Remove old routes
+          routeList.forEach((route, i) => {
+                route.remove();
+          });
+
+          // Display start point
+          var start = {"lat":dataItinerary.waypoints[0][0],"lon":dataItinerary.waypoints[0][1]}
+          displayMarker(start)
+          // display the new route
+          displayRoute(dataItinerary.waypoints);
+
+          showSummary(dataItinerary);
+
+          // Fit the itinerary in the screen
+          fitItinerary(dataItinerary.waypoints);
+
+        });
+      }
+      else {
+        url = "route?start="+data+"&distance="+distance+"&render=true";
+        window.location.href=url;
+      }
+
+    }
+
+  });
+}
+
+function closeInfo() {
+  document.getElementById("info-bottom").hidden = true;
+}
+
+
+function showSummary(data) {
+  console.log(data);
+  document.getElementById("info-bottom").hidden = false;
+  var distance = data.distance;
+  var estimatedTime = data.duration;
+
+
+  currentDistance=distance;
+  currentDuration=estimatedTime;
+
+  // Display the distance and calculation time
+  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+" km";
+  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+timeConvert(estimatedTime);
+
+}
+
+
+function timeConvert(n) {
+var num = n;
+var hours = (num / 60);
+var rhours = Math.floor(hours);
+var minutes = (hours - rhours) * 60;
+var rminutes = Math.round(minutes);
+var str = "" + rhours;
+
+if (rhours>1) {
+  str += " hours and ";
+}
+else {
+  str += " hour and ";
+}
+if (rminutes>1) {
+  str += rminutes + " minutes";
+}
+else {
+  str += rminutes + "minute";
+}
+return str;
+}
+
+async function getItinerary(url){
+  let response = await fetch(url);
+
+  let data = await response.json();
+
+  return data
+}
+
+
+async function getLocations(location1,location2){
+  if (location2 != "None") {
+    var endpoint = "https://nominatim.openstreetmap.org/search/";
+    var query1 = endpoint+location1+"?format=json&limit=1";
+    var query2 = endpoint+location2+"?format=json&limit=1";
+    let response1 = await fetch(query1);
+    let response2 = await fetch(query2);
+
+    let data1 = await response1.json();
+    let data2 = await response2.json();
+
+    var coords = ""+data1[0].lat+","+data1[0].lon+";"+data2[0].lat+","+data2[0].lon;
+    return coords;
+  }
+  else {
+    // Route mode
+    var endpoint = "https://nominatim.openstreetmap.org/search/";
+    var query1 = endpoint+location1+"?format=json&limit=1";
+    let response1 = await fetch(query1);
+    let data1 = await response1.json();
+    var coords = ""+data1[0].lat+","+data1[0].lon;
+    return coords;
+
+  }
+
+}
