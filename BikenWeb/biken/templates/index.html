@@ -52,7 +52,16 @@
 
       pointList = [startPoint,finishPoint];
 
-      displayStartFinish(pointList);
+      if (startPoint.lat!=finishPoint.lat &&  startPoint.lon!=finishPoint.lon) {
+        displayStartFinish(pointList);
+      }
+      else {
+        displayStart(startPoint);
+        
+        // Fit the itinerary in the screen
+        fitItinerary(itinerary.waypoints);
+      }
+
       showSummary(itinerary)
     }
   }
