@@ -42,7 +42,7 @@
     {% endif %}
 
 
-    <p class="text-center login-title">Log In</p>
+    <p class="text-center login-title">Sign Up</p>
     <div class="text-center">
       <img src="{{ url_for('static', filename='biken.svg') }}" width="100px" height="100px" class="logo" alt="logo"/>
     </div>
@@ -73,8 +73,32 @@
       <!-- <div class="submit-button">
         {{ form.submit }}
       </div> -->
-      <input type="submit" class="logbtn" value="Login">
+      <input type="submit" class="logbtn" value="Sign Up">
     </form>
+    <div class="pt-2 ">
+      <div id="my-signin2"></div>
+      <script>
+        function onSuccess(googleUser) {
+          console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+        }
+        function onFailure(error) {
+          console.log(error);
+        }
+        function renderButton() {
+          gapi.signin2.render('my-signin2', {
+            'scope': 'profile email',
+            'width': 240,
+            'height': 50,
+            'longtitle': true,
+            'theme': 'dark',
+            'onsuccess': onSuccess,
+            'onfailure': onFailure
+          });
+        }
+      </script>
+
+      <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+    </div>
 
     <div class="login-signup text-center">
       <span>Already have an account? <a href="{{ url_for('auth_bp.login') }}">Log in.</a></span>
