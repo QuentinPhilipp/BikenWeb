@@ -1,0 +1,71 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+
+
+<div id="mapid"></div>
+
+
+<!-- <div class="warning-box">
+  {% for message in get_flashed_messages() %}
+    <script type="text/javascript">
+        alert("Flash")
+    </script>
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+    </div>
+  {% endfor %}
+</div> -->
+
+<div class="row justify-content-center" id="info-bottom" hidden>
+  <div id="info-container" class="col-6" >
+    <div class="row justify-content-center text-center">
+      <div id="itinerary-distance" class="col-md-6 my-3 col-sm-12">
+      </div>
+      <div id="itinerary-time" class="col-md-6 my-3 col-sm-12">
+      </div>
+    </div>
+    <button type="button" id="close-info-cross" name="button" onclick="closeInfo()"><i class="close-button fa-2x fa fa-times-circle"></i></button>
+  </div>
+</div>
+
+
+<script src="../static/js/map.js" charset="utf-8"></script>
+<script src="../static/js/main.js" charset="utf-8"></script>
+
+
+<script>
+
+  if ({{itinerary|tojson}}!=undefined)
+  {
+    itinerary = {{itinerary|tojson}};
+
+    if(itinerary!=undefined) {
+      displayRoute(itinerary.waypoints);
+
+      startPoint = {lat : itinerary.waypoints[0][0],lon : itinerary.waypoints[0][1]}
+      finishPoint = {lat : itinerary.waypoints[itinerary.waypoints.length -1][0],lon : itinerary.waypoints[itinerary.waypoints.length - 1][1]}
+
+      pointList = [startPoint,finishPoint];
+
+      if (startPoint.lat!=finishPoint.lat &&  startPoint.lon!=finishPoint.lon) {
+        displayStartFinish(pointList);
+      }
+      else {
+        displayMarker(startPoint);
+
+        // Fit the itinerary in the screen
+        fitItinerary(itinerary.waypoints);
+      }
+
+      showSummary(itinerary)
+    }
+  }
+</script>
+
+
+{% endblock %}

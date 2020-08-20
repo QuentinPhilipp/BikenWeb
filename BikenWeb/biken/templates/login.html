@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+
+<div class="login-form">
+
+<!-- Error handling -->
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+    </div>
+  {% endfor %}
+  {% if form.email.errors %}
+    <div class="alert alert-warning">
+      {% for error in form.email.errors %}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ error }}{% endfor %}
+    </div>
+  {% endif %}
+  {% if form.password.errors %}
+    <div class="alert alert-warning">
+      {% for error in form.password.errors %}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ error }}{% endfor %}
+    </div>
+  {% endif %}
+
+
+
+  <p class="text-center login-title">Log In</p>
+  <div class="text-center">
+    <img src="{{ url_for('static', filename='biken.svg') }}" width="100px" height="100px" class="logo" alt="logo"/>
+  </div>
+
+  <form method="POST" action="/login">
+    {{ form.csrf_token }}
+
+    <fieldset class="email txtb">
+      {{ form.email.label }}
+      {{ form.email(placeholder='youremail@example.com') }}
+    </fieldset>
+
+    <fieldset class="password txtb">
+      {{ form.password.label }}
+      {{ form.password }}
+    </fieldset>
+
+    <!-- <div class="logbtn">
+      {{ form.submit }}
+    </div> -->
+    <input type="submit" class="logbtn" value="Login">
+
+
+    <div class="login-signup text-center">
+      <span>Don't have an account? <a href="{{ url_for('auth_bp.signup') }}">Sign up.</a></span>
+    </div>
+
+  </form>
+
+  <script type="text/javascript">
+  $(".txtb input").on("focus",function(){
+    $(this).addClass("focus");
+  });
+
+  $(".txtb input").on("blur",function(){
+    if($(this).val() == "")
+    $(this).removeClass("focus");
+  });
+  </script>
+
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}

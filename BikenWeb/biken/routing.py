@@ -3,7 +3,7 @@ import json
 import time
 from math import pi,cos,sin,radians
 import random
-import utils
+import biken.utils as utils
 
 
 def itinerary(startCoord,endCoord,mode) :
@@ -14,7 +14,7 @@ def itinerary(startCoord,endCoord,mode) :
 
     startTime = time.time()
 
-    url = f"https://routing.openstreetmap.de/routed-{mode}/route/v1/driving/{startLon},{startLat};{endLon},{endLat}?overview=false&alternatives=false&steps=true&geometries=geojson"
+    url = f"https://routing.openstreetmap.de/routed-{mode}/route/v1/cycling/{startLon},{startLat};{endLon},{endLat}?overview=false&alternatives=false&steps=true&geometries=geojson"
     print("Url:",url)
 
     r = requests.get(url)
@@ -23,7 +23,7 @@ def itinerary(startCoord,endCoord,mode) :
     endWaypoint = data['waypoints'][1]
 
 
-    print(f"\nDistance :{data['routes'][0]['distance']} meters")
+    print(f"\nDistance :{data['routes'][0]['distance']//1000} meters")
     print(f"\nDuration :{data['routes'][0]['duration']//60} minutes")
 
 
@@ -35,21 +35,22 @@ def itinerary(startCoord,endCoord,mode) :
     print("\nNumber of point in the path :",len(path))
 
 
+
     # Switch from lon,lat to lat,lon for leaflet
     returnedPath = [(coord[1], coord[0]) for coord in path]
     endTime = time.time()
     print(f"~~~~~~~~~~~~\nTime for the request : {endTime-startTime} seconds")
 
-    returnObject = {"waypoints":returnedPath,"distance":data["routes"][0]['distance'],"calculationTime":endTime-startTime,"estimatedTime":0}
+    returnObject = {"waypoints":returnedPath,"duration":data['routes'][0]['duration']//60,"distance":round(data["routes"][0]['distance']/1000,2),"calculationTime":endTime-startTime,"estimatedTime":0}
 
     return returnObject
 
 
-def route(startPoint,distance) :
+def route(startPoint,distance,mode) :
     numberOfPoints = 5
     waypointList = generateCircle(startPoint,distance,numberOfPoints)
 
-    baseUrl = 'http://router.project-osrm.org/trip/v1/cycling/'
+    baseUrl = f'https://routing.openstreetmap.de/routed-{mode}/trip/v1/cycling/'
     for waypoint in waypointList:
         baseUrl += str(waypoint["lon"]) + "," + str(waypoint["lat"]) + ";"
 
@@ -62,15 +63,83 @@ def route(startPoint,distance) :
     r = requests.get(url)
     data = r.json()
     path = []
+
+    waypointsIndex = []
+
     for leg in data['trips'][0]["legs"]:
+        indexStart=0
         for step in leg["steps"]:
             path += step["geometry"]["coordinates"]
+            indexStart += len(step["geometry"]["coordinates"])
+        waypointsIndex.append(indexStart)
     #       print(path)
     # Switch from lon,lat to lat,lon for leaflet
     returnedPath = [(coord[1], coord[0]) for coord in path]
+
+
+    # Check U-turn on the roads
+    returnedPath = removeUturn(returnedPath);
+
+
     endTime = time.time()
-    returnObject = {"waypoints":returnedPath,"distance":data["trips"][0]['distance'],"calculationTime":endTime-startTime}
+    returnObject = {"waypoints":returnedPath,"duration":data['trips'][0]['duration']//60,"distance": round(data["trips"][0]['distance']/1000,2),"calculationTime":endTime-startTime}
     return returnObject
+
+
+
+
+
+def removeUturn(coordsList):
+    # Need to check if two adjacents points are the same;
+
+    verified = False
+    bufferSize=10;
+
+
+    while not verified:
+        for i,point in enumerate(coordsList[:-2]):
+            # print("point:",coordsList[i],"point+1:",coordsList[i+1],"point+2:",coordsList[i+2])
+
+
+            minIndex = i-bufferSize
+            if minIndex<0:
+                minIndex = 0
+
+            # Update buffer with last 20 points
+            bufferPoint = coordsList[minIndex:i+2]
+
+            if coordsList[i+2] in bufferPoint:
+                ind = bufferPoint.index(coordsList[i+2])
+                removeLow = i-(bufferSize-ind)
+                removeHigh = i+2
+                removedList = coordsList[removeLow:removeHigh]
+                del coordsList[removeLow:removeHigh]
+                break
+
+            if coordsList[i]==coordsList[i+2] :
+                # config XYX
+                # remove the point Y to have two identical point next to each other
+                coordsList.remove(coordsList[i+1])
+                break
+
+            elif coordsList[i]==coordsList[i+1] :
+                # config XYYX
+                # Remove the two Y only if the next one are different
+                if (coordsList[i-1]!=coordsList[i+2]):
+                     # XYYZ -> XYZ
+                    coordsList.remove(coordsList[i])
+                else:
+                    # XYYX -> XX
+                    coordsList.remove(coordsList[i+1])
+                    coordsList.remove(coordsList[i])
+                break
+        else:
+            verified=True
+
+    return coordsList
+
+
+
 
 def generateCircle(start,distance,points):
     # Generate a circle for the route
@@ -86,9 +155,10 @@ def generateCircle(start,distance,points):
         waypointList = []   #clear the list
         isDirectionOk = True  #reset for another  test
 
-        maxValue = 360;
+        maxValue = 360
         direction = int(random.random()*maxValue)
         print("direction : ", direction)
+
 
         startAngle = direction-180;
         #set startAngle (180 - angle of direction)
@@ -106,7 +176,7 @@ def generateCircle(start,distance,points):
 
 
     coord = addKmWithAngle(radius,startAngle,centerPoint)
-    waypointList.append(coord)            #adding startNode to close the route
+    # waypointList.append(coord)            #adding startNode to close the route
 
     return waypointList
 
@@ -133,4 +203,27 @@ if __name__ == '__main__':
 
     # itinerary(start,end,"bike")
 
-    route(start,50)
+    # route(start,50)
+
+    # coordsList = ["G","E","D","C","B","A","B","C","D","F","H"]
+    # coordsList = ["G","E","D","C","B","A","A","B","C","D","F","H"]
+    coordsList = ["X","W","V","U","T","S","R","Q","P","O","N","M","L","K","I","G","F","E","C","B","A","D","E","F","H","J"]
+    removeUturn(coordsList)
+    print(coordsList)
+
+
+
+
+# Precision GPS
+# decimal  degrees    distance
+# places
+# -------------------------------
+# 0        1.0        111 km
+# 1        0.1        11.1 km
+# 2        0.01       1.11 km
+# 3        0.001      111 m
+# 4        0.0001     11.1 m
+# 5        0.00001    1.11 m
+# 6        0.000001   0.111 m
+# 7        0.0000001  1.11 cm
+# 8        0.00000001 1.11 mm

@@ -6,19 +6,26 @@ Web version of Biken in Python using Flask. Biken was a school project of pathfi
 
 # Development instruction
 
+
 Install requirements.
 > pip3 install -r requirements.txt
 
-To start the server, execute
-> python3 server/app.py
+Get the .env file with the API keys and app secrets.
 
-The local web interface is located in http://127.0.0.1:6001
+To start the server, execute
+> ./start.sh
+
+The local web interface is located in http://127.0.0.1:5000
+
+# Website 
+
+The website is hosted at http://bikenapp.com/. Feel free to open an issue if you find a bug and i'll try to patch it.
 
 # Next features
 
-Authenticate with google.
+Possibility to save itinerary/routes. (WIP)
 
-Possibility to save itinerary/routes.
+Authenticate with google.
 
 Export/Import GPX files (GPS files).
 

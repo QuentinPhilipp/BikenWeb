@@ -1,0 +1,183 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+
+<!-- Error handling -->
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+    </div>
+  {% endfor %}
+
+<section id="profile">
+  <div class="container">
+    <div class="row py-4">
+      <div class="col-12 text-center">
+        <h1>Hi {{current_user.name}} !</h1>
+      </div>
+    </div>
+
+    <h2 class="pt-4">Your itineraries</h2>
+    <hr>
+
+    <script src="../static/js/profile.js" charset="utf-8"></script>
+
+
+    {% if not itineraries %}
+    <div class="text-center py-4">
+      <h2>You haven't saved any itinerary.</h2>
+      <p>To save an itinerary, just click on the save button in the menu bar when you have created an itinerary</p>
+    </div>
+
+    {% else %}
+
+    {% for itinerary in itineraries %}
+    <div class="row my-3 mx-3 py-3 justify-content-center itinerary-container">
+      <a class="col-lg-6 col-sm-12" href="/home?itinerary={{itinerary.itineraryIdentifier}}">
+        <div class="mapPreview" id="mapPreview{{itinerary.itineraryIdentifier}}"></div>
+      </a>
+      <div class="info-container text-center col-lg-6 col-sm-12">
+
+        <div id="header-row" class="row pt-2 justify-content-center">
+          <div class="col">
+            <h3 id="activityName{{itinerary.itineraryIdentifier}}">{{itinerary.name}}</h3>
+          </div>
+        </div>
+
+        <div id="stat-row" class="row justify-content-center">
+
+            <div class=" text-left info-detail">
+              <div class="label-up">Distance</div>
+              <b class="info">{{itinerary.distance}} km</b>
+          </div>
+
+          <div class=" text-left info-detail">
+            <div class="label-up">Durée</div>
+            <b class="info">{{itinerary.duration//60}} hour(s) and {{itinerary.duration%60}} minute(s) </b>
+          </div>
+
+
+        </div>
+
+        <hr>
+
+        <div id="button-row" class="row justify-content-center">
+
+          <div class="col">
+            <button type="button" class="btn btn-primary" name="button" onclick="editName('{{itinerary.itineraryIdentifier}}')">Change Name</button>
+          </div>
+
+          <div class="col">
+            <button type="button" class="btn btn-danger" name="button" onclick="deleteItinerary('{{itinerary.itineraryIdentifier}}')">Delete</button>
+          </div>
+
+        </div>
+      </div>
+
+
+    </div>
+
+    <script type="text/javascript">
+
+      var extractRegex = /((.+?),(.+?);)/g;
+
+      var extractedData = strToWaypoints("{{itinerary.waypoints}}")
+
+      var longitudeStart = extractedData[0][0];
+      var latitudeStart = extractedData[0][1];
+
+      var longitudeEnd = extractedData[extractedData.length-1][0];
+      var latitudeEnd = extractedData[extractedData.length-1][1];
+
+      //Store start and end point
+      var pointList = [[longitudeStart,latitudeStart],[longitudeEnd,latitudeEnd]];
+
+      var mapPreview{{itinerary.itineraryIdentifier}} = L.map('mapPreview{{itinerary.itineraryIdentifier}}',{ zoomControl: false,dragging:false }).setView([longitudeStart,latitudeStart], 10);
+
+      L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 18,
+          id: 'mapbox/streets-v11',
+          tileSize: 512,
+          zoomOffset: -1,
+          accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
+      }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+
+      var route{{itinerary.itineraryIdentifier}} = L.polyline(extractedData, {
+        color: '#F67C5A',
+        weight:6
+      }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+
+
+      console.log("Point List :",pointList);
+
+      if ((pointList[0][0]!=pointList[1][0]) && (pointList[0][1]!=pointList[1][1])) {
+        // If itinerary
+        pointList.forEach((
+          point, i) => {
+            var marker = L.marker([point[0], point[1]]).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+        });
+
+        var corner1{{itinerary.itineraryIdentifier}} = L.latLng(pointList[0][0], pointList[0][1]);
+        var corner2{{itinerary.itineraryIdentifier}} = L.latLng(pointList[1][0], pointList[1][1]);
+        var bounds{{itinerary.itineraryIdentifier}} = L.latLngBounds(corner1{{itinerary.itineraryIdentifier}}, corner2{{itinerary.itineraryIdentifier}});
+
+        mapPreview{{itinerary.itineraryIdentifier}}.fitBounds(bounds{{itinerary.itineraryIdentifier}});
+      }
+      else {
+        // If route
+        var marker = L.marker([pointList[0][0], pointList[0][1]]).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+        var zoomPoint{{itinerary.itineraryIdentifier}} = L.latLng(pointList[0][0], pointList[0][1]);
+        mapPreview{{itinerary.itineraryIdentifier}}.flyTo(zoomPoint{{itinerary.itineraryIdentifier}});
+      }
+
+
+
+
+
+    </script>
+
+
+    {%endfor%}
+
+  </div>
+
+  {%endif%}
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
