@@ -58,7 +58,7 @@ function saveItinerary() {
       console.log(route._latlngs);
 
       var waypointsList = ["12;23","45;56","78;91"];
-      $.post( "/api/1.0/save", {
+      $.post( "/save", {
           waypoints: JSON.stringify(route._latlngs),
           distance: currentDistance,
           duration: currentDuration,
