@@ -17,9 +17,9 @@ To start the server, execute
 
 The local web interface is located in http://127.0.0.1:5000
 
-# Website 
+# Website
 
-The website is hosted at http://bikenapp.com/. Feel free to open an issue if you find a bug and i'll try to patch it.
+The website is hosted at https://bikenapp.com/. Feel free to open an issue if you find a bug and i'll try to patch it.
 
 # Next features
 
