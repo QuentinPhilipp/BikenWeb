@@ -157,25 +157,30 @@ def callback():
 
     # Create a user in your db with the information provided
     # by Google
-    user = User(
-        name=users_name,
-        email=users_email,
-        created_on=datetime.datetime.utcnow(),
-        last_login=datetime.datetime.utcnow()
-    )
-    user.set_password("random")
+
+
+    user = User.query.filter_by(email=users_email).first():
 
     print("User :",user.email)
 
     # Doesn't exist? Add it to the database.
-    if not User.query.filter_by(email=users_email).first():
+    if not user:
+        newUser = User(
+            name=users_name,
+            email=users_email,
+            created_on=datetime.datetime.utcnow(),
+            last_login=datetime.datetime.utcnow()
+        )
+        newUser.set_password("random")
         print("New user")
         db.session.add(user)
         db.session.commit()  # Create new user
         print("New user added")
+        login_user(newUser)
+    else :
+        # Begin user session by logging the user in
+        login_user(user)
 
-    # Begin user session by logging the user in
-    login_user(user)
     print("User logged in")
 
 
