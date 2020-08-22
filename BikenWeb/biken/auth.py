@@ -159,7 +159,7 @@ def callback():
     # by Google
 
 
-    user = User.query.filter_by(email=users_email).first():
+    user = User.query.filter_by(email=users_email).first()
 
     print("User :",user.email)
 

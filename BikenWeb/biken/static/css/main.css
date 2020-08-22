@@ -3,6 +3,7 @@ body {
   margin-left: 0;
   margin-top:0;
   overflow-x: hidden;
+  box-sizing: border-box;
   background-color: rgb(240, 240, 245);
   font-family: 'Roboto', sans-serif;
 }
@@ -10,10 +11,25 @@ body {
 #mapid {
   position: relative;
   z-index: 0;
-  height: 100vh;
+  height: 100%;
   width: 100vw;
 }
 
+.screen {
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  width: auto;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .screen {
+    top: 56px;
+  }
+}
 
 /* Loader */
 
@@ -72,7 +88,7 @@ height: 150px;
 /* .success {
   position: absolute;
   top: 80px;
-  background-color: #4CAF50; 
+  background-color: #4CAF50;
   color: white;
   margin-left: auto;
   margin-right: auto;
