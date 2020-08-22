@@ -87,9 +87,12 @@ function sendRequest() {
   getLocations(start,finish).then(data =>  {
     // check if itinerary or route
 
+    var loader = document.getElementById('loader');
+
     if (getRequestType()=="itinerary")
     {
       if (window.location.pathname=="/" || window.location.pathname=="/home") {
+        loader.hidden=false;
         url = "itinerary?coords="+data+"&render=false";
         getItinerary(url).then(dataItinerary => {
 
@@ -106,6 +109,8 @@ function sendRequest() {
           // display the new route
           displayRoute(dataItinerary.waypoints);
           showSummary(dataItinerary);
+          loader.hidden=true;
+
         });
       }
       else {
@@ -121,6 +126,7 @@ function sendRequest() {
     }
     else {
       if (window.location.pathname=="/" || window.location.pathname=="/home") {
+        loader.hidden=false;
         url = "route?start="+data+"&distance="+distance+"&render=false";
         // console.log('Not implemented',url);
         getItinerary(url).then(dataItinerary => {
@@ -140,6 +146,7 @@ function sendRequest() {
 
           // Fit the itinerary in the screen
           fitItinerary(dataItinerary.waypoints);
+          loader.hidden=true;
 
         });
       }
