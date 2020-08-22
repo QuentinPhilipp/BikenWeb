@@ -52,9 +52,9 @@ function saveItinerary() {
 
   if (routeList.length==0) {
     alertContainer.innerHTML ='<div class="alert">You need to create an itinerary before</div>';
-    // setTimeout(function(){
-    //     alertContainer.innerHTML = '';
-    // }, 2000);
+    setTimeout(function(){
+        alertContainer.innerHTML = '';
+    }, 2000);
   }
   else {
     routeList.forEach((route, i) => {
@@ -66,17 +66,28 @@ function saveItinerary() {
         $.post( "/save", {
             waypoints: JSON.stringify(route._latlngs),
             distance: currentDistance,
-            duration: currentDuration,
-        });
+            duration: currentDuration
+        },
+        function(data, status){
+            if (data=="Already Stored") {
+              alertContainer.innerHTML ='<div class="alert warning">This itinerary has already been saved</div>';
+              setTimeout(function(){
+                  alertContainer.innerHTML = '';
+              }, 2000);
+            }
+            else {
+              alertContainer.innerHTML ='<div class="alert success">The itinerary has been saved</div>';
+
+              setTimeout(function(){
+                  alertContainer.innerHTML = '';
+              }, 2000);
+            }
+          });
       }
 
     });
 
-    alertContainer.innerHTML ='<div class="alert success">The itinerary has been saved</div>';
 
-    // setTimeout(function(){
-    //     alertContainer.innerHTML = '';
-    // }, 2000);
   }
 
 

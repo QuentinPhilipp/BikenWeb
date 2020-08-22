@@ -60,14 +60,23 @@ height: 150px;
   margin-right: auto;
 }
 
-.success {
+.alert.warning {
+  background-color: #ff9800; /* Orange */
+}
+
+.alert.success {
+  background-color: #4CAF50; /* Green */
+}
+
+
+/* .success {
   position: absolute;
   top: 80px;
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50; 
   color: white;
   margin-left: auto;
   margin-right: auto;
-}
+} */
 
 
 .dropdown-divider {

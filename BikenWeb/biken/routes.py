@@ -188,7 +188,7 @@ def save():
         return "OK"
     else:
         print("Itinerary already stored")
-        return "Fail"
+        return "Already Stored"
 
 
 
