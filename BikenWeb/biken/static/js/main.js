@@ -48,24 +48,39 @@ function getRequestType()
 
 function saveItinerary() {
 
+  var alertContainer = document.getElementById('alertContainer');
+
   if (routeList.length==0) {
-    alert("You need to create an itinerary before saving")
+    alertContainer.innerHTML ='<div class="alert">You need to create an itinerary before</div>';
+    // setTimeout(function(){
+    //     alertContainer.innerHTML = '';
+    // }, 2000);
+  }
+  else {
+    routeList.forEach((route, i) => {
+
+      if (route._path!=undefined) {
+        console.log(route._latlngs);
+
+        var waypointsList = ["12;23","45;56","78;91"];
+        $.post( "/save", {
+            waypoints: JSON.stringify(route._latlngs),
+            distance: currentDistance,
+            duration: currentDuration,
+        });
+      }
+
+    });
+
+    alertContainer.innerHTML ='<div class="alert success">The itinerary has been saved</div>';
+
+    // setTimeout(function(){
+    //     alertContainer.innerHTML = '';
+    // }, 2000);
   }
 
-  routeList.forEach((route, i) => {
 
-    if (route._path!=undefined) {
-      console.log(route._latlngs);
 
-      var waypointsList = ["12;23","45;56","78;91"];
-      $.post( "/save", {
-          waypoints: JSON.stringify(route._latlngs),
-          distance: currentDistance,
-          duration: currentDuration,
-      });
-    }
-
-  });
 
 }
 

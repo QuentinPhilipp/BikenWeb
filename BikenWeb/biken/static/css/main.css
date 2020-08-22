@@ -41,13 +41,33 @@ height: 150px;
   100% { transform: translate(0,-20px); }
 
 }
-/* .loader {
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
-  z-index: 100;
-} */
 
+
+/* Save info  */
+
+/* The alert message box */
+#alertContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.alert {
+  position: absolute;
+  top: 80px;
+  background-color: #f44336; /* Red */
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.success {
+  position: absolute;
+  top: 80px;
+  background-color: #4CAF50; /* Green */
+  color: white;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 
 .dropdown-divider {
