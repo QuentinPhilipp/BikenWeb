@@ -33,6 +33,30 @@ $('input[name=checkbox-mode]').change(function(){
 });
 
 
+
+async function getElevation(itinerary)
+{
+  // $.ajax({
+  //   type: 'GET',
+  //   url: '/elevation',
+  //   dataType: 'application/json',
+  //   processData: false,
+  //   data: $.param({'waypoints' : itinerary }),
+  //   success: function(resp){
+  //       console.log(resp);
+  //   }
+  // });
+
+
+  $.post( "/elevation", {
+      waypoints: JSON.stringify(itinerary)
+  },
+  function(data, status){
+      console.log(data);
+    });
+}
+
+
 function getRequestType()
 {
   if (document.getElementById("customSwitches").checked)
@@ -122,6 +146,7 @@ function sendRequest() {
         url = "itinerary?coords="+data+"&render=false";
         getItinerary(url).then(dataItinerary => {
 
+          getElevation(dataItinerary.waypoints)
           // Remove old routes
           routeList.forEach((route, i) => {
                 route.remove();
@@ -192,7 +217,7 @@ function closeInfo() {
 
 
 function showSummary(data) {
-  console.log(data);
+  // console.log(data);
   document.getElementById("info-bottom").hidden = false;
   var distance = data.distance;
   var estimatedTime = data.duration;

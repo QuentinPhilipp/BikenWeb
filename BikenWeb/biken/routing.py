@@ -195,17 +195,17 @@ def generateCircle(start,distance,points):
 
 
 def getElevation(path):
-    print(path)
-    print("Len of path :",len(path))
+    # print(path)
+    # print("Len of path :",len(path))
 
     # Scale down the resolution of the path for the Elevation API
 
     # Max 30 points
+    # print("Divider :",divider)
     divider = len(path)//30 + 1
-    print("Divider :",divider)
 
     newPath = path[::divider]
-    print("Len of new path :",len(newPath))
+    # print("Len of new path :",len(newPath))
 
     # Convert list of tuple to a long string for the query
 
@@ -217,11 +217,15 @@ def getElevation(path):
     query = query[:-1]
     baseUrl = f'https://api.airmap.com/elevation/v1/ele/path?{query}'
     headers = {'X-API-Key': ELEVATION_API_KEY}
-    print(baseUrl)
     r = requests.get(baseUrl, headers=headers)
-    data = r.json()
-    print(data)
+    response = r.json()
+    profile = []
+    data = response["data"]
+    if response["status"]=="success":
+        for step in data:
+            profile.extend(step["profile"])
 
+    return profile
 
 
 def addKmWithAngle(radius, direction, startPos):

@@ -208,8 +208,6 @@ def api_itinerary():
     if start and finish:
         itinerary = routing.itinerary(start,finish,"bike")
 
-        routing.getElevation(itinerary["waypoints"])
-
         if render=='false':
             # return only the data
             return jsonify(itinerary)
@@ -226,6 +224,20 @@ def api_itinerary():
         print("Bad request")
         val = {"error_code": "01", "error_desc": "Endpoint not defined"}
         return jsonify(val)
+
+
+@main_bp.route("/elevation",methods=['POST'])
+def api_elevation():
+    # print('\n\n\n\n\n'+request.json+'\n\n\n\n\n')
+
+    dataWaypoints = json.loads(request.form['waypoints'])
+    profile = routing.getElevation(dataWaypoints)
+
+
+    returnValue = {"profile":profile,"elevation":200}
+
+    return jsonify(returnValue)
+
 
 # Route
 @main_bp.route('/route', methods=['GET'])
