@@ -208,7 +208,6 @@ def getElevation(path):
     # print("Len of new path :",len(newPath))
 
     # Convert list of tuple to a long string for the query
-
     query = "points="
     for point in newPath:
         query+=str(point[0])+','+str(point[1])+','
@@ -225,7 +224,24 @@ def getElevation(path):
         for step in data:
             profile.extend(step["profile"])
 
-    return profile
+
+    # Calculate total elevation
+    elevation = 0
+    try:
+        for i in range(len(profile)-2):
+            if profile[i]>profile[i+1]:
+                elevation += (profile[i]-profile[i+1])
+    except IndexError as e:
+        print("Error")
+
+    print("Total elevation :",elevation)
+
+
+    # Max N points in the profile
+    divider = len(profile)//150 + 1
+    profile = profile[::divider]
+
+    return {"profile":profile,"elevation":elevation}
 
 
 def addKmWithAngle(radius, direction, startPos):

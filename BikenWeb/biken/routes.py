@@ -234,7 +234,7 @@ def api_elevation():
     profile = routing.getElevation(dataWaypoints)
 
 
-    returnValue = {"profile":profile,"elevation":200}
+    returnValue = {"profile":profile["profile"],"elevation":profile["elevation"]}
 
     return jsonify(returnValue)
 
