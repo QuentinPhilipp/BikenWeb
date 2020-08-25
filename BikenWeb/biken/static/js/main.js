@@ -150,9 +150,6 @@ function sendRequest() {
         window.location.href=url;
       }
 
-      //
-      // url = "itinerary?coords="+data;
-      // window.location.href = url;
 
 
     }
