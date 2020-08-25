@@ -208,8 +208,8 @@ function showSummary(data) {
   currentDuration=estimatedTime;
 
   // Display the distance and calculation time
-  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+" km";
-  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+timeConvert(estimatedTime);
+  document.getElementById("itinerary-distance").innerHTML = '<i class="fas fa-arrows-alt-h px-2"></i>'+distance+" km";
+  document.getElementById("itinerary-time").innerHTML ='<i class="fas fa-stopwatch px-2"></i>'+timeConvert(estimatedTime);
 
 }
 
@@ -220,13 +220,10 @@ var hours = (num / 60);
 var rhours = Math.floor(hours);
 var minutes = (hours - rhours) * 60;
 var rminutes = Math.round(minutes);
-var str = "" + rhours;
+var str = "";
 
 if (rhours>1) {
-  str += " hours and ";
-}
-else {
-  str += " hour and ";
+  str += rhours + " hours and ";
 }
 if (rminutes>1) {
   str += rminutes + " minutes";

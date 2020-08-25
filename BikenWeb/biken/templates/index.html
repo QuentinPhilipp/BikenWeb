@@ -3,9 +3,6 @@
 
 {% block content %}
 
-
-
-
 <div class="screen">
   <div id="mapid"></div>
 </div>
@@ -15,7 +12,7 @@
 </div>
 
 <div class="row justify-content-center" id="info-bottom" hidden>
-  <div id="info-container" class="col-6" >
+  <div id="info-container" class="col" >
     <div class="row justify-content-center text-center">
       <div id="itinerary-distance" class="col-md-6 my-3 col-sm-12">
       </div>
@@ -23,8 +20,8 @@
       </div>
     </div>
     <button type="button" id="close-info-cross" name="button" onclick="closeInfo()"><i class="close-button fa-2x fa fa-times-circle"></i></button>
-    <div class="row justify-content-center text-center">
-      <canvas id="elevationChart" width="400" height="150"></canvas>
+    <div id="elevation-container" class="row justify-content-center text-center">
+      <canvas id="elevationChart" width="400" height="70"></canvas>
     </div>
 
   </div>

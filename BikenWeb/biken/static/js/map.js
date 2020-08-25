@@ -7,8 +7,6 @@ currentDistance = 0;
 currentDuration = 0;
 
 
-
-
 async function getElevation(itinerary)
 {
 
@@ -29,6 +27,7 @@ async function getElevation(itinerary)
           ]
         },
         options: {
+          maintainAspectRatio: false,
           scales: {
                   xAxes: [{
                       ticks: {

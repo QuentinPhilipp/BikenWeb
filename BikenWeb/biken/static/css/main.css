@@ -15,6 +15,45 @@ body {
   width: 100vw;
 }
 
+/* Route info */
+
+#info-bottom {
+  position: fixed;
+  z-index: 100;
+  bottom: 10px;
+  width: 100vw;
+  margin:0;
+}
+
+#elevationChart {
+  /* max-width: 400px; */
+  padding-right: 10px;
+}
+
+#close-info-cross {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    border:none;
+    background: none;
+}
+
+.close-button {
+  color: rgb(171, 171, 171);
+}
+
+#info-container {
+  background: white;
+  border: 1px solid rgb(187, 187, 187);
+  border-radius: 4px;
+  box-shadow: 2px 2px 2px #888888;
+  max-width: 400px;
+}
+
+
+/* End Route info */
+
+
 .screen {
   top: 70px;
   left: 0;
@@ -110,33 +149,6 @@ height: 150px;
 } */
 
 
-#info-bottom {
-  position: fixed;
-  z-index: 100;
-  bottom: 10px;
-  width: 100vw;
-  margin:0;
-}
-
-#close-info-cross {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    border:none;
-    background: none;
-}
-
-.close-button {
-  color: rgb(171, 171, 171);
-}
-
-#info-container {
-  background: white;
-  border: 1px solid rgb(187, 187, 187);
-  border-radius: 15px;
-  box-shadow: 2px 2px 2px #888888;
-
-}
 
 /* #profile-name {
   text-align: center;
@@ -173,6 +185,8 @@ height: 150px;
 }
 
 
+
+
 .route-info {
   color: rgb(107, 107, 107)
 }
@@ -194,6 +208,9 @@ height: 150px;
   to {left: 15px;}
 }
 .fa{
+    font-family: FontAwesome;
+  }
+.fas{
     font-family: FontAwesome;
   }
 
@@ -228,21 +245,3 @@ height: 150px;
     background: #59add1;
     cursor: pointer;
   }
-
-.cyan {
-  background:rgb(0, 116, 128);
-}
-.cyan-dark {
-  background:rgb(3, 90, 99);
-}
-.white-text {
-  color: white;
-}
-.white {
-  color: white;
-  background: white;
-}
-
-.social-link:hover {
-  color: white
-}
