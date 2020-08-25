@@ -8,6 +8,58 @@ currentDuration = 0;
 
 
 
+
+async function getElevation(itinerary)
+{
+
+  $.post( "/elevation", {
+      waypoints: JSON.stringify(itinerary)
+  },
+  function(data, status){
+      console.log(data);
+      new Chart(document.getElementById("elevationChart"), {
+        type: 'line',
+        data: {
+          labels: data.profile,
+          datasets: [{
+              data: data.profile,
+              borderColor: "#3e95cd",
+              fill: false
+            }
+          ]
+        },
+        options: {
+          scales: {
+                  xAxes: [{
+                      ticks: {
+                          display: false //this will remove the label
+                      },
+                      gridLines: {
+                        display: false
+                      }
+                  }],
+                  yAxes: [{
+                      gridLines: {
+                        display: false
+                      }
+                  }]
+              },
+          legend: {
+              display:false
+          },
+          elements: {
+                    point:{
+                        radius: 0
+                    }
+                }
+        }
+      });
+    });
+}
+
+
+
+
 function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(setPosition);

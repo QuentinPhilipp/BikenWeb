@@ -1,4 +1,6 @@
 
+
+
 $(document).ready(function() {
 
   $('.submit_on_enter').keydown(function(event) {
@@ -34,27 +36,6 @@ $('input[name=checkbox-mode]').change(function(){
 
 
 
-async function getElevation(itinerary)
-{
-  // $.ajax({
-  //   type: 'GET',
-  //   url: '/elevation',
-  //   dataType: 'application/json',
-  //   processData: false,
-  //   data: $.param({'waypoints' : itinerary }),
-  //   success: function(resp){
-  //       console.log(resp);
-  //   }
-  // });
-
-
-  $.post( "/elevation", {
-      waypoints: JSON.stringify(itinerary)
-  },
-  function(data, status){
-      console.log(data);
-    });
-}
 
 
 function getRequestType()
