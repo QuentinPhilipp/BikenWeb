@@ -162,6 +162,7 @@ function sendRequest() {
         url = "route?start="+data+"&distance="+distance+"&render=false";
         // console.log('Not implemented',url);
         getItinerary(url).then(dataItinerary => {
+          getElevation(dataItinerary.waypoints)
 
           // Remove old routes
           routeList.forEach((route, i) => {
@@ -224,6 +225,9 @@ var str = "";
 
 if (rhours>1) {
   str += rhours + " hours and ";
+}
+else if (rhours==1) {
+  str += "1 hour and ";
 }
 if (rminutes>1) {
   str += rminutes + " minutes";

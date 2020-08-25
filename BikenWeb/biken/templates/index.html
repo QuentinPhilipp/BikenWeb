@@ -63,7 +63,11 @@
     itinerary = {{itinerary|tojson}};
 
     if(itinerary!=undefined) {
+      getElevation(itinerary.waypoints)
+
+
       displayRoute(itinerary.waypoints);
+
 
       startPoint = {lat : itinerary.waypoints[0][0],lon : itinerary.waypoints[0][1]}
       finishPoint = {lat : itinerary.waypoints[itinerary.waypoints.length -1][0],lon : itinerary.waypoints[itinerary.waypoints.length - 1][1]}
