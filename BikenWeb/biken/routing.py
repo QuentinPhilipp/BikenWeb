@@ -4,6 +4,12 @@ import time
 from math import pi,cos,sin,radians
 import random
 import biken.utils as utils
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+ELEVATION_API_KEY = os.environ.get("ELEVATION_API_KEY", None)
 
 COEFF_DURATION = 2
 OFFSET_DISTANCE_ROUTE = 10
@@ -25,7 +31,7 @@ def itinerary(startCoord,endCoord,mode) :
     endWaypoint = data['waypoints'][1]
 
 
-    print(f"\nDistance :{data['routes'][0]['distance']//1000} meters")
+    print(f"\nDistance :{data['routes'][0]['distance']/1000} kms")
     print(f"\nDuration :{data['routes'][0]['duration']//60} minutes")
 
 
@@ -186,6 +192,38 @@ def generateCircle(start,distance,points):
     return waypointList
 
 
+
+
+def getElevation(path):
+    print(path)
+    print("Len of path :",len(path))
+
+    # Scale down the resolution of the path for the Elevation API
+
+    # Max 30 points
+    divider = len(path)//30 + 1
+    print("Divider :",divider)
+
+    newPath = path[::divider]
+    print("Len of new path :",len(newPath))
+
+    # Convert list of tuple to a long string for the query
+
+    query = "points="
+    for point in newPath:
+        query+=str(point[0])+','+str(point[1])+','
+
+    # Remove last comma
+    query = query[:-1]
+    baseUrl = f'https://api.airmap.com/elevation/v1/ele/path?{query}'
+    headers = {'X-API-Key': ELEVATION_API_KEY}
+    print(baseUrl)
+    r = requests.get(baseUrl, headers=headers)
+    data = r.json()
+    print(data)
+
+
+
 def addKmWithAngle(radius, direction, startPos):
     #calculate the km to add to latitude and longitude based on the angle
     addLat = sin(radians(direction))*radius
@@ -212,23 +250,6 @@ if __name__ == '__main__':
 
     # coordsList = ["G","E","D","C","B","A","B","C","D","F","H"]
     # coordsList = ["G","E","D","C","B","A","A","B","C","D","F","H"]
-    coordsList = ["X","W","V","U","T","S","R","Q","P","O","N","M","L","K","I","G","F","E","C","B","A","D","E","F","H","J"]
-    removeUturn(coordsList)
-    print(coordsList)
-
-
-
-
-# Precision GPS
-# decimal  degrees    distance
-# places
-# -------------------------------
-# 0        1.0        111 km
-# 1        0.1        11.1 km
-# 2        0.01       1.11 km
-# 3        0.001      111 m
-# 4        0.0001     11.1 m
-# 5        0.00001    1.11 m
-# 6        0.000001   0.111 m
-# 7        0.0000001  1.11 cm
-# 8        0.00000001 1.11 mm
+    # coordsList = ["X","W","V","U","T","S","R","Q","P","O","N","M","L","K","I","G","F","E","C","B","A","D","E","F","H","J"]
+    # removeUturn(coordsList)
+    # print(coordsList)

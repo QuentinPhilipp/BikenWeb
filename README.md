@@ -23,9 +23,7 @@ The website is hosted at https://bikenapp.com/. Feel free to open an issue if yo
 
 # Next features
 
-Possibility to save itinerary/routes. (WIP)
-
-Authenticate with google.
+Elevation : https://developers.airmap.com/docs/elevation-api
 
 Export/Import GPX files (GPS files).
 

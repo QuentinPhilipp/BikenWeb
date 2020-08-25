@@ -176,7 +176,7 @@ def save():
             user_id=current_user.id,
             waypoints=stringCoord,
             hash=hashValue,
-            distance=int(distance),
+            distance=distance,
             name= "Itinerary "+ randomString,
             duration=int(duration)
         )
@@ -207,6 +207,9 @@ def api_itinerary():
     # If the start/end are defined
     if start and finish:
         itinerary = routing.itinerary(start,finish,"bike")
+
+        routing.getElevation(itinerary["waypoints"])
+
         if render=='false':
             # return only the data
             return jsonify(itinerary)
