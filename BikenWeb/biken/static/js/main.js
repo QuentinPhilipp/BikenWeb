@@ -1,4 +1,6 @@
 
+
+
 $(document).ready(function() {
 
   $('.submit_on_enter').keydown(function(event) {
@@ -34,27 +36,6 @@ $('input[name=checkbox-mode]').change(function(){
 
 
 
-async function getElevation(itinerary)
-{
-  // $.ajax({
-  //   type: 'GET',
-  //   url: '/elevation',
-  //   dataType: 'application/json',
-  //   processData: false,
-  //   data: $.param({'waypoints' : itinerary }),
-  //   success: function(resp){
-  //       console.log(resp);
-  //   }
-  // });
-
-
-  $.post( "/elevation", {
-      waypoints: JSON.stringify(itinerary)
-  },
-  function(data, status){
-      console.log(data);
-    });
-}
 
 
 function getRequestType()
@@ -181,6 +162,7 @@ function sendRequest() {
         url = "route?start="+data+"&distance="+distance+"&render=false";
         // console.log('Not implemented',url);
         getItinerary(url).then(dataItinerary => {
+          getElevation(dataItinerary.waypoints)
 
           // Remove old routes
           routeList.forEach((route, i) => {
@@ -227,8 +209,8 @@ function showSummary(data) {
   currentDuration=estimatedTime;
 
   // Display the distance and calculation time
-  document.getElementById("itinerary-distance").innerHTML = "Total distance: "+distance+" km";
-  document.getElementById("itinerary-time").innerHTML = "Estimated time: "+timeConvert(estimatedTime);
+  document.getElementById("itinerary-distance").innerHTML = '<i class="fas fa-arrows-alt-h px-2"></i>'+distance+" km";
+  document.getElementById("itinerary-time").innerHTML ='<i class="fas fa-stopwatch px-2"></i>'+timeConvert(estimatedTime);
 
 }
 
@@ -239,13 +221,13 @@ var hours = (num / 60);
 var rhours = Math.floor(hours);
 var minutes = (hours - rhours) * 60;
 var rminutes = Math.round(minutes);
-var str = "" + rhours;
+var str = "";
 
 if (rhours>1) {
-  str += " hours and ";
+  str += rhours + " hours and ";
 }
-else {
-  str += " hour and ";
+else if (rhours==1) {
+  str += "1 hour and ";
 }
 if (rminutes>1) {
   str += rminutes + " minutes";
