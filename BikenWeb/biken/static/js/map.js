@@ -6,54 +6,70 @@ routeList = [];
 currentDistance = 0;
 currentDuration = 0;
 
+function createChart(data)
+{
+  document.getElementById("elevation-container").hidden=false;
+  new Chart(document.getElementById("elevationChart"), {
+    type: 'line',
+    data: {
+      labels: data.profile,
+      datasets: [{
+          data: data.profile,
+          borderColor: "#3e95cd",
+          fill: false
+        }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      scales: {
+              xAxes: [{
+                  ticks: {
+                      display: false //this will remove the label
+                  },
+                  gridLines: {
+                    display: false
+                  }
+              }],
+              yAxes: [{
+                  gridLines: {
+                    display: false
+                  }
+              }]
+          },
+      legend: {
+          display:false
+      },
+      elements: {
+                point:{
+                    radius: 0
+                }
+            }
+    }
+  });
+}
+
 
 async function getElevation(itinerary)
 {
+  var alertContainer = document.getElementById('alertContainer');
 
   $.post( "/elevation", {
       waypoints: JSON.stringify(itinerary)
   },
   function(data, status){
-      console.log(data);
-      new Chart(document.getElementById("elevationChart"), {
-        type: 'line',
-        data: {
-          labels: data.profile,
-          datasets: [{
-              data: data.profile,
-              borderColor: "#3e95cd",
-              fill: false
-            }
-          ]
-        },
-        options: {
-          maintainAspectRatio: false,
-          scales: {
-                  xAxes: [{
-                      ticks: {
-                          display: false //this will remove the label
-                      },
-                      gridLines: {
-                        display: false
-                      }
-                  }],
-                  yAxes: [{
-                      gridLines: {
-                        display: false
-                      }
-                  }]
-              },
-          legend: {
-              display:false
-          },
-          elements: {
-                    point:{
-                        radius: 0
-                    }
-                }
+        console.log(data);
+        if (data.profile.length > 0) {
+          createChart(data);
         }
-      });
+        else {
+          alertContainer.innerHTML ='<div class="alert warning">This itinerary is too long to get the elevation</div>';
+          setTimeout(function(){
+              alertContainer.innerHTML = '';
+          }, 2000);
+        }
     });
+
 }
 
 
