@@ -85,6 +85,21 @@ def profile():
     )
 
 
+@main_bp.route('/activities', methods=['GET'])
+@login_required
+def activities():
+    """Logged-in User."""
+    return render_template(
+        'activities.html',
+        title='Biken - Your activities',
+        current_user=current_user,
+        account="None"
+    )
+
+
+
+
+
 @main_bp.route("/itineraries",methods=["POST"])
 @login_required
 def editName():

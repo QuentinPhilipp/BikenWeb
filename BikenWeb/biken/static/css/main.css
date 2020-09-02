@@ -104,15 +104,14 @@ height: 150px;
 #alertContainer {
   display: flex;
   justify-content: center;
+  margin-top: 10px;
+
 }
 
 .alert {
-  position: absolute;
-  top: 80px;
   background-color: #f44336; /* Red */
   color: white;
-  margin-left: auto;
-  margin-right: auto;
+
 }
 
 .alert.warning {

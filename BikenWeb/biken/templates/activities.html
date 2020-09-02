@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/activities.css') }}">
+
+<!-- Error handling -->
+
+<section id="profile">
+  <div class="container">
+    <div class="row py-4">
+      <div class="col-12 text-center">
+        <h1>Hi {{current_user.name}} !</h1>
+      </div>
+    </div>
+
+    <h2 class="pt-4">Your activities on Strava</h2>
+    <hr>
+
+    <script src="../static/js/activities.js" charset="utf-8"></script>
+
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+      </div>
+    {% endfor %}
+
+    {% if account=="None" %}
+    <div class="text-center py-4">
+      <h2>You need to link your Strava profile.</h2>
+      <a href="http://www.strava.com/oauth/authorize?client_id=51912&response_type=code&redirect_uri=http://127.0.0.1:5000/exchange_token&approval_prompt=force&scope=profile:read_all,activity:read_all">
+        <img src="static/stravaLoginBtn.svg" alt="">
+      </a>
+
+    </div>
+
+
+    {%endif%}
+
+
+
+  </div>
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

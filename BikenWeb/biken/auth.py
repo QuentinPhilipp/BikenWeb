@@ -28,6 +28,9 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
+STRAVA_CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID", None)
+STRAVA_CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET", None)
+STRAVA_GRANT_TYPE = os.environ.get("STRAVA_GRANT_TYPE", None)
 
 # OAuth 2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
@@ -202,3 +205,31 @@ def unauthorized():
     """Redirect unauthorized users to Login page."""
     flash('You must be logged in to view that page.')
     return redirect(url_for('auth_bp.login'))
+
+
+
+
+# STRAVA
+
+
+@auth_bp.route("/exchange_token")
+def stravaToken():
+    query_parameters = request.args
+    code = query_parameters.get('code')
+    scopes = query_parameters.get('scope')
+
+    if scopes!="read,activity:read_all,profile:read_all":
+        flash("You need to accept all the permissions required")
+
+    token_url="https://www.strava.com/oauth/token"
+    payload = {'code': code, 'client_id': STRAVA_CLIENT_ID,'client_secret':STRAVA_CLIENT_SECRET,'grant_type':STRAVA_GRANT_TYPE}
+    # Exchange this code for a short lived access_token
+    token_response = requests.post(
+        token_url,
+        data=payload
+    )
+
+    print("Response:",token_response.json())
+    print("Access token :",token_response.json()["access_token"])
+
+    return redirect(url_for('main_bp.activities'))
