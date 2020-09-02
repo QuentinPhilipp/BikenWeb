@@ -1,11 +1,13 @@
 import requests
 import biken.routing as routing
+import biken.strava as strava
 import biken.utils as utils
 import re
 import json
 from .models import db, User, Itinerary
 import hashlib
 import random
+import time
 import string
 
 """Logged-in page routes."""
@@ -89,11 +91,24 @@ def profile():
 @login_required
 def activities():
     """Logged-in User."""
+
+
+    print("Expiration :",current_user.stravaTokenExpiration)
+    print("Current Time :",time.time())
+
+    if current_user.stravaTokenExpiration != None:
+        print(current_user.stravaTokenExpiration > time.time())
+        if int(current_user.stravaTokenExpiration) > time.time():
+            activity = strava.getActivity(current_user.stravaToken)
+    else:
+        activity = "None"
+
+
     return render_template(
         'activities.html',
         title='Biken - Your activities',
         current_user=current_user,
-        account="None"
+        activity=activity
     )
 
 

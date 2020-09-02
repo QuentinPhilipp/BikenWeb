@@ -39,6 +39,18 @@ class User(UserMixin, db.Model):
         unique=False,
         nullable=True
     )
+	stravaToken = db.Column(
+        db.String(40),
+        index=False,
+        unique=False,
+        nullable=True
+    )
+	stravaTokenExpiration = db.Column(
+        db.Integer,
+        index=False,
+        unique=False,
+        nullable=True
+	)
 	itinerary = db.relationship("Itinerary")
 
 	def set_password(self, password):

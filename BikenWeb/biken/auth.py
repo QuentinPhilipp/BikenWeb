@@ -7,6 +7,9 @@ from .import login_manager
 import datetime
 import os
 import json
+import time
+
+
 
 from dotenv import load_dotenv
 from oauthlib.oauth2 import WebApplicationClient
@@ -229,7 +232,13 @@ def stravaToken():
         data=payload
     )
 
-    print("Response:",token_response.json())
-    print("Access token :",token_response.json()["access_token"])
+    # print("Response:",token_response.json())
+    # print("Access token :",token_response.json()["access_token"])
+    current_user.stravaToken=token_response.json()["access_token"]
+    current_user.stravaTokenExpiration=token_response.json()["expires_at"]  #6 hours after request
+    # print("Expiration Time:",current_user.stravaTokenExpiration)
+    # print("Time :",time.time())
+    
+    db.session.commit()  # Store temporary token
 
     return redirect(url_for('main_bp.activities'))
