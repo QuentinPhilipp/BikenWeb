@@ -8,6 +8,10 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+.navbar {
+  z-index: 10;
+}
+
 #mapid {
   position: relative;
   z-index: 0;

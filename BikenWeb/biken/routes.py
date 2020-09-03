@@ -95,13 +95,12 @@ def activities():
 
     print("Expiration :",current_user.stravaTokenExpiration)
     print("Current Time :",time.time())
+    activity="None"
 
     if current_user.stravaTokenExpiration != None:
         print(current_user.stravaTokenExpiration > time.time())
         if int(current_user.stravaTokenExpiration) > time.time():
             activity = strava.getActivity(current_user.stravaToken)
-    else:
-        activity = "None"
 
 
     return render_template(
