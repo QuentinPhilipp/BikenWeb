@@ -1,0 +1,29 @@
+.itinerary-container {
+  background-color: white;
+  border-radius: 5px;
+  max-width: 1200px;
+}
+
+
+.mapPreview {
+  min-height: 250px;
+  min-width: 180px;
+}
+
+
+
+.label-up {
+  font-size: 12px;
+}
+
+.info-detail {
+  margin: 10px 20px 10px 20px;
+}
+
+.info-detail p {
+  margin-bottom: 0px;
+}
+
+#stat-row {
+  min-height: 50%;
+}

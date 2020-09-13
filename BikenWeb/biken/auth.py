@@ -232,13 +232,19 @@ def stravaToken():
         data=payload
     )
 
-    # print("Response:",token_response.json())
     # print("Access token :",token_response.json()["access_token"])
-    current_user.stravaToken=token_response.json()["access_token"]
-    current_user.stravaTokenExpiration=token_response.json()["expires_at"]  #6 hours after request
-    # print("Expiration Time:",current_user.stravaTokenExpiration)
-    # print("Time :",time.time())
-    
-    db.session.commit()  # Store temporary token
+    print("Response:",token_response.json())
+
+    if "errors" in token_response.json().keys():
+        print("Auth error")
+        print("Response:",token_response.json())
+    else :
+        current_user.stravaToken=token_response.json()["access_token"]
+        current_user.stravaTokenExpiration=token_response.json()["expires_at"]  #6 hours after request
+        print("Expiration Time:",current_user.stravaTokenExpiration)
+        print("Time :",time.time())
+
+        db.session.commit()  # Store temporary token
+
 
     return redirect(url_for('main_bp.activities'))

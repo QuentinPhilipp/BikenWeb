@@ -95,19 +95,47 @@ def activities():
 
     print("Expiration :",current_user.stravaTokenExpiration)
     print("Current Time :",time.time())
-    activity="None"
+    activities = []
 
     if current_user.stravaTokenExpiration != None:
-        print(current_user.stravaTokenExpiration > time.time())
         if int(current_user.stravaTokenExpiration) > time.time():
-            activity = strava.getActivity(current_user.stravaToken)
+            print("Token not expired")
 
+            rawActivities = strava.getActivity(current_user.stravaToken,5)
+            for activity in rawActivities:
+                if activity["type"]=="Ride":
+                    activitySummary = {}
+                    activitySummary["distance"] = round(activity["distance"]/1000, 2)
+                    # transform "/" into "//"
+                    polyline = re.escape(activity["map"]["summary_polyline"])
+
+                    activitySummary["polyline"] = polyline
+                    activitySummary["elevation"] = activity["total_elevation_gain"]
+
+                    # moving_time in seconds, transform in minutes
+                    activitySummary["time"] = activity["moving_time"]//60
+                    activitySummary["id"] = activity["id"]
+                    activitySummary["name"] = activity["name"]
+
+                    # try:
+                    #     # Request detail for the itinerary
+                    #     detailedActivity = strava.getDetailedActivity(current_user.stravaToken,activity["id"])
+                    #     activitySummary["polyline"] = detailedActivity["map"]["summary_polyline"]
+                    #
+                    # except Exception as e:
+                    #     print("Error fetching details")
+
+                    activities.append(activitySummary)
+
+
+        else :
+            print("Token expired")
 
     return render_template(
         'activities.html',
         title='Biken - Your activities',
         current_user=current_user,
-        activity=activity
+        activities=activities
     )
 
 
