@@ -28,7 +28,7 @@
     {% if activities == [] %}
     <div class="text-center py-4">
       <h2>You need to link your Strava profile.</h2>
-      <a href="http://www.strava.com/oauth/authorize?client_id=51912&response_type=code&redirect_uri=https://bikenapp.com/exchange_token&approval_prompt=force&scope=profile:read_all,activity:read_all">
+      <a href="http://www.strava.com/oauth/authorize?client_id=51912&response_type=code&redirect_uri={{redirect_link}}/exchange_token&approval_prompt=force&scope=profile:read_all,activity:read_all">
         <img src="static/stravaLoginBtn.svg" alt="">
       </a>
 

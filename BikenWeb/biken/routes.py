@@ -14,6 +14,10 @@ import string
 from flask import Blueprint,flash,render_template, redirect, url_for,request,jsonify
 from flask_login import current_user, login_required, logout_user
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+STRAVA_REDIRECT_LINK = os.environ.get("STRAVA_REDIRECT_LINK", None)
 
 # Blueprint Configuration
 main_bp = Blueprint(
@@ -68,8 +72,15 @@ def home():
 @login_required
 def logout():
     """User log-out logic."""
+    # log out user from Google or simple login system
     logout_user()
-    return redirect(url_for('auth_bp.login'))
+
+    # Log out user from Strava
+    # Force expiration of token
+    current_user.stravaTokenExpiration=str(time.time()-1)
+    db.session.commit()  # Store data
+
+    return redirect(url_for('main_bp.home'))
 
 
 @main_bp.route('/profile', methods=['GET'])
@@ -135,7 +146,8 @@ def activities():
         'activities.html',
         title='Biken - Your activities',
         current_user=current_user,
-        activities=activities
+        activities=activities,
+        redirect_link=STRAVA_REDIRECT_LINK
     )
 
 
@@ -226,7 +238,7 @@ def save():
     existingItinerary = Itinerary.query.filter_by(hash=hashValue,user_id=current_user.id).first()
 
     if not existingItinerary:
-        randomString = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+        randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
         itinerary = Itinerary(
             itineraryIdentifier=randomString,
