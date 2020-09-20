@@ -54,7 +54,7 @@ async function getElevation(itinerary)
 {
   var alertContainer = document.getElementById('alertContainer');
 
-  $.post( "routing/elevation", {
+  $.post( "/routing/elevation", {
       waypoints: JSON.stringify(itinerary)
   },
   function(data, status){

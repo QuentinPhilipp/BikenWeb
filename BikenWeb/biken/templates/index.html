@@ -64,25 +64,18 @@
     itinerary = {{itinerary|tojson}};
 
     if(itinerary!=undefined) {
-      getElevation(itinerary.waypoints)
+      getElevation(itinerary.polyline)
 
 
-      displayRoute(itinerary.waypoints);
+      displayPolyline(itinerary.polyline);
 
+      var coordinates = L.Polyline.fromEncoded(itinerary.polyline).getLatLngs();
 
-      startPoint = {lat : itinerary.waypoints[0][0],lon : itinerary.waypoints[0][1]}
-      finishPoint = {lat : itinerary.waypoints[itinerary.waypoints.length -1][0],lon : itinerary.waypoints[itinerary.waypoints.length - 1][1]}
-
-      pointList = [startPoint,finishPoint];
-
-      if (startPoint.lat!=finishPoint.lat &&  startPoint.lon!=finishPoint.lon) {
-        displayStartFinish(pointList);
+      if (coordinates[0].lat!=coordinates[coordinates.length-1].lat &&  coordinates[0].lng!=coordinates[coordinates.length-1].lng) {
+        displayStartFinish(itinerary.polyline);
       }
       else {
-        displayMarker(startPoint);
-
-        // Fit the itinerary in the screen
-        fitItinerary(itinerary.waypoints);
+        displayMarker(coordinates[0]);
       }
 
       showSummary(itinerary)
