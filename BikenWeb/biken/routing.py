@@ -19,12 +19,6 @@ def itinerary(startCoord,endCoord,mode) :
     startLat = startCoord['lat']
     endLon = endCoord['lon']
     endLat = endCoord['lat']
-    # 
-    #
-    # startLon = 14.5349
-    # startLat = 46.0315
-    # endLon = 14.5599
-    # endLat = 46.0380
 
     startTime = time.time()
 

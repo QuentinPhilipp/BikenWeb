@@ -91,10 +91,10 @@
 
     <ul class="navbar-nav ml-auto">
 
-      <div class="row text-center">
+      <div class="row text-center mx-4">
         {% if current_user.is_authenticated %}
-        <button class="nav-item btn btn-outline-success col mx-4" onclick="saveItinerary()">Save</button>
-        <li class="dropdown col">
+        <button class="nav-item btn btn-outline-success col-8 col-sm-10" onclick="saveItinerary()">Save & Export</button>
+        <li class="dropdown col-4 col-sm-2">
           <a class="nav-link nav-item " href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="{{url_for('static', filename='profile_unknown.svg')}}" width="30" height="30" class="d-inline-block align-middle profile-pic" alt="profile_pic">
           </a>
@@ -106,6 +106,7 @@
           </div>
         </li>
         {% else %}
+        <button class="nav-item btn btn-outline-success col mx-4" onclick="saveItinerary()">Export itinerary</button>
         <li class="nav-item">
           <a class="nav-link mx-3" href="/login">Login
             <!-- <img src="{{url_for('static', filename='google.svg')}}" width="20" height="20" class="d-inline-block align-middle" alt="biken-logo"> -->
