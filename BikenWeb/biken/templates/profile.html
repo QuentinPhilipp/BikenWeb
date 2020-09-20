@@ -2,6 +2,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<script type="text/javascript" src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"></script>
 
 <!-- Error handling -->
   {% for message in get_flashed_messages() %}
@@ -55,7 +56,27 @@
 
           <div class=" text-left info-detail">
             <div class="label-up">Durée</div>
-            <b class="info">{{itinerary.duration//60}} hour(s) and {{itinerary.duration%60}} minute(s) </b>
+            {% if itinerary.duration//60 > 1 and itinerary.duration%60 >1 %}
+            <b class="info">{{itinerary.duration//60}} hours and {{itinerary.duration%60}} minutes </b>
+            {% elif itinerary.duration//60 > 1 and itinerary.duration%60 ==1 %}
+            <b class="info">{{itinerary.duration//60}} hours and {{itinerary.duration%60}} minute </b>
+            {% elif itinerary.duration//60 > 1 and itinerary.duration%60 ==0 %}
+            <b class="info">{{itinerary.duration//60}} hours</b>
+
+            <!-- More than 1 hour -->
+            {% elif itinerary.duration//60 == 1 and itinerary.duration%60 >1 %}
+            <b class="info">{{itinerary.duration//60}} hour and {{itinerary.duration%60}} minutes </b>
+            {% elif itinerary.duration//60 == 1 and itinerary.duration%60 ==1 %}
+            <b class="info">{{itinerary.duration//60}} hour and {{itinerary.duration%60}} minute </b>
+            {% elif itinerary.duration//60 == 1 and itinerary.duration%60 ==0 %}
+            <b class="info">{{itinerary.duration//60}} hour</b>
+
+            <!-- Less than 1 hour -->
+            {% elif itinerary.duration//60 == 0 and itinerary.duration%60 >1 %}
+            <b class="info">{{itinerary.duration%60}} minutes </b>
+            {% elif itinerary.duration//60 == 0 and itinerary.duration%60 == 1 %}
+            <b class="info">{{itinerary.duration%60}} minute </b>
+            {%endif%}
           </div>
 
 
@@ -81,20 +102,17 @@
 
     <script type="text/javascript">
 
-      var extractRegex = /((.+?),(.+?);)/g;
 
-      var extractedData = strToWaypoints("{{itinerary.waypoints}}")
+      var polyline{{itinerary.itineraryIdentifier}} = L.Polyline.fromEncoded('{{itinerary.polyline}}');
+      var coordinates{{itinerary.itineraryIdentifier}} = polyline{{itinerary.itineraryIdentifier}}.getLatLngs();
 
-      var longitudeStart = extractedData[0][0];
-      var latitudeStart = extractedData[0][1];
+      var start{{itinerary.itineraryIdentifier}} = L.latLng(coordinates{{itinerary.itineraryIdentifier}}[0].lat, coordinates{{itinerary.itineraryIdentifier}}[0].lng);
+      var end{{itinerary.itineraryIdentifier}} = L.latLng(coordinates{{itinerary.itineraryIdentifier}}[coordinates{{itinerary.itineraryIdentifier}}.length-1].lat, coordinates{{itinerary.itineraryIdentifier}}[coordinates{{itinerary.itineraryIdentifier}}.length-1].lng);
 
-      var longitudeEnd = extractedData[extractedData.length-1][0];
-      var latitudeEnd = extractedData[extractedData.length-1][1];
+      console.log("Start:",start{{itinerary.itineraryIdentifier}});
+      console.log("End:",end{{itinerary.itineraryIdentifier}});
 
-      //Store start and end point
-      var pointList = [[longitudeStart,latitudeStart],[longitudeEnd,latitudeEnd]];
-
-      var mapPreview{{itinerary.itineraryIdentifier}} = L.map('mapPreview{{itinerary.itineraryIdentifier}}',{ zoomControl: false,dragging:false }).setView([longitudeStart,latitudeStart], 10);
+      var mapPreview{{itinerary.itineraryIdentifier}} = L.map('mapPreview{{itinerary.itineraryIdentifier}}',{ zoomControl: false,dragging:false }).setView(start{{itinerary.itineraryIdentifier}},11);
 
       L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -105,32 +123,26 @@
           accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
       }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
 
-      var route{{itinerary.itineraryIdentifier}} = L.polyline(extractedData, {
-        color: '#F67C5A',
-        weight:6
-      }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+
+      var bounds{{itinerary.itineraryIdentifier}} = L.latLngBounds(start{{itinerary.itineraryIdentifier}}, end{{itinerary.itineraryIdentifier}});
 
 
-      console.log("Point List :",pointList);
+      // Show route
+      polyline{{itinerary.itineraryIdentifier}}.setStyle({
+          color: '#F67C5A'
+      });
+      polyline{{itinerary.itineraryIdentifier}}.addTo(mapPreview{{itinerary.itineraryIdentifier}});
 
-      if ((pointList[0][0]!=pointList[1][0]) && (pointList[0][1]!=pointList[1][1])) {
+      if ((start{{itinerary.itineraryIdentifier}}.lat!=end{{itinerary.itineraryIdentifier}}.lat) && (start{{itinerary.itineraryIdentifier}}.lng!=end{{itinerary.itineraryIdentifier}}.lng)) {
         // If itinerary
-        pointList.forEach((
-          point, i) => {
-            var marker = L.marker([point[0], point[1]]).addTo(mapPreview{{itinerary.itineraryIdentifier}});
-        });
-
-        var corner1{{itinerary.itineraryIdentifier}} = L.latLng(pointList[0][0], pointList[0][1]);
-        var corner2{{itinerary.itineraryIdentifier}} = L.latLng(pointList[1][0], pointList[1][1]);
-        var bounds{{itinerary.itineraryIdentifier}} = L.latLngBounds(corner1{{itinerary.itineraryIdentifier}}, corner2{{itinerary.itineraryIdentifier}});
-
+        var marker1 = L.marker(start{{itinerary.itineraryIdentifier}}).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+        var marker2 = L.marker(end{{itinerary.itineraryIdentifier}}).addTo(mapPreview{{itinerary.itineraryIdentifier}});
         mapPreview{{itinerary.itineraryIdentifier}}.fitBounds(bounds{{itinerary.itineraryIdentifier}});
       }
       else {
         // If route
-        var marker = L.marker([pointList[0][0], pointList[0][1]]).addTo(mapPreview{{itinerary.itineraryIdentifier}});
-        var zoomPoint{{itinerary.itineraryIdentifier}} = L.latLng(pointList[0][0], pointList[0][1]);
-        mapPreview{{itinerary.itineraryIdentifier}}.flyTo(zoomPoint{{itinerary.itineraryIdentifier}});
+        var marker1 = L.marker(start{{itinerary.itineraryIdentifier}}).addTo(mapPreview{{itinerary.itineraryIdentifier}});
+        mapPreview{{itinerary.itineraryIdentifier}}.flyTo(start{{itinerary.itineraryIdentifier}});
       }
 
 

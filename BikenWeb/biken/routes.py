@@ -90,6 +90,9 @@ def profile():
 
     itineraries = Itinerary.query.filter_by(user_id=current_user.id).all()
 
+    for itinerary in itineraries:
+        # transform "/" into "//"
+        itinerary.polyline = re.escape(itinerary.polyline)
     return render_template(
         'profile.html',
         title='Biken - Your profile',
