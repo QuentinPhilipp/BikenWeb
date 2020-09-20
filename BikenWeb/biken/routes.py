@@ -203,17 +203,16 @@ def deleteItinerary():
 
 
 @main_bp.route("/save",methods=["POST"])
-@login_required
 def save():
 
-    dataWaypoints = request.form['waypoints']
+    polyline = request.form['polyline']
     distance = float(request.form['distance'])
     duration = float(request.form['duration'])
 
     print("Duration:",duration)
     print("Distance:",distance)
 
-    if not dataWaypoints:
+    if not polyline:
         flash('You need to create an itinerary before saving')
         return render_template(
             'index.html',
@@ -221,47 +220,56 @@ def save():
             current_user=current_user,
         )
 
-    print("Load waypoinst")
-    waypoints = json.loads(dataWaypoints)
-    print("Done waypoinst")
+    if current_user.is_authenticated:
+        # If the user is logged in
+        existingItinerary = Itinerary.query.filter_by(polyline=polyline,user_id=current_user.id).first()
 
-    stringCoord = ""
-    for waypoint in waypoints:
-        stringCoord+=str(waypoint["lat"])+","+str(waypoint["lng"])+";"
+        if not existingItinerary:
+            randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
-    itineraryRenderMap = utils.strToWaypoints(stringCoord)
-
-    hash_object = hashlib.md5(stringCoord.encode())
-
-    hashValue = hash_object.hexdigest()
-
-    existingItinerary = Itinerary.query.filter_by(hash=hashValue,user_id=current_user.id).first()
-
-    if not existingItinerary:
-        randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-
-        itinerary = Itinerary(
-            itineraryIdentifier=randomString,
-            user_id=current_user.id,
-            waypoints=stringCoord,
-            hash=hashValue,
-            distance=distance,
-            name= "Itinerary "+ randomString,
-            duration=int(duration)
-        )
-        db.session.add(itinerary)
-        db.session.commit()  #
+            itinerary = Itinerary(
+                itineraryIdentifier=randomString,
+                user_id=current_user.id,
+                polyline=polyline,
+                distance=distance,
+                name= "Itinerary "+ randomString,
+                duration=int(duration)
+            )
+            db.session.add(itinerary)
+            db.session.commit()  #
 
 
-        print("Itinerary stored")
-        return "OK"
-    else:
-        print("Itinerary already stored")
-        return "Already Stored"
+            print("Itinerary stored")
+            return "OK"
+        else:
+            print("Itinerary already stored")
+            return "Already Stored"
+    else :
+        # If the user is not logged in
+        existingItinerary = Itinerary.query.filter_by(polyline=polyline,user_id=0).first()
+
+        if not existingItinerary:
+            randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+
+            itinerary = Itinerary(
+                itineraryIdentifier=randomString,
+                user_id=0,
+                polyline=polyline,
+                distance=distance,
+                name="Itinerary "+ randomString,
+                duration=int(duration)
+            )
+            db.session.add(itinerary)
+            db.session.commit()  #
+
+            print("Itinerary stored")
+            return "OK"
+        else:
+            print("Itinerary already stored")
+            return "Already Stored"
 
 
-
-@main_bp.route('/itinerary', methods=['GET'])
+@main_bp.route('/routing/itinerary', methods=['GET'])
 def api_itinerary():
     query_parameters = request.args
     coords = query_parameters.get('coords')
@@ -295,7 +303,7 @@ def api_itinerary():
         return jsonify(val)
 
 
-@main_bp.route("/elevation",methods=['POST'])
+@main_bp.route("/routing/elevation",methods=['POST'])
 def api_elevation():
     # print('\n\n\n\n\n'+request.json+'\n\n\n\n\n')
 
@@ -309,7 +317,7 @@ def api_elevation():
 
 
 # Route
-@main_bp.route('/route', methods=['GET'])
+@main_bp.route('/routing/route', methods=['GET'])
 def api_route():
     query_parameters = request.args
     startCoord = query_parameters.get('start')

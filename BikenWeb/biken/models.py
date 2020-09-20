@@ -79,14 +79,11 @@ class Itinerary(db.Model):
 		db.String(16),
         unique=True
 	)
-	hash = db.Column(
-		db.String(100),
-	)
 	user_id=db.Column(
 		db.Integer,
 		db.ForeignKey("flasklogin-users.id")
 	)
-	waypoints=db.Column(
+	polyline=db.Column(
 		db.String()
 	)
 	distance=db.Column(

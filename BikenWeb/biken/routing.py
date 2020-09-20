@@ -6,6 +6,7 @@ import random
 import biken.utils as utils
 import os
 from dotenv import load_dotenv
+import polyline
 
 
 load_dotenv()
@@ -42,14 +43,14 @@ def itinerary(startCoord,endCoord,mode) :
 
     print("\nNumber of point in the path :",len(path))
 
+    # Convert the itinerary to a polyline
+    routePolyline = polyline.encode(path, 5,geojson=True)
 
 
-    # Switch from lon,lat to lat,lon for leaflet
-    returnedPath = [(coord[1], coord[0]) for coord in path]
     endTime = time.time()
     print(f"~~~~~~~~~~~~\nTime for the request : {endTime-startTime} seconds")
 
-    returnObject = {"waypoints":returnedPath,"duration":(data['routes'][0]['duration']//60)/COEFF_DURATION,"distance":round(data["routes"][0]['distance']/1000,2),"calculationTime":endTime-startTime,"estimatedTime":0}
+    returnObject = {"polyline":routePolyline,"duration":(data['routes'][0]['duration']//60)/COEFF_DURATION,"distance":round(data["routes"][0]['distance']/1000,2),"calculationTime":endTime-startTime,"estimatedTime":0}
 
     return returnObject
 
@@ -81,16 +82,17 @@ def route(startPoint,distance,mode) :
             indexStart += len(step["geometry"]["coordinates"])
         waypointsIndex.append(indexStart)
     #       print(path)
-    # Switch from lon,lat to lat,lon for leaflet
-    returnedPath = [(coord[1], coord[0]) for coord in path]
+
+    # Convert the itinerary to a polyline
+    routePolyline = polyline.encode(path, 5,geojson=True)
 
 
-    # Check U-turn on the roads
-    returnedPath = removeUturn(returnedPath);
+    # # Check U-turn on the roads
+    # returnedPath = removeUturn(returnedPath);
 
 
     endTime = time.time()
-    returnObject = {"waypoints":returnedPath,"duration":(data['trips'][0]['duration']//60)/COEFF_DURATION,"distance": round(data["trips"][0]['distance']/1000,2),"calculationTime":endTime-startTime}
+    returnObject = {"polyline":routePolyline,"duration":(data['trips'][0]['duration']//60)/COEFF_DURATION,"distance": round(data["trips"][0]['distance']/1000,2),"calculationTime":endTime-startTime}
     return returnObject
 
 
@@ -194,18 +196,14 @@ def generateCircle(start,distance,points):
 
 
 
-def getElevation(path):
-    # print(path)
-    # print("Len of path :",len(path))
+def getElevation(polylineData):
+    # Convert the polyline into gps points
+    path = polyline.decode(polylineData, 5,geojson=True)
 
     # Scale down the resolution of the path for the Elevation API
-
     # Max 30 points
-    # print("Divider :",divider)
     divider = len(path)//30 + 1
-
     newPath = path[::divider]
-    # print("Len of new path :",len(newPath))
 
     # Convert list of tuple to a long string for the query
     query = "points="
@@ -224,24 +222,23 @@ def getElevation(path):
         for step in data:
             profile.extend(step["profile"])
 
-
-    # Calculate total elevation
-    elevation = 0
-    try:
-        for i in range(len(profile)-2):
-            if profile[i]>profile[i+1]:
-                elevation += (profile[i]-profile[i+1])
-    except IndexError as e:
-        print("Error")
-
-    print("Total elevation :",elevation)
+    # # Calculate total elevation
+    # elevation = 0
+    # try:
+    #     for i in range(len(profile)-2):
+    #         if profile[i]>profile[i+1]:
+    #             elevation += (profile[i]-profile[i+1])
+    # except IndexError as e:
+    #     print("Error")
+    #
+    # print("Total elevation :",elevation)
 
 
     # Max N points in the profile
     divider = len(profile)//150 + 1
     profile = profile[::divider]
 
-    return {"profile":profile,"elevation":elevation}
+    return {"profile":profile,"elevation":0}
 
 
 def addKmWithAngle(radius, direction, startPos):

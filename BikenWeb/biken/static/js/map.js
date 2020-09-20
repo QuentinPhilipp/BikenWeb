@@ -1,8 +1,8 @@
 
 var mymap = L.map('mapid',{ zoomControl: false }).setView([48.8589507,2.2770202], 10);
 debugState = false;
-squareList = [];
 routeList = [];
+displayedPolyline = "";
 currentDistance = 0;
 currentDuration = 0;
 
@@ -54,7 +54,7 @@ async function getElevation(itinerary)
 {
   var alertContainer = document.getElementById('alertContainer');
 
-  $.post( "/elevation", {
+  $.post( "routing/elevation", {
       waypoints: JSON.stringify(itinerary)
   },
   function(data, status){
@@ -124,28 +124,26 @@ function geocode(location)
 
 
 
-
-function displayRoute(waypoints) {
-var polyline = L.polyline(waypoints, {
-  color: '#F67C5A',
-  weight:6
-}).addTo(mymap);
-routeList.push(polyline);
-
+function displayPolyline(polylineData){
+  var polyline = L.Polyline.fromEncoded(polylineData);
+  polyline.setStyle({
+      color: '#F67C5A'
+  });
+  polyline.addTo(mymap);
+  routeList.push(polyline);
 }
 
 
-function displayStartFinish(pointList) {
-  pointList.forEach((
-    point, i) => {
-      var marker = L.marker([point.lat, point.lon]).addTo(mymap);
-      routeList.push(marker);
+function displayStartFinish(polylineData) {
+  // Display a marker at both end of the route
+  var coordinates = L.Polyline.fromEncoded(polylineData).getLatLngs();
 
-  });
+  var start = L.latLng(coordinates[0].lat, coordinates[0].lng);
+  var end = L.latLng(coordinates[coordinates.length-1].lat, coordinates[coordinates.length-1].lng);
 
-  var corner1 = L.latLng(pointList[0].lat, pointList[0].lon);
-  var corner2 = L.latLng(pointList[1].lat, pointList[1].lon);
-  var bounds = L.latLngBounds(corner1, corner2);
+  var bounds = L.latLngBounds(start, end);
+  var marker1 = L.marker(start).addTo(mymap);
+  var marker2 = L.marker(end).addTo(mymap);
 
   // Padding to show the itiinerary even with the infos displayed
   mymap.flyToBounds(bounds,{
@@ -153,12 +151,14 @@ function displayStartFinish(pointList) {
         duration: 1,
         padding: [90,90]
 });
+  routeList.push(marker1);
+  routeList.push(marker2);
+
 }
 
 
 function displayMarker(point) {
-  console.log(point);
-  var marker = L.marker([point.lat, point.lon]).addTo(mymap);
+  var marker = L.marker([point.lat, point.lng]).addTo(mymap);
   routeList.push(marker);
 }
 

@@ -67,9 +67,8 @@ function saveItinerary() {
       if (route._path!=undefined) {
         console.log(route._latlngs);
 
-        var waypointsList = ["12;23","45;56","78;91"];
         $.post( "/save", {
-            waypoints: JSON.stringify(route._latlngs),
+            polyline: displayedPolyline,
             distance: currentDistance,
             duration: currentDuration
         },
@@ -124,29 +123,31 @@ function sendRequest() {
     {
       if (window.location.pathname=="/" || window.location.pathname=="/home") {
         loader.hidden=false;
-        url = "itinerary?coords="+data+"&render=false";
+        url = "routing/itinerary?coords="+data+"&render=false";
         getItinerary(url).then(dataItinerary => {
 
-          getElevation(dataItinerary.waypoints)
           // Remove old routes
           routeList.forEach((route, i) => {
                 route.remove();
           });
-          // display the cursor at the start and finish position
-          var start = {"lat":dataItinerary.waypoints[0][0],"lon":dataItinerary.waypoints[0][1]}
-          var finish = {"lat":dataItinerary.waypoints[dataItinerary.waypoints.length-1][0],"lon":dataItinerary.waypoints[dataItinerary.waypoints.length-1][1]}
 
-          displayStartFinish([start,finish]);
+          // Query elevation of this path to the server
+          getElevation(dataItinerary.polyline)
+
+          // display the cursor at the start and finish position
+          displayStartFinish(dataItinerary.polyline);
 
           // display the new route
-          displayRoute(dataItinerary.waypoints);
+          displayPolyline(dataItinerary.polyline);
+
+          // Show elevation, distance and time
           showSummary(dataItinerary);
           loader.hidden=true;
 
         });
       }
       else {
-        url = "itinerary?coords="+data+"&render=true";
+        url = "routing/itinerary?coords="+data+"&render=true";
         window.location.href=url;
       }
 
@@ -156,32 +157,35 @@ function sendRequest() {
     else {
       if (window.location.pathname=="/" || window.location.pathname=="/home") {
         loader.hidden=false;
-        url = "route?start="+data+"&distance="+distance+"&render=false";
+        url = "routing/route?start="+data+"&distance="+distance+"&render=false";
         // console.log('Not implemented',url);
         getItinerary(url).then(dataItinerary => {
-          getElevation(dataItinerary.waypoints)
-
           // Remove old routes
           routeList.forEach((route, i) => {
                 route.remove();
           });
 
-          // Display start point
-          var start = {"lat":dataItinerary.waypoints[0][0],"lon":dataItinerary.waypoints[0][1]}
-          displayMarker(start)
-          // display the new route
-          displayRoute(dataItinerary.waypoints);
+          // Query elevation of this path to the server
+          getElevation(dataItinerary.polyline)
 
+          // // Display start point
+          var coordinates = L.Polyline.fromEncoded(dataItinerary.polyline).getLatLngs();
+          displayMarker(coordinates[0]);
+
+          // display the new route
+          displayPolyline(dataItinerary.polyline);
+
+          // Show elevation, distance and time
           showSummary(dataItinerary);
 
-          // Fit the itinerary in the screen
-          fitItinerary(dataItinerary.waypoints);
+          // // Fit the itinerary in the screen
+          // fitItinerary(dataItinerary.polyline);
           loader.hidden=true;
 
         });
       }
       else {
-        url = "route?start="+data+"&distance="+distance+"&render=true";
+        url = "routing/route?start="+data+"&distance="+distance+"&render=true";
         window.location.href=url;
       }
 
@@ -201,7 +205,7 @@ function showSummary(data) {
   var distance = data.distance;
   var estimatedTime = data.duration;
 
-
+  displayedPolyline=data.polyline;
   currentDistance=distance;
   currentDuration=estimatedTime;
 
@@ -242,6 +246,8 @@ async function getItinerary(url){
 
   return data
 }
+
+
 
 
 async function getLocations(location1,location2){
