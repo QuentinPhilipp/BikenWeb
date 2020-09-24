@@ -24,7 +24,7 @@ body {
 
 #info-bottom {
   position: fixed;
-  z-index: 100;
+  z-index: 1;
   bottom: 10px;
   width: 100vw;
   margin:0;
@@ -249,3 +249,52 @@ height: 150px;
     background: #59add1;
     cursor: pointer;
   }
+
+
+
+
+/* Popup Save */
+.popupSave {
+  position: fixed;
+  z-index:10;
+  width: 100vw;
+}
+
+/* Modal Content/Box */
+.popup-content {
+  background-color: #fefefe;
+  padding: 10px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  height: 100%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.popup-content h1 {
+  text-align: center
+}
+
+#urlCopyInput {
+  margin-right: 10px;
+  width:70%;
+}
+#copyButton {
+  margin-left: 10px
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}

@@ -46,7 +46,7 @@ def home():
         itineraryObject = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first()
 
         if itineraryObject:
-            itinerary["waypoints"]=utils.strToWaypoints(itineraryObject.waypoints)
+            itinerary["polyline"] = itineraryObject.polyline
             itinerary["distance"] = itineraryObject.distance
             itinerary["duration"] = itineraryObject.duration
             # itinerary=itineraryObject.waypoints
@@ -243,10 +243,10 @@ def save():
 
 
             print("Itinerary stored")
-            return "OK"
+            return {"text":"OK","itineraryCode":randomString}
         else:
             print("Itinerary already stored")
-            return "Already Stored"
+            return {"text":"Already Stored","itineraryCode":existingItinerary.itineraryIdentifier}
     else :
         # If the user is not logged in
         existingItinerary = Itinerary.query.filter_by(polyline=polyline,user_id=0).first()
@@ -266,10 +266,11 @@ def save():
             db.session.commit()  #
 
             print("Itinerary stored")
-            return "OK"
+            return {"text":"OK - User not logged in","itineraryCode":randomString}
         else:
             print("Itinerary already stored")
-            return "Already Stored"
+            return {"text":"Already Stored - User not logged in","itineraryCode":existingItinerary.itineraryIdentifier}
+
 
 
 @main_bp.route('/routing/itinerary', methods=['GET'])

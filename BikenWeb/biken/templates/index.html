@@ -51,6 +51,25 @@
   </svg>
   </div>
 </div>
+
+<div class="popupSave" id="popupSave">
+  <div class="popup-content">
+    <span class="close">&times;</span>
+    <h1>Share this itinerary</h1>
+    <div class="row justify-content-center">
+      <!-- The text field -->
+      <input type="text" value="" id="urlCopyInput">
+
+      <!-- The button used to copy the text -->
+      <button id="copyButton" onclick="copyOnClick()">Copy URL</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 <script type="text/javascript" src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script src="../static/js/map.js" charset="utf-8"></script>

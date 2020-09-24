@@ -73,11 +73,16 @@ function saveItinerary() {
             duration: currentDuration
         },
         function(data, status){
-            if (data=="Already Stored") {
+            if (data["text"]=="Already Stored") {
               alertContainer.innerHTML ='<div class="alert warning">This itinerary has already been saved</div>';
               setTimeout(function(){
                   alertContainer.innerHTML = '';
               }, 2000);
+              showSaveExportPopup(data["itineraryCode"])
+            }
+            else if (data["text"]=="OK - User not logged in" || data["text"]=="Already Stored - User not logged in"){
+              // Only show the share popup if not connected
+              showSaveExportPopup(data["itineraryCode"])
             }
             else {
               alertContainer.innerHTML ='<div class="alert success">The itinerary has been saved</div>';
@@ -85,6 +90,7 @@ function saveItinerary() {
               setTimeout(function(){
                   alertContainer.innerHTML = '';
               }, 2000);
+              showSaveExportPopup(data["itineraryCode"])
             }
           });
       }
@@ -94,9 +100,16 @@ function saveItinerary() {
 
   }
 
+}
 
+async function showSaveExportPopup(itineraryCode){
+  // Get the popup
+  var popup = document.getElementById("popupSave");
+  popup.style.display = "block";
 
-
+  // Write the current url
+  var myInput = document.getElementById("urlCopyInput");
+  myInput.value = window.location.host + "/home?itinerary="+itineraryCode;
 }
 
 
@@ -276,3 +289,31 @@ async function getLocations(location1,location2){
   }
 
 }
+
+
+// Popup save
+
+// Get the popup
+var popup = document.getElementById("popupSave");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  popup.style.display = "none";
+}
+
+function copyOnClick() {
+  /* Get the text field */
+  var copyText = document.getElementById("myInput");
+
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+}
+
+showSaveExportPopup("iHJKTsbm2Dk9aZi4")
