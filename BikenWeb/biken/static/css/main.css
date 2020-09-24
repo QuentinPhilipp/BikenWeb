@@ -255,6 +255,7 @@ height: 150px;
 
 /* Popup Save */
 .popupSave {
+  display: none; /* Default hidden */
   position: fixed;
   z-index:10;
   width: 100vw;
