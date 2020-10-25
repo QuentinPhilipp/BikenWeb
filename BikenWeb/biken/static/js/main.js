@@ -109,7 +109,7 @@ async function showSaveExportPopup(itineraryCode){
 
   // Write the current url
   var myInput = document.getElementById("urlCopyInput");
-  myInput.value = window.location.host + "/home?itinerary="+itineraryCode;
+  myInput.value = window.location.origin + "/home?itinerary="+itineraryCode;
 }
 
 
