@@ -1,0 +1,51 @@
+<gpx version="1.1" creator="https://www.bikenapp.com">
+    <metadata>
+        <name>Example Route</name>
+        <author>
+            <link href="https://bikenapp.com" />
+        </author>
+    </metadata>
+    <trk>
+        <name>Example Route</name>
+        <trkseg>
+            <trkpt lat="46.049877" lon="14.506865" />
+            <trkpt lat="46.049838" lon="14.506828" />
+            <trkpt lat="46.049819" lon="14.506873" />
+            <trkpt lat="46.049536" lon="14.506586" />
+            <trkpt lat="46.048906" lon="14.506341" />
+            <trkpt lat="46.048325" lon="14.506213" />
+            <trkpt lat="46.047817" lon="14.506259" />
+            <trkpt lat="46.047252" lon="14.506427" />
+            <trkpt lat="46.047242" lon="14.506432" />
+            <trkpt lat="46.047233" lon="14.506401" />
+            <trkpt lat="46.047112" lon="14.50646" />
+            <trkpt lat="46.046821" lon="14.506658" />
+            <trkpt lat="46.046797" lon="14.506685" />
+            <trkpt lat="46.046657" lon="14.506697" />
+            <trkpt lat="46.046599" lon="14.506686" />
+            <trkpt lat="46.046105" lon="14.50666" />
+            <trkpt lat="46.046002" lon="14.50666" />
+            <trkpt lat="46.045897" lon="14.506645" />
+            <trkpt lat="46.045868" lon="14.506595" />
+            <trkpt lat="46.045874" lon="14.506527" />
+            <trkpt lat="46.045896" lon="14.506264" />
+            <trkpt lat="46.045909" lon="14.505943" />
+            <trkpt lat="46.045909" lon="14.505875" />
+            <trkpt lat="46.045848" lon="14.505875" />
+            <trkpt lat="46.045846" lon="14.505985" />
+            <trkpt lat="46.045775" lon="14.506022" />
+            <trkpt lat="46.045659" lon="14.506054" />
+            <trkpt lat="46.044846" lon="14.506183" />
+            <trkpt lat="46.04444" lon="14.50627" />
+            <trkpt lat="46.044212" lon="14.506317" />
+            <trkpt lat="46.044061" lon="14.50636" />
+            <trkpt lat="46.043945" lon="14.506392" />
+            <trkpt lat="46.04357" lon="14.506664" />
+            <trkpt lat="46.043363" lon="14.506963" />
+            <trkpt lat="46.043157" lon="14.507313" />
+            <trkpt lat="46.042361" lon="14.508615" />
+            <trkpt lat="46.041738" lon="14.509711" />
+            <trkpt lat="46.041461" lon="14.509407" />
+        </trkseg>
+    </trk>
+</gpx>
