@@ -317,3 +317,8 @@ function copyOnClick() {
   copyButton.innerHTML="Copied!"
 
 }
+
+
+function exportGPX() {
+  console.log("Export GPX file");
+}
