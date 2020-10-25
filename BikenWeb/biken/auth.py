@@ -166,9 +166,7 @@ def callback():
 
 
     user = User.query.filter_by(email=users_email).first()
-
-    print("User :",user.email)
-
+    
     # Doesn't exist? Add it to the database.
     if not user:
         newUser = User(
