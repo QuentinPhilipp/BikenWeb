@@ -166,7 +166,7 @@ def callback():
 
 
     user = User.query.filter_by(email=users_email).first()
-    
+
     # Doesn't exist? Add it to the database.
     if not user:
         newUser = User(
@@ -176,17 +176,12 @@ def callback():
             last_login=datetime.datetime.utcnow()
         )
         newUser.set_password("random")
-        print("New user")
-        db.session.add(user)
+        db.session.add(newUser)
         db.session.commit()  # Create new user
-        print("New user added")
         login_user(newUser)
     else :
         # Begin user session by logging the user in
         login_user(user)
-
-    print("User logged in")
-
 
     # Send user back to homepage
     return redirect(url_for("main_bp.home"))
