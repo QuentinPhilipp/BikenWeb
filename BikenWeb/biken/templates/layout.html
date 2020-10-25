@@ -93,8 +93,8 @@
 
       <div class="row text-center mx-4">
         {% if current_user.is_authenticated %}
-        <button class="nav-item btn btn-outline-success col-8 col-sm-10" onclick="saveItinerary()">Save & Share</button>
-        <a class="nav-link mx-3" href="" onclick="exportGPX()">GPX <i class="fas fa-cloud-download-alt"></i></a>
+        <button class="nav-item btn btn-outline-success col mx-4" onclick="saveItinerary()">Save & Share</button>
+        <button class="nav-item btn gray-txt" onclick="exportGPX()">GPX <i class="fas fa-cloud-download-alt"></i></button>
         <li class="dropdown col-4 col-sm-2">
           <a class="nav-link nav-item " href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="{{url_for('static', filename='profile_unknown.svg')}}" width="30" height="30" class="d-inline-block align-middle profile-pic" alt="profile_pic">
@@ -108,10 +108,8 @@
         </li>
         {% else %}
         <button class="nav-item btn btn-outline-success col mx-4" onclick="saveItinerary()">Export itinerary</button>
-        <a class="nav-link mx-3" href="" onclick="exportGPX()">GPX <i class="fas fa-cloud-download-alt"></i></a>
-        <li class="nav-item">
-          <a class="nav-link mx-3" href="/login">Login</a>
-        </li>
+        <button class="nav-item btn gray-txt" onclick="exportGPX()">GPX <i class="fas fa-cloud-download-alt"></i></button>
+        <a class="nav-item btn gray-txt" href="/login">Login</a>
         {% endif %}
       </div>
 

@@ -321,4 +321,11 @@ function copyOnClick() {
 
 function exportGPX() {
   console.log("Export GPX file");
+
+  var alertContainer = document.getElementById('alertContainer');
+
+  alertContainer.innerHTML ='<div class="alert warning">WIP, it will be ready soon</div>';
+  setTimeout(function(){
+      alertContainer.innerHTML = '';
+  }, 2000);
 }
