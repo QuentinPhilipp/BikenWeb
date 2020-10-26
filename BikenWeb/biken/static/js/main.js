@@ -51,7 +51,7 @@ function getRequestType()
 }
 
 
-function saveItinerary() {
+function saveItinerary(gpx=false) {
 
   var alertContainer = document.getElementById('alertContainer');
 
@@ -65,7 +65,6 @@ function saveItinerary() {
     routeList.forEach((route, i) => {
 
       if (route._path!=undefined) {
-        console.log(route._latlngs);
 
         $.post( "/save", {
             polyline: displayedPolyline,
@@ -78,11 +77,24 @@ function saveItinerary() {
               setTimeout(function(){
                   alertContainer.innerHTML = '';
               }, 2000);
-              showSaveExportPopup(data["itineraryCode"])
-            }
+              if(gpx==false) 
+              {
+                showSaveExportPopup(data["itineraryCode"])
+              }
+              else
+              {
+                exportGPX(data["itineraryCode"])
+              }            }
             else if (data["text"]=="OK - User not logged in" || data["text"]=="Already Stored - User not logged in"){
               // Only show the share popup if not connected
-              showSaveExportPopup(data["itineraryCode"])
+              if(gpx==false) 
+              {
+                showSaveExportPopup(data["itineraryCode"])
+              }
+              else
+              {
+                exportGPX(data["itineraryCode"])
+              }
             }
             else {
               alertContainer.innerHTML ='<div class="alert success">The itinerary has been saved</div>';
@@ -90,8 +102,14 @@ function saveItinerary() {
               setTimeout(function(){
                   alertContainer.innerHTML = '';
               }, 2000);
-              showSaveExportPopup(data["itineraryCode"])
-            }
+              if(gpx==false) 
+              {
+                showSaveExportPopup(data["itineraryCode"])
+              }
+              else
+              {
+                exportGPX(data["itineraryCode"])
+              }            }
           });
       }
 
@@ -186,13 +204,8 @@ function sendRequest() {
           displayMarker(coordinates[0]);
 
           // display the new route
-          displayPolyline(dataItinerary.polyline);
-
-          // Show elevation, distance and time
-          showSummary(dataItinerary);
-
-          // // Fit the itinerary in the screen
-          // fitItinerary(dataItinerary.polyline);
+          displayPolyli  console.log("Export GPX file");
+          ry(dataItinerary.polyline);
           loader.hidden=true;
 
         });
@@ -319,13 +332,37 @@ function copyOnClick() {
 }
 
 
-function exportGPX() {
-  console.log("Export GPX file");
+function exportGPX(itineraryCode) {
 
   var alertContainer = document.getElementById('alertContainer');
 
-  alertContainer.innerHTML ='<div class="alert warning">WIP, it will be ready soon</div>';
-  setTimeout(function(){
-      alertContainer.innerHTML = '';
-  }, 2000);
+  url = "getGPX?itinerary="+itineraryCode;
+
+
+  getGPXfile(url).then(gpxData => {
+    if(gpxData.success==true) {
+      console.log("Success to create GPX file")
+      var fileUrl = window.location.href + gpxData.filename
+      window.open(fileUrl)
+    }
+    else {
+      console.log("Fail to create GPX file")
+
+      alertContainer.innerHTML ='<div class="alert warning">Fail to download the itinerary</div>';
+      setTimeout(function(){
+          alertContainer.innerHTML = '';
+      }, 2000);
+    }
+  });
+
 }
+
+
+async function getGPXfile(url) {
+  let response = await fetch(url);
+  console.log(response)
+  let data = await response.json();
+
+  return data
+}
+

@@ -2,6 +2,7 @@ import requests
 import biken.routing as routing
 import biken.strava as strava
 import biken.utils as utils
+import biken.gpxEncoder as gpxEncoder
 import re
 import json
 from .models import db, User, Itinerary
@@ -203,6 +204,22 @@ def deleteItinerary():
 
     return "Success"
 
+
+@main_bp.route("/getGPX",methods=["GET"])
+def getGpx():
+    query_parameters = request.args
+    itineraryID = query_parameters.get('itinerary')
+
+    itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
+
+    if itinerary:
+        filename = gpxEncoder.createGPXfile(itinerary,"TEST")
+        if filename != "Error":
+            val = {"filename": filename, "success": True}
+            return jsonify(val)
+    # else
+    val = {"success": False}
+    return jsonify(val)
 
 
 @main_bp.route("/save",methods=["POST"])
