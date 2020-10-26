@@ -213,7 +213,12 @@ def getGpx():
     itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
 
     if itinerary:
-        filename = gpxEncoder.createGPXfile(itinerary,"TEST")
+
+        if itinerary.name :
+            filename = gpxEncoder.createGPXfile(itinerary,itinerary.name)
+        else :
+            filename = gpxEncoder.createGPXfile(itinerary,itineraryID)
+      
         if filename != "Error":
             val = {"filename": filename, "success": True}
             return jsonify(val)

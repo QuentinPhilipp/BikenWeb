@@ -65,6 +65,7 @@ function saveItinerary(gpx=false) {
     routeList.forEach((route, i) => {
 
       if (route._path!=undefined) {
+        console.log("call Save")
 
         $.post( "/save", {
             polyline: displayedPolyline,
@@ -146,9 +147,14 @@ function sendRequest() {
 
 
   getLocations(start,finish).then(data =>  {
-    // check if itinerary or route
+    // Remove old routes
+    routeList.forEach((route, i) => {
+      route.remove();
+    });
 
     var loader = document.getElementById('loader');
+
+    // check if itinerary or route
 
     if (getRequestType()=="itinerary")
     {
@@ -157,10 +163,7 @@ function sendRequest() {
         url = "routing/itinerary?coords="+data+"&render=false";
         getItinerary(url).then(dataItinerary => {
 
-          // Remove old routes
-          routeList.forEach((route, i) => {
-                route.remove();
-          });
+
 
           // Query elevation of this path to the server
           getElevation(dataItinerary.polyline)
@@ -191,10 +194,6 @@ function sendRequest() {
         url = "routing/route?start="+data+"&distance="+distance+"&render=false";
         // console.log('Not implemented',url);
         getItinerary(url).then(dataItinerary => {
-          // Remove old routes
-          routeList.forEach((route, i) => {
-                route.remove();
-          });
 
           // Query elevation of this path to the server
           getElevation(dataItinerary.polyline)
@@ -204,8 +203,13 @@ function sendRequest() {
           displayMarker(coordinates[0]);
 
           // display the new route
-          displayPolyli  console.log("Export GPX file");
-          ry(dataItinerary.polyline);
+          displayPolyline(dataItinerary.polyline);
+
+          // Show elevation, distance and time
+          showSummary(dataItinerary);
+
+          // // Fit the itinerary in the screen
+          // fitItinerary(dataItinerary.polyline);
           loader.hidden=true;
 
         });
