@@ -3,6 +3,7 @@ import biken.routing as routing
 import biken.strava as strava
 import biken.utils as utils
 import biken.gpxEncoder as gpxEncoder
+import biken.data as dataManager
 import re
 import json
 from .models import db, User, Itinerary
@@ -69,6 +70,124 @@ def home():
     )
 
 
+
+
+
+# Plan an itinerary
+@main_bp.route('/plan/itinerary', methods=['GET'])
+def planItinerary():
+    query_parameters = request.args
+    startPlace = query_parameters.get('start')
+    destinationPlace = query_parameters.get('destination')
+    distance = query_parameters.get('distance')
+    routeType = query_parameters.get('type')
+    render = query_parameters.get('render')
+
+    if routeType=="oneway":
+        gpsStart=routing.getGPSLocation(startPlace)
+        gpsDestination=routing.getGPSLocation(destinationPlace)
+        if gpsStart and gpsDestination:
+            itinerary = routing.itinerary(gpsStart,gpsDestination)
+
+            # Store itinerary in DB
+            itineraryId = dataManager.storeItinerary(itinerary)
+            itinerary["uniqueId"]=itineraryId
+ 
+            if render=='false':
+                # return only the data
+                return jsonify(itinerary)
+            else :
+                # Return the template
+                return render_template(
+                    'index.html',
+                    title='Biken Home page',
+                    current_user=current_user,
+                    itinerary=itinerary
+                )
+        else :
+            val = {"error": "Bad request", "error_desc": "Start and/or destination not found"}
+            return jsonify(val)
+
+
+    # elif routeType=="round":
+    #     # Remove 10% of distance
+    #     distance = float(distance) - float(distance)*0.1
+
+    #     gpsStart=routing.getGPSLocation(startPlace)
+    #     # If the start is an adress
+    #     if gpsStart and distance:
+    #         route = routing.route(gpsStart,distance)
+
+    #         if render=='false':
+    #             # return only the data
+    #             return jsonify(route)
+    #         else :
+    #             # Return the template
+    #             return render_template(
+    #                 'index.html',
+    #                 title='Biken Home page',
+    #                 current_user=current_user,
+    #                 itinerary=route
+    #             )
+
+    #     else :
+    #         val = {"error": "Bad request", "error_desc": "Start and/or distance not found"}
+    #         return jsonify(val)
+
+    # else :
+    #     val = {"error": "Bad request", "error_desc": "RouteType doesn't correspond to any of the valid entry (oneway or roundtrip)"}
+    #     return jsonify(val)
+
+
+
+
+
+@main_bp.route("/save",methods=["POST"])
+@login_required
+def save():
+    itineraryId = request.form['itineraryId']
+
+    dataManager.bindUserToItinerary(itineraryId,current_user.userId)
+    return "OK"
+
+
+# @main_bp.route("/routing/elevation",methods=['POST'])
+# def api_elevation():
+#     # print('\n\n\n\n\n'+request.json+'\n\n\n\n\n')
+
+#     dataWaypoints = json.loads(request.form['waypoints'])
+#     profile = routing.getElevation(dataWaypoints)
+
+
+#     returnValue = {"profile":profile["profile"],"elevation":profile["elevation"]}
+
+#     return jsonify(returnValue)
+
+
+
+
+# @main_bp.route("/getGPX",methods=["GET"])
+# def getGpx():
+#     query_parameters = request.args
+#     itineraryID = query_parameters.get('itinerary')
+
+#     itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
+
+#     if itinerary:
+
+#         if itinerary.name :
+#             filename = gpxEncoder.createGPXfile(itinerary,itinerary.name)
+#         else :
+#             filename = gpxEncoder.createGPXfile(itinerary,itineraryID)
+      
+#         if filename != "Error":
+#             val = {"filename": filename, "success": True}
+#             return jsonify(val)
+#     # else
+#     val = {"success": False}
+#     return jsonify(val)
+
+
 @main_bp.route("/logout")
 @login_required
 def logout():
@@ -89,17 +208,27 @@ def logout():
 def profile():
     """Logged-in User."""
 
-    itineraries = Itinerary.query.filter_by(user_id=current_user.id).all()
+    itineraries = dataManager.getAllItineraryFromUser(current_user.userId)
 
-    for itinerary in itineraries:
-        # transform "/" into "//"
-        itinerary.polyline = re.escape(itinerary.polyline)
     return render_template(
         'profile.html',
         title='Biken - Your profile',
         current_user=current_user,
         itineraries=itineraries
     )
+
+@main_bp.route('/features', methods=['GET'])
+def features():
+    """Logged-in User."""
+
+
+    return render_template(
+        'features.html',
+        title='Biken - Features'
+    )
+
+
+
 
 
 @main_bp.route('/activities', methods=['GET'])
@@ -112,7 +241,7 @@ def activities():
     print("Current Time :",time.time())
     activities = []
 
-    if current_user.stravaTokenExpiration != None:
+    if current_user.stravaTokenExpiration != None and current_user.stravaTokenExpiration != "":
         if int(current_user.stravaTokenExpiration) > time.time():
             print("Token not expired")
 
@@ -163,25 +292,15 @@ def activities():
 def editName():
     query_parameters = request.args
     itineraryID = query_parameters.get('itinerary')
-
-    itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
     name = request.form['name']
 
-    if itinerary.user_id==current_user.id:
-        # Edit the itinerary
-        if name!="" :
-            if len(name)<=100:
-                print("New name :",name)
-                itinerary.name = name
-                db.session.commit()
-                return redirect(url_for("main_bp.profile"))
-            else:
-                flash("The name of the itinerary can't exceed 100 characters")
-        else:
-            flash("You can't set an empty name")
-    else :
-        flash("You can't edit the itinerary of another person")
-    return redirect(url_for("main_bp.profile"))
+
+    result = dataManager.renameItinerary(itineraryID,current_user.userId,name)
+    if result :
+        return redirect(url_for('main_bp.profile'))
+    else : return "Fail"
+
+
 
 @main_bp.route("/itineraries",methods=["DELETE"])
 @login_required
@@ -189,214 +308,9 @@ def deleteItinerary():
 
     query_parameters = request.args
     itineraryID = query_parameters.get('itinerary')
-    itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
 
-    if itinerary.user_id==current_user.id:
-        Itinerary.query.filter_by(itineraryIdentifier=itineraryID).delete()
-        db.session.commit()
-        print("Route deleted")
-        return "Success"
-
-        # return redirect(url_for("main_bp.profile"))
-
-    else :
-        flash("You can't delete the itinerary of another person")
-
-    return "Success"
-
-
-@main_bp.route("/getGPX",methods=["GET"])
-def getGpx():
-    query_parameters = request.args
-    itineraryID = query_parameters.get('itinerary')
-
-    itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
-
-    if itinerary:
-
-        if itinerary.name :
-            filename = gpxEncoder.createGPXfile(itinerary,itinerary.name)
-        else :
-            filename = gpxEncoder.createGPXfile(itinerary,itineraryID)
-      
-        if filename != "Error":
-            val = {"filename": filename, "success": True}
-            return jsonify(val)
-    # else
-    val = {"success": False}
-    return jsonify(val)
-
-
-@main_bp.route("/save",methods=["POST"])
-def save():
-
-    polyline = request.form['polyline']
-    distance = float(request.form['distance'])
-    duration = float(request.form['duration'])
-
-    print("Duration:",duration)
-    print("Distance:",distance)
-
-    if not polyline:
-        flash('You need to create an itinerary before saving')
-        return render_template(
-            'index.html',
-            title='Biken Home page',
-            current_user=current_user,
-        )
-
-    if current_user.is_authenticated:
-        # If the user is logged in
-        existingItinerary = Itinerary.query.filter_by(polyline=polyline,user_id=current_user.id).first()
-
-        if not existingItinerary:
-            randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-
-            itinerary = Itinerary(
-                itineraryIdentifier=randomString,
-                user_id=current_user.id,
-                polyline=polyline,
-                distance=distance,
-                name= "Itinerary "+ randomString,
-                duration=int(duration)
-            )
-            db.session.add(itinerary)
-            db.session.commit()  #
-
-
-            print("Itinerary stored")
-            return {"text":"OK","itineraryCode":randomString}
-        else:
-            print("Itinerary already stored")
-            return {"text":"Already Stored","itineraryCode":existingItinerary.itineraryIdentifier}
-    else :
-        # If the user is not logged in
-        existingItinerary = Itinerary.query.filter_by(polyline=polyline,user_id=0).first()
-
-        if not existingItinerary:
-            randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-
-            itinerary = Itinerary(
-                itineraryIdentifier=randomString,
-                user_id=0,
-                polyline=polyline,
-                distance=distance,
-                name="Itinerary "+ randomString,
-                duration=int(duration)
-            )
-            db.session.add(itinerary)
-            db.session.commit()  #
-
-            print("Itinerary stored")
-            return {"text":"OK - User not logged in","itineraryCode":randomString}
-        else:
-            print("Itinerary already stored")
-            return {"text":"Already Stored - User not logged in","itineraryCode":existingItinerary.itineraryIdentifier}
-
-
-
-@main_bp.route('/routing/itinerary', methods=['GET'])
-def api_itinerary():
-    query_parameters = request.args
-    coords = query_parameters.get('coords')
-    render = query_parameters.get('render')
-
-    # regular expression to extract the coords
-    result = re.findall("(.+?),(.+?);(.+?),(.+?)$",coords)
-    # The result come like this : [('48.9589708', '7.3350752', '49.0508729', '7.4254577')] and we need to create two dictionnary
-    start = {"lat":result[0][0],"lon":result[0][1]}
-    finish = {"lat":result[0][2],"lon":result[0][3]}
-
-    # If the start/end are defined
-    if start and finish:
-        itinerary = routing.itinerary(start,finish,"bike")
-
-        if render=='false':
-            # return only the data
-            return jsonify(itinerary)
-        else :
-            # Return the template
-            return render_template(
-                'index.html',
-                title='Biken Home page',
-                current_user=current_user,
-                itinerary=itinerary
-            )
-
-    else :
-        print("Bad request")
-        val = {"error_code": "01", "error_desc": "Endpoint not defined"}
-        return jsonify(val)
-
-
-@main_bp.route("/routing/elevation",methods=['POST'])
-def api_elevation():
-    # print('\n\n\n\n\n'+request.json+'\n\n\n\n\n')
-
-    dataWaypoints = json.loads(request.form['waypoints'])
-    profile = routing.getElevation(dataWaypoints)
-
-
-    returnValue = {"profile":profile["profile"],"elevation":profile["elevation"]}
-
-    return jsonify(returnValue)
-
-
-# Route
-@main_bp.route('/routing/route', methods=['GET'])
-def api_route():
-    query_parameters = request.args
-    startCoord = query_parameters.get('start')
-    distance = query_parameters.get('distance')
-    render = query_parameters.get('render')
-
-
-    # regular expression to extract the coords
-    result = re.findall("(.+?),(.+?)$",startCoord)
-    # The result come like this : [('48.9589708', '7.3350752', '49.0508729', '7.4254577')] and we need to create two dictionnary
-    start = {"lat":result[0][0],"lon":result[0][1]}
-
-
-    distance = float(distance) - float(distance)*0.1
-    # If the start is an adress
-    if start and distance:
-        route = routing.route(start,distance,"bike")
-
-        if render=='false':
-            # return only the data
-            return jsonify(route)
-        else :
-            # Return the template
-            return render_template(
-                'index.html',
-                title='Biken Home page',
-                current_user=current_user,
-                itinerary=route
-            )
-
-    else :
-        print("Bad request")
-        val = {"error_code": "01", "error_desc": "Endpoint not defined"}
-        return jsonify(val)
-
-#
-# @app.route('/profile', methods=['GET'])
-# @login_required
-# def profile():
-#     return render_template("profile.html")
-#
-# @app.route('/activities', methods=['GET'])
-# @login_required
-# def activities():
-#     return render_template("activities.html")
-#
-# @app.route('/settings', methods=['GET'])
-# @login_required
-# def preferences():
-#     return render_template("preferences.html")
-#
-#
-# @login_manager.unauthorized_handler
-# def unauthorized_callback():
-#     return redirect('/login?next=' + request.path)
-#
+    result = dataManager.removeLinkUserItinerary(itineraryID,current_user.userId)
+    if result :
+        return "OK"
+    else : 
+        return "Fail"

@@ -100,6 +100,7 @@ body{
 
 .google-button-container {
   width: 100%;
+  padding: 0px 5px;
   height: 50px;
   cursor: pointer;
   display: flex;
@@ -126,6 +127,14 @@ body{
   border: 1px solid #4285F4;
   background: #4285F4;
   color: white;
+}
+
+.no-decoration:hover {
+  text-decoration: none;
+}
+
+.no-decoration:visited {
+  text-decoration: none;
 }
 
 .bottom-text{

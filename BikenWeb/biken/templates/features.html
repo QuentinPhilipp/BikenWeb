@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features.css') }}">
+
+
+<section id="profile">
+  <div class="container">
+
+
+    <h2 class="pt-4">Main features</h2>
+    <hr>
+    <ul>
+        <li>Generating itinerary between two points</li>
+        <li>Generating a random route of a certain size around a certain position</li>
+        <li>View the distance and the elevation of the itinerary/li>
+        <li>Saving itineraries</li>
+        <li>Exporting itineraries to GPX files</li>
+        <li>Synchronisation with Strava activity and edit your past routes (Work In Progress)</li>
+        <li>Login with Google, Strava or classic authentification</li>
+        <li>Easy account binding</li>
+        <!-- , just add your Strava account when logged with Google and the two accounts will be linked. You will be able to login with either Google or Strava -->
+
+    </ul>
+  </div>
+
+</section>
+
+
+{% endblock %}

@@ -4,11 +4,13 @@ from flask_login import current_user, login_user
 from .forms import LoginForm, SignupForm
 from .models import db, User
 from .import login_manager
+import biken.data as dataManager
 import datetime
 import os
 import json
 import time
-
+import random
+import string
 
 
 from dotenv import load_dotenv
@@ -34,6 +36,7 @@ GOOGLE_DISCOVERY_URL = (
 STRAVA_CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID", None)
 STRAVA_CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET", None)
 STRAVA_GRANT_TYPE = os.environ.get("STRAVA_GRANT_TYPE", None)
+STRAVA_REDIRECT_LINK = os.environ.get("STRAVA_REDIRECT_LINK", None)
 
 # OAuth 2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
@@ -53,11 +56,14 @@ def signup():
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
         if existing_user is None:
+            randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+
             user = User(
                 name=form.name.data,
+                userId=randomString,
                 email=form.email.data,
-                created_on=datetime.datetime.utcnow(),
-                last_login=datetime.datetime.utcnow()
+                createdOn=datetime.datetime.utcnow(),
+                lastLogin=datetime.datetime.utcnow()
             )
             user.set_password(form.password.data)
             db.session.add(user)
@@ -94,7 +100,7 @@ def login():
             login_user(user)
             next_page = request.args.get('next')
             # Update last login date
-            user.last_login=datetime.datetime.utcnow()
+            user.lastLogin=datetime.datetime.utcnow()
             db.session.commit()
             return redirect(next_page or url_for('main_bp.home'))
         flash('Invalid username/password combination')
@@ -104,7 +110,8 @@ def login():
         form=form,
         title='Log in.',
         template='login-page',
-        body="Log in with your User account."
+        body="Log in with your User account.",
+        strava_redirect_link=STRAVA_REDIRECT_LINK
     )
 
 
@@ -169,11 +176,14 @@ def callback():
 
     # Doesn't exist? Add it to the database.
     if not user:
+        randomString = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+
         newUser = User(
             name=users_name,
+            userId=randomString,
             email=users_email,
-            created_on=datetime.datetime.utcnow(),
-            last_login=datetime.datetime.utcnow()
+            createdOn=datetime.datetime.utcnow(),
+            lastLogin=datetime.datetime.utcnow()
         )
         newUser.set_password("random")
         db.session.add(newUser)
@@ -206,15 +216,13 @@ def unauthorized():
 
 
 # STRAVA
-
-
 @auth_bp.route("/exchange_token")
 def stravaToken():
     query_parameters = request.args
     code = query_parameters.get('code')
     scopes = query_parameters.get('scope')
 
-    if scopes!="read,activity:read_all,profile:read_all":
+    if scopes!="read,activity:read_all":
         flash("You need to accept all the permissions required")
 
     token_url="https://www.strava.com/oauth/token"
@@ -225,19 +233,76 @@ def stravaToken():
         data=payload
     )
 
-    # print("Access token :",token_response.json()["access_token"])
-    print("Response:",token_response.json())
 
     if "errors" in token_response.json().keys():
         print("Auth error")
         print("Response:",token_response.json())
+        return redirect(url_for('main_bp.home'))
+
     else :
-        current_user.stravaToken=token_response.json()["access_token"]
-        current_user.stravaTokenExpiration=token_response.json()["expires_at"]  #6 hours after request
-        print("Expiration Time:",current_user.stravaTokenExpiration)
-        print("Time :",time.time())
 
-        db.session.commit()  # Store temporary token
+        data = token_response.json()
+        if current_user.is_authenticated:
+            # Just adding the strava account to an already logged in user
+            current_user.stravaToken=data["access_token"]
+            current_user.stravaTokenExpiration=data["expires_at"]  #6 hours after request
+            stravaId = data["athlete"]["id"]
+
+            print("Binding Strava account to the user account")
 
 
-    return redirect(url_for('main_bp.activities'))
+            # Check if the user has already an account with Strava
+            existingStravaUser = User.query.filter_by(stravaId=stravaId).first()
+
+            if existingStravaUser:
+                print("Need to merge two accounts")
+                # Replacing some data from Strava account and transfering the saved itineraries
+                stravaAccount = dataManager.mergeAccount(existingStravaUser,current_user)
+                login_user(stravaAccount)
+
+
+            else :
+                # Simply add the strava ID
+                current_user.stravaId=stravaId
+                db.session.commit()  # Store temporary token
+
+            return redirect(url_for('main_bp.activities'))
+       
+        else:
+            # Log the user with the strava credential
+            
+            stravaId = data["athlete"]["id"]
+            userId = "strava_"+str(stravaId)
+            user = User.query.filter_by(stravaId=stravaId).first()
+
+            # Doesn't exist? Add it to the database.
+            if not user:
+                print("Create new user via Strava. Id:",userId)
+
+                newUser = User(
+                    name=data["athlete"]["firstname"],
+                    userId=userId,
+                    createdOn=datetime.datetime.utcnow(),
+                    lastLogin=datetime.datetime.utcnow(),
+                    stravaId=stravaId,
+                    stravaToken=data["access_token"],
+                    stravaTokenExpiration=data["expires_at"]
+                )
+                newUser.set_password("useless")
+                db.session.add(newUser)
+                db.session.commit()  # Create new user
+                login_user(newUser)
+                return redirect(url_for('main_bp.home'))
+
+            else :
+                print("Login user via Strava")
+                current_user.stravaToken=data["access_token"]
+                current_user.stravaTokenExpiration=data["expires_at"]  #6 hours after request
+                current_user.lastLogin=datetime.datetime.utcnow()
+
+                db.session.commit()  # Store temporary token
+                # Begin user session by logging the user in
+                login_user(user)
+
+                return redirect(url_for('main_bp.home'))
+

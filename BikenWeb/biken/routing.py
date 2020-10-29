@@ -11,11 +11,12 @@ import polyline
 
 load_dotenv()
 ELEVATION_API_KEY = os.environ.get("ELEVATION_API_KEY", None)
+MAPBOX_API_KEY = os.environ.get("MAPBOX_DIRECTION_API_TOKEN", None)
 
 COEFF_DURATION = 2
 OFFSET_DISTANCE_ROUTE = 10
 
-def itinerary(startCoord,endCoord,mode) :
+def itinerary(startCoord,endCoord) :
     startLon = startCoord['lon']
     startLat = startCoord['lat']
     endLon = endCoord['lon']
@@ -23,39 +24,25 @@ def itinerary(startCoord,endCoord,mode) :
 
     startTime = time.time()
 
-    url = f"https://routing.openstreetmap.de/routed-{mode}/route/v1/cycling/{startLon},{startLat};{endLon},{endLat}?overview=false&alternatives=false&steps=true&geometries=geojson"
-    print("Url:",url)
-
+    # url = f"https://routing.openstreetmap.de/routed-{mode}/route/v1/cycling/{startLon},{startLat};{endLon},{endLat}?overview=false&alternatives=false&steps=true&geometries=geojson"
+    url = f"https://api.mapbox.com/directions/v5/mapbox/cycling/{startLon},{startLat};{endLon},{endLat}?alternatives=false&overview=full&geometries=polyline&steps=false&access_token={MAPBOX_API_KEY}"
+    
+    print("Request itinerary: ",url)
     r = requests.get(url)
     data = r.json()
-    startWaypoint = data['waypoints'][0]
-    endWaypoint = data['waypoints'][1]
+    polyline = data["routes"][0]["geometry"]
+    distance = int(data["routes"][0]["distance"])
+    duration = int(data["routes"][0]["duration"]/60)
 
-
-    print(f"\nDistance :{data['routes'][0]['distance']/1000} kms")
-    print(f"\nDuration :{data['routes'][0]['duration']//60} minutes")
-
-
-
-    path = []
-    for step in data['routes'][0]["legs"][0]["steps"]:
-        path += step["geometry"]["coordinates"]
-
-    print("\nNumber of point in the path :",len(path))
-
-    # Convert the itinerary to a polyline
-    routePolyline = polyline.encode(path, 5,geojson=True)
-
+    startWaypoint = {"name":data["waypoints"][0]["name"],"lon": data["waypoints"][0]["location"][0],"lat": data["waypoints"][0]["location"][1]}
+    endWaypoint = {"name":data["waypoints"][1]["name"],"lon": data["waypoints"][1]["location"][0],"lat": data["waypoints"][1]["location"][1]}
 
     endTime = time.time()
-    print(f"~~~~~~~~~~~~\nTime for the request : {endTime-startTime} seconds")
-
-    returnObject = {"polyline":routePolyline,"duration":(data['routes'][0]['duration']//60)/COEFF_DURATION,"distance":round(data["routes"][0]['distance']/1000,2),"calculationTime":endTime-startTime,"estimatedTime":0}
-
+    returnObject = {"type":"oneway","polyline":polyline,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
     return returnObject
 
 
-def route(startPoint,distance,mode) :
+def route(startPoint,distance) :
     numberOfPoints = 5
     waypointList = generateCircle(startPoint,distance,numberOfPoints)
 
@@ -69,7 +56,7 @@ def route(startPoint,distance,mode) :
     startTime = time.time()
     # url = 'http://router.project-osrm.org/trip/v1/driving/7.38005110142422,48.997893;7.391206631583589,48.91401095997912;7.515921473100911,48.8950695287716;7.581843953900803,48.96724512051065?steps=true&geometries=geojson'
     print(url)
-    r = requests.get(url)
+    # r = requests.get(url)
     data = r.json()
     path = []
 
@@ -193,7 +180,12 @@ def generateCircle(start,distance,points):
 
     return waypointList
 
-
+def getGPSLocation(place):
+    endpoint = "https://nominatim.openstreetmap.org/search/"
+    endpoint = endpoint+place+"?format=json&limit=1"
+    r = requests.get(endpoint)
+    response = r.json()
+    return {"lat":response[0]["lat"],"lon":response[0]["lon"]}
 
 
 def getElevation(polylineData):
@@ -252,6 +244,9 @@ def addKmWithAngle(radius, direction, startPos):
 
     return returnValues
 
+
+
+
 if __name__ == '__main__':
 
     start = {}
@@ -260,6 +255,9 @@ if __name__ == '__main__':
     start["lon"] = 7.379982
     end["lat"] =48.962728
     end["lon"] = 7.369994
+
+
+    getGPSLocation("Bitche")
 
     # itinerary(start,end,"bike")
 

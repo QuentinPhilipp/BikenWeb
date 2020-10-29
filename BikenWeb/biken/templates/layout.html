@@ -14,7 +14,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-
     <!-- Primary Meta Tags -->
     <title>BikenApp | Generate your next cycling trip</title>
     <meta name="title" content="BikenApp | Generate your next cycling trip">
@@ -46,6 +45,7 @@
  crossorigin=""/>
 
  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
 
  <!-- Javascript -->
  <script
@@ -62,42 +62,29 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <a class="navbar-brand" href="/">
-        <img src="{{url_for('static', filename='bikenWithoutBg.svg')}}" width="30" height="30" class="d-inline-block align-top logo-brand" alt="biken-logo">
-        Biken
-      </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-       <span class="navbar-toggler-icon"></span>
-   </button>
-  <div class="collapse  navbar-collapse" id="navbarNav">
-    <!-- mr-auto -->
-    <ul class="navbar-nav ">
-      <div class="row text-center mx-4">
-        <div class="custom-control my-1 custom-switch py-2 col-md-auto">
-          <input type="checkbox" name="checkbox-mode" class="custom-control-input" id="customSwitches">
-          <label class="custom-control-label" id="switch-type-label" for="customSwitches"></label>
-        </div>
-        <form class="form-inline col" onsubmit="sendRequest();return false;">
-          <input class="form-control my-1  mr-sm-2" id="start" placeholder="Start">
-          <input class="form-control my-1  mr-sm-2" id="finish" placeholder="Destination" required>
-          <input class="form-control my-1  mr-sm-2" id="distance" placeholder="Distance" type="number" max="999" hidden>
-          <button class="btn btn-outline-success  mx-auto my-2 sm" data-toggle="collapse" data-target=".navbar-collapse.show">Search</button>
-        </form>
-      </div>
-    </ul>
-
-    <div class="dropdown-divider"></div>
-
-    <ul class="navbar-nav ml-auto">
-
-      <div class="row text-center mx-4">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">
+      <img src="{{url_for('static', filename='ressources/svg/logo.svg')}}" height="50" class="d-inline-block align-top logo-brand" alt="biken-logo">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/features">Features</a>
+        </li>
+      </ul>
+      <hr class="hr-light">
+      <ul class="navbar-nav">
         {% if current_user.is_authenticated %}
-        <button class="nav-item btn btn-outline-success col mx-4" onclick="saveItinerary()">Save & Share</button>
-        <button class="nav-item btn gray-txt" onclick="saveItinerary(gpx=true)">GPX <i class="fas fa-cloud-download-alt"></i></button>
-        <li class="dropdown col-4 col-sm-2">
+      
+        <li class="nav-item dropdown">
           <a class="nav-link nav-item " href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img src="{{url_for('static', filename='profile_unknown.svg')}}" width="30" height="30" class="d-inline-block align-middle profile-pic" alt="profile_pic">
+            <img src="{{url_for('static', filename='ressources/svg/profile_unknown.svg')}}" width="30" height="30" class="d-inline-block align-middle profile-pic" alt="profile_pic">
           </a>
           <div class="nav-item dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item"  href="/profile">My Profile</a>
@@ -107,23 +94,23 @@
           </div>
         </li>
         {% else %}
-        <button class="nav-item btn btn-outline-success col mx-4" onclick="saveItinerary()">Export itinerary</button>
-        <button class="nav-item btn gray-txt" onclick="saveItinerary(gpx=true)">GPX <i class="fas fa-cloud-download-alt"></i></button>
-        <a class="nav-item btn gray-txt" href="/login">Login</a>
+        <li class="nav-item">
+          <a class="nav-link" href="/login">Login | Sign-in</a>
+        </li>
         {% endif %}
-      </div>
-
-
-
-
-    </ul>
-  </div>
+      </ul>
+    </div>
   </nav>
-  {% block content %}{% endblock %}
+
+
+  {% block content %}
+  
+  {% endblock %}
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-  <script src="../static/js/main.js" charset="utf-8"></script>
 
 </body>
 

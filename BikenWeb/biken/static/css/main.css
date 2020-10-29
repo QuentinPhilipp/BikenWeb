@@ -16,27 +16,8 @@ body {
   color: rgba(255, 255, 255, 0.5);
 }
 
-#mapid {
-  position: relative;
-  z-index: 0;
-  height: 100%;
-  width: 100vw;
-}
 
-/* Route info */
-
-#info-bottom {
-  position: fixed;
-  z-index: 1;
-  bottom: 10px;
-  width: 100vw;
-  margin:0;
-}
-
-#elevationChart {
-  /* max-width: 400px; */
-  padding-right: 10px;
-}
+/* 
 
 #close-info-cross {
     position: absolute;
@@ -59,7 +40,6 @@ body {
 }
 
 
-/* End Route info */
 
 
 .screen {
@@ -78,7 +58,6 @@ body {
   }
 }
 
-/* Loader */
 
 .loader-container {
   position: absolute;
@@ -105,10 +84,6 @@ height: 150px;
 
 }
 
-
-/* Save info  */
-
-/* The alert message box */
 #alertContainer {
   display: flex;
   justify-content: center;
@@ -117,28 +92,18 @@ height: 150px;
 }
 
 .alert {
-  background-color: #f44336; /* Red */
+  background-color: #f44336;
   color: white;
 
 }
 
 .alert.warning {
-  background-color: #ff9800; /* Orange */
+  background-color: #ff9800; 
 }
 
 .alert.success {
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50; 
 }
-
-
-/* .success {
-  position: absolute;
-  top: 80px;
-  background-color: #4CAF50;
-  color: white;
-  margin-left: auto;
-  margin-right: auto;
-} */
 
 
 .dropdown-divider {
@@ -147,19 +112,6 @@ height: 150px;
   background-color: rgb(233, 14, 188) !important;
 }
 
-/* .warning-box {
-  position: fixed;
-  top:70px;
-  width: 100%;
-  background: rgb(14, 205, 142);
-  height: 100px;
-} */
-
-
-
-/* #profile-name {
-  text-align: center;
-} */
 
 .profile-pic {
     border-radius: 50%;
@@ -256,20 +208,18 @@ height: 150px;
 
 
 
-/* Popup Save */
 .popupSave {
-  display: none; /* Default hidden */
+  display: none; 
   position: fixed;
   z-index:10;
   width: 100vw;
 }
 
-/* Modal Content/Box */
 .popup-content {
   background-color: #fefefe;
   padding: 10px;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 80%; 
   height: 100%;
   max-width: 700px;
   margin-left: auto;
@@ -288,7 +238,6 @@ height: 150px;
   margin-left: 10px
 }
 
-/* The Close Button */
 .close {
   color: #aaa;
   float: right;
@@ -301,4 +250,4 @@ height: 150px;
   color: black;
   text-decoration: none;
   cursor: pointer;
-}
+} */

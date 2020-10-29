@@ -11,6 +11,10 @@ class User(UserMixin, db.Model):
 		db.Integer,
 		primary_key=True
 	)
+	userId = db.Column(
+		db.String(16),
+        unique=True
+	)
 	name = db.Column(
 		db.String(100),
 		nullable=False,
@@ -18,8 +22,7 @@ class User(UserMixin, db.Model):
 	)
 	email = db.Column(
 		db.String(40),
-		unique=True,
-		nullable=False
+		unique=True
 	)
 	password = db.Column(
 		db.String(200),
@@ -27,17 +30,22 @@ class User(UserMixin, db.Model):
 		unique=False,
 		nullable=False
 	)
-	created_on = db.Column(
+	createdOn = db.Column(
         db.DateTime,
         index=False,
         unique=False,
         nullable=True
     )
-	last_login = db.Column(
+	lastLogin = db.Column(
         db.DateTime,
         index=False,
         unique=False,
         nullable=True
+    )
+	stravaId = db.Column(
+        db.Integer,
+        index=False,
+        unique=True
     )
 	stravaToken = db.Column(
         db.String(40),
@@ -51,7 +59,6 @@ class User(UserMixin, db.Model):
         unique=False,
         nullable=True
 	)
-	itinerary = db.relationship("Itinerary")
 
 	def set_password(self, password):
 		"""Create hashed password."""
@@ -63,8 +70,6 @@ class User(UserMixin, db.Model):
 
 	def __repr__(self):
 		return '<User {}>'.format(self.username)
-
-
 
 
 class Itinerary(db.Model):
@@ -79,10 +84,6 @@ class Itinerary(db.Model):
 		db.String(16),
         unique=True
 	)
-	user_id=db.Column(
-		db.Integer,
-		db.ForeignKey("flasklogin-users.id")
-	)
 	polyline=db.Column(
 		db.String()
 	)
@@ -91,11 +92,38 @@ class Itinerary(db.Model):
         unique=False,
         nullable=True
 	)
-	name=db.Column(
-		db.String(100),
-        unique=False,
-        nullable=True
-	)
 	duration=db.Column(
 		db.Integer
+	)
+	startCoordLat=db.Column(
+		db.Float()
+	)
+	startCoordLon=db.Column(
+		db.Float()
+	)	
+	endCoordLat=db.Column(
+		db.Float()
+	)	
+	endCoordLon=db.Column(
+		db.Float()
+	)
+class ItineraryOwnership(db.Model):
+	"""Define the appartenance of itinerary to different user"""
+	__tablename__ = 'itineraryOwnership'
+	id = db.Column(
+		db.Integer,
+        unique=True,
+		primary_key=True
+	)
+	itineraryIdentifier = db.Column(
+		db.String(16)
+	)
+	userId = db.Column(
+		db.String(16)
+	)
+	private = db.Column(
+		db.Boolean
+	)
+	name = db.Column(
+		db.String(100)
 	)

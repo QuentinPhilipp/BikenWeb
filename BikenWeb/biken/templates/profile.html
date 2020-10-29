@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <h2 class="pt-4">Your itineraries</h2>
+    <h2 class="pt-4">Your saved itineraries</h2>
     <hr>
 
     <script src="../static/js/profile.js" charset="utf-8"></script>
@@ -29,7 +29,7 @@
     {% if not itineraries %}
     <div class="text-center py-4">
       <h2>You haven't saved any itinerary.</h2>
-      <p>To save an itinerary, just click on the save button in the menu bar when you have created an itinerary</p>
+      <p>To save an itinerary, just click on the save button when you have created an itinerary</p>
     </div>
 
     {% else %}
@@ -51,11 +51,11 @@
 
             <div class=" text-left info-detail">
               <div class="label-up">Distance</div>
-              <b class="info">{{itinerary.distance}} km</b>
+              <b class="info">{{(itinerary.distance/1000)|round(1)}} km</b>
           </div>
 
           <div class=" text-left info-detail">
-            <div class="label-up">Durée</div>
+            <div class="label-up">Duration</div>
             {% if itinerary.duration//60 > 1 and itinerary.duration%60 >1 %}
             <b class="info">{{itinerary.duration//60}} hours and {{itinerary.duration%60}} minutes </b>
             {% elif itinerary.duration//60 > 1 and itinerary.duration%60 ==1 %}
@@ -120,7 +120,7 @@
           id: 'mapbox/streets-v11',
           tileSize: 512,
           zoomOffset: -1,
-          accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2sxeHp3amcwMGdvYTNobDh6Ym55ZW1ibSJ9.lGWM8-RyVB2NoQRSgIL9nQ'
+          accessToken: 'pk.eyJ1IjoiYmlrZW5kZXYiLCJhIjoiY2tndXZ6ZG1sMHo5ODJ6cDlmZjFoMWdheSJ9.Z8rE4hBJxztTXy5EX5mMUw'
       }).addTo(mapPreview{{itinerary.itineraryIdentifier}});
 
 

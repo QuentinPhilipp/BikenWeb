@@ -1,0 +1,103 @@
+#mapid {
+    width: 100vw;
+    height: 100%;
+}
+
+.screen {
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    width: auto;
+    height: auto;
+    z-index: 1;
+  }
+
+.itinerary-planner-container {
+    position: relative;
+    max-width: 400px;
+    z-index: 100;
+}
+
+#panel {
+    padding: 5px;
+    border-radius: 3px;
+    background-color: white;
+    -webkit-box-shadow: 4px 6px 29px -8px rgba(0,0,0,0.75);
+    -moz-box-shadow: 4px 6px 29px -8px rgba(0,0,0,0.75);
+    box-shadow: 4px 6px 29px -8px rgba(0,0,0,0.75);
+}
+
+.itinerary-type.active {
+    color: white !important;
+    background : #8cd8bf;
+    border: #8cd8bf;
+}
+
+.itinerary-type{
+    color: #101010;
+    border: solid 1px #101010;
+    border-radius: 5px;
+    margin-bottom: 0;
+}
+
+.btn-search {
+    border: solid 1px #8cd8bf;
+    margin-right: 0px;
+    margin-left: auto;
+}
+
+
+input {
+    /* Remove circle of radio button */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+
+.bg {
+    background: #000;
+}
+
+.button-row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+
+/* Itinerary details panel */
+
+.data-display {
+    font-size: 18px;
+}
+
+.widget-container {
+    border-top: 1px solid rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    padding: 10px 20px 10px 20px;
+}
+
+#elevation-chart {
+    height: 90px;
+    background-color: palegoldenrod;
+    width: 100%;
+}
+
+.collapse-button {
+	background-color:#8cd8bf;
+	border-radius:  0px 0px 11px 11px;
+	border:1px solid #75b9a3;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+    padding:0px 31px;
+    line-height: 100%;
+	text-decoration:none;
+}
+
+
+        
