@@ -8,6 +8,8 @@
   src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"
 ></script>
 
+<script src="../static/js/utils.js" charset="utf-8"></script>
+
 <!-- Error handling -->
 {% for message in get_flashed_messages() %}
 <div class="alert alert-warning">
@@ -116,7 +118,16 @@
               Change Name
             </button>
           </div>
-
+          <div class="col">
+            <button
+              type="button"
+              class="btn btn-primary"
+              name="button"
+              onclick="exportGPX('{{itinerary.itineraryIdentifier}}','{{itinerary.name}}')"
+            >
+              Download GPX
+            </button>
+          </div>
           <div class="col">
             <button
               type="button"
