@@ -166,26 +166,26 @@ def save():
 
 
 
-# @main_bp.route("/getGPX",methods=["GET"])
-# def getGpx():
-#     query_parameters = request.args
-#     itineraryID = query_parameters.get('itinerary')
+@main_bp.route("/getGPX",methods=["GET"])
+def getGpx():
+    query_parameters = request.args
+    itineraryID = query_parameters.get('itinerary')
+    itineraryName = query_parameters.get('name')
 
-#     itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
+    itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
 
-#     if itinerary:
-
-#         if itinerary.name :
-#             filename = gpxEncoder.createGPXfile(itinerary,itinerary.name)
-#         else :
-#             filename = gpxEncoder.createGPXfile(itinerary,itineraryID)
+    if itinerary:
+        filename = gpxEncoder.createGPXfile(itinerary,itineraryName)
       
-#         if filename != "Error":
-#             val = {"filename": filename, "success": True}
-#             return jsonify(val)
-#     # else
-#     val = {"success": False}
-#     return jsonify(val)
+        if filename != "Error":
+            val = {"filename": filename, "success": True}
+            return jsonify(val)
+    else:
+        val = {"success": False}
+        return jsonify(val)
+
+    val = {"success": False}
+    return jsonify(val)
 
 
 @main_bp.route("/logout")

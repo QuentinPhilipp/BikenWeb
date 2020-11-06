@@ -135,5 +135,3 @@ def mergeAccount(existingStravaUser,current_user):
 
     return existingStravaUser
 
-
-

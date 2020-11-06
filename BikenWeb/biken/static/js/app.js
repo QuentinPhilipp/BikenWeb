@@ -35,8 +35,24 @@ function saveItinerary() {
   // });
 }
 
-function exportGPX() {
+async function exportGPX() {
   console.log("Export GPX");
+
+  url =
+    "getGPX?itinerary=" +
+    sessionStorage.getItem("itineraryID") +
+    "&name=" +
+    sessionStorage.getItem("itineraryID");
+  let response = await fetch(url);
+  await response.json().then((gpxData) => {
+    if (gpxData.success == true) {
+      console.log("Success to create GPX file");
+      var fileUrl = window.location.href + gpxData.filename;
+      window.open(fileUrl);
+    } else {
+      console.log("Fail to create GPX file");
+    }
+  });
 }
 
 async function requestItinerary() {
