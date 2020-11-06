@@ -24,9 +24,10 @@ def itinerary(startCoord,endCoord) :
 
     startTime = time.time()
 
-    # url = f"https://routing.openstreetmap.de/routed-{mode}/route/v1/cycling/{startLon},{startLat};{endLon},{endLat}?overview=false&alternatives=false&steps=true&geometries=geojson"
+    # Add the waypoints in the request
     url = f"https://api.mapbox.com/directions/v5/mapbox/cycling/{startLon},{startLat};{endLon},{endLat}?alternatives=false&overview=full&geometries=polyline&steps=false&access_token={MAPBOX_API_KEY}"
     
+    # Request data and sort the results
     print("Request itinerary: ",url)
     r = requests.get(url)
     data = r.json()
@@ -34,10 +35,13 @@ def itinerary(startCoord,endCoord) :
     distance = int(data["routes"][0]["distance"])
     duration = int(data["routes"][0]["duration"]/60)
 
+    # Create waypoints
     startWaypoint = {"name":data["waypoints"][0]["name"],"lon": data["waypoints"][0]["location"][0],"lat": data["waypoints"][0]["location"][1]}
     endWaypoint = {"name":data["waypoints"][1]["name"],"lon": data["waypoints"][1]["location"][0],"lat": data["waypoints"][1]["location"][1]}
 
     endTime = time.time()
+
+    # Return the route
     returnObject = {"type":"oneway","polyline":polyline,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
     return returnObject
 
@@ -46,49 +50,28 @@ def route(startPoint,distance) :
     numberOfPoints = 5
     waypointList = generateCircle(startPoint,distance,numberOfPoints)
 
-    # baseUrl = f'https://routing.openstreetmap.de/routed-{mode}/trip/v1/cycling/'
-
+    # Add the waypoints in the request
     url = f"https://api.mapbox.com/directions/v5/mapbox/cycling/{waypointList[0]['lon']},{waypointList[0]['lat']};{waypointList[1]['lon']},{waypointList[1]['lat']};{waypointList[2]['lon']},{waypointList[2]['lat']};{waypointList[3]['lon']},{waypointList[3]['lat']};{waypointList[4]['lon']},{waypointList[4]['lat']};{waypointList[0]['lon']},{waypointList[0]['lat']}?alternatives=false&overview=full&geometries=polyline&steps=false&access_token={MAPBOX_API_KEY}"
 
     startTime = time.time()
     print("Request itinerary: ",url)
 
+    # Request data and sort the results
     r = requests.get(url)
     data = r.json()
     polyline = data["routes"][0]["geometry"]
     distance = int(data["routes"][0]["distance"])
     duration = int(data["routes"][0]["duration"]/60)
 
+    # Create waypoints
     startWaypoint = {"name":data["waypoints"][0]["name"],"lon": data["waypoints"][0]["location"][0],"lat": data["waypoints"][0]["location"][1]}
     endWaypoint = startWaypoint
 
     endTime = time.time()
+
+    # Return the route
     returnObject = {"type":"round","polyline":polyline,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
     return returnObject
-
-
-    # for leg in data['trips'][0]["legs"]:
-    #     indexStart=0
-    #     for step in leg["steps"]:
-    #         path += step["geometry"]["coordinates"]
-    #         indexStart += len(step["geometry"]["coordinates"])
-    #     waypointsIndex.append(indexStart)
-    # #       print(path)
-
-    # # Convert the itinerary to a polyline
-    # routePolyline = polyline.encode(path, 5,geojson=True)
-
-
-    # # # Check U-turn on the roads
-    # # returnedPath = removeUturn(returnedPath);
-
-
-    # endTime = time.time()
-    # returnObject = {"polyline":routePolyline,"duration":(data['trips'][0]['duration']//60)/COEFF_DURATION,"distance": round(data["trips"][0]['distance']/1000,2),"calculationTime":endTime-startTime}
-    # return returnObject
-
-
-
 
 
 def removeUturn(coordsList):
