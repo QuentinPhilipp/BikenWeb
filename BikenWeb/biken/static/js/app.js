@@ -43,9 +43,11 @@ async function requestItinerary() {
   var startInput = document.getElementById("start");
   var destinationInput = document.getElementById("finish");
   var distanceInput = document.getElementById("distance");
-  var radio1 = document.getElementById("option1-radio");
+  var radio1 = document.getElementById("radio1-label");
 
-  if (radio1.checked == true) {
+  console.log(radio1.classList);
+
+  if (radio1.classList.contains("active")) {
     // Oneway mode
     url =
       window.location.href +
@@ -74,6 +76,31 @@ async function requestItinerary() {
     });
   } else {
     // Round mode
+    url =
+      window.location.href +
+      "plan/itinerary?start=" +
+      startInput.value +
+      "&destination=" +
+      destinationInput.value +
+      "&distance=" +
+      distanceInput.value +
+      "&type=round&render=false";
+
+    let response = await fetch(url);
+    await response.json().then((dataItinerary) => {
+      console.log(dataItinerary);
+
+      // Store locally the itinerary ID
+      sessionStorage.setItem("itineraryID", dataItinerary["uniqueId"]);
+
+      renderItinerary(dataItinerary);
+
+      //   // Query elevation of this path to the server
+      //   getElevation(dataItinerary.polyline)
+
+      // Show elevation, distance and time
+      showItineraryDetail(dataItinerary);
+    });
   }
 }
 

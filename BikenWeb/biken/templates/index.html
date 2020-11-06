@@ -12,12 +12,12 @@
     <input class="form-control my-1  mr-sm-2" id="distance" placeholder="Distance" type="number" name="distance" max="999" hidden>
     <div class="row button-row align-items-center">
       <div data-toggle="buttons">
-        <label onclick="selectOneWayTrip();" class="btn itinerary-type active">
+        <label onclick="selectOneWayTrip();" id="radio1-label" class="btn itinerary-type active">
             <input type="radio" name="type" value="oneway" id="option1-radio" checked autocomplete="off">Oneway Trip
         </label>
-        <!-- <label onclick="selectRoundTrip();" class="btn itinerary-type ml-2" >
+        <label onclick="selectRoundTrip();" class="btn itinerary-type ml-2" >
             <input type="radio" name="type" value="round" id="option2-radio" autocomplete="off">Round Trip
-        </label> -->
+        </label>
       </div>
       <button class="btn btn-search float-right" data-toggle="collapse" data-target=".navbar-collapse.show"><i class="fas fa-search"></i></button>
     </div>

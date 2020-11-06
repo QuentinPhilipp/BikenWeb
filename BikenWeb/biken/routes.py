@@ -109,34 +109,34 @@ def planItinerary():
             return jsonify(val)
 
 
-    # elif routeType=="round":
-    #     # Remove 10% of distance
-    #     distance = float(distance) - float(distance)*0.1
+    elif routeType=="round":
+        # Remove 10% of distance
+        distance = float(distance) - float(distance)*0.1
 
-    #     gpsStart=routing.getGPSLocation(startPlace)
-    #     # If the start is an adress
-    #     if gpsStart and distance:
-    #         route = routing.route(gpsStart,distance)
+        gpsStart=routing.getGPSLocation(startPlace)
+        # If the start is an adress
+        if gpsStart and distance:
+            route = routing.route(gpsStart,distance)
 
-    #         if render=='false':
-    #             # return only the data
-    #             return jsonify(route)
-    #         else :
-    #             # Return the template
-    #             return render_template(
-    #                 'index.html',
-    #                 title='Biken Home page',
-    #                 current_user=current_user,
-    #                 itinerary=route
-    #             )
+            if render=='false':
+                # return only the data
+                return jsonify(route)
+            else :
+                # Return the template
+                return render_template(
+                    'index.html',
+                    title='Biken Home page',
+                    current_user=current_user,
+                    itinerary=route
+                )
 
-    #     else :
-    #         val = {"error": "Bad request", "error_desc": "Start and/or distance not found"}
-    #         return jsonify(val)
+        else :
+            val = {"error": "Bad request", "error_desc": "Start and/or distance not found"}
+            return jsonify(val)
 
-    # else :
-    #     val = {"error": "Bad request", "error_desc": "RouteType doesn't correspond to any of the valid entry (oneway or roundtrip)"}
-    #     return jsonify(val)
+    else :
+        val = {"error": "Bad request", "error_desc": "RouteType doesn't correspond to any of the valid entry (oneway or roundtrip)"}
+        return jsonify(val)
 
 
 

@@ -122,8 +122,10 @@ function displayMarker(point) {
 }
 
 function renderItinerary(itinerary) {
+  // Render full polyline
   displayPolyline(itinerary.polyline);
 
+  // Add markers at the beginning and the end
   var coordinates = L.Polyline.fromEncoded(itinerary.polyline).getLatLngs();
   if (itinerary["type"] == "oneway") {
     var start = L.latLng(coordinates[0].lat, coordinates[0].lng);
