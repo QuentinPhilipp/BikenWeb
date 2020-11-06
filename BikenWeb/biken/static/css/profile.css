@@ -24,3 +24,15 @@
 #stat-row {
   min-height: 50%;
 }
+
+#button-row {
+  height: fit-content;
+}
+
+.info-container {
+  height: fit-content;
+}
+
+.buttons {
+  white-space: nowrap;
+}

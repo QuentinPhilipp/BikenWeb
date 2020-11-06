@@ -108,30 +108,30 @@
         <hr />
 
         <div id="button-row" class="row justify-content-center">
-          <div class="col">
+          <div class="col my-1">
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-primary buttons"
               name="button"
               onclick="editName('{{itinerary.itineraryIdentifier}}')"
             >
               Change Name
             </button>
           </div>
-          <div class="col">
+          <div class="col my-1">
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-primary buttons"
               name="button"
               onclick="exportGPX('{{itinerary.itineraryIdentifier}}','{{itinerary.name}}')"
             >
               Download GPX
             </button>
           </div>
-          <div class="col">
+          <div class="col my-1">
             <button
               type="button"
-              class="btn btn-danger"
+              class="btn btn-danger buttons"
               name="button"
               onclick="deleteItinerary('{{itinerary.itineraryIdentifier}}')"
             >
