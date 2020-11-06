@@ -1,17 +1,13 @@
-
-
 .itinerary-container {
   background-color: white;
   border-radius: 5px;
   max-width: 1200px;
 }
 
-
 .mapPreview {
   min-height: 250px;
   min-width: 180px;
 }
-
 
 .label-up {
   font-size: 12px;

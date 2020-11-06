@@ -1,16 +1,20 @@
-{% extends "layout.html" %}
-
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
-<script type="text/javascript" src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"></script>
+{% extends "layout.html" %} {% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/profile.css') }}"
+/>
+<script
+  type="text/javascript"
+  src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"
+></script>
 
 <!-- Error handling -->
-  {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      {{ message }}
-    </div>
-  {% endfor %}
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  {{ message }}
+</div>
+{% endfor %}
 
 <section id="profile">
   <div class="container">
@@ -21,83 +25,110 @@
     </div>
 
     <h2 class="pt-4">Your saved itineraries</h2>
-    <hr>
+    <hr />
 
     <script src="../static/js/profile.js" charset="utf-8"></script>
-
 
     {% if not itineraries %}
     <div class="text-center py-4">
       <h2>You haven't saved any itinerary.</h2>
-      <p>To save an itinerary, just click on the save button when you have created an itinerary</p>
+      <p>
+        To save an itinerary, just click on the save button when you have
+        created an itinerary
+      </p>
     </div>
 
-    {% else %}
-
-    {% for itinerary in itineraries %}
+    {% else %} {% for itinerary in itineraries %}
     <div class="row my-3 mx-3 py-3 justify-content-center itinerary-container">
-      <a class="col-lg-6 col-sm-12" href="/home?itinerary={{itinerary.itineraryIdentifier}}">
-        <div class="mapPreview" id="mapPreview{{itinerary.itineraryIdentifier}}"></div>
+      <a
+        class="col-lg-6 col-sm-12"
+        href="/home?itinerary={{itinerary.itineraryIdentifier}}"
+      >
+        <div
+          class="mapPreview"
+          id="mapPreview{{itinerary.itineraryIdentifier}}"
+        ></div>
       </a>
       <div class="info-container text-center col-lg-6 col-sm-12">
-
         <div id="header-row" class="row pt-2 justify-content-center">
           <div class="col">
-            <h3 id="activityName{{itinerary.itineraryIdentifier}}">{{itinerary.name}}</h3>
+            <h3 id="activityName{{itinerary.itineraryIdentifier}}">
+              {{itinerary.name}}
+            </h3>
           </div>
         </div>
 
         <div id="stat-row" class="row justify-content-center">
-
-            <div class=" text-left info-detail">
-              <div class="label-up">Distance</div>
-              <b class="info">{{(itinerary.distance/1000)|round(1)}} km</b>
+          <div class="text-left info-detail">
+            <div class="label-up">Distance</div>
+            <b class="info">{{(itinerary.distance/1000)|round(1)}} km</b>
           </div>
 
-          <div class=" text-left info-detail">
+          <div class="text-left info-detail">
             <div class="label-up">Duration</div>
             {% if itinerary.duration//60 > 1 and itinerary.duration%60 >1 %}
-            <b class="info">{{itinerary.duration//60}} hours and {{itinerary.duration%60}} minutes </b>
+            <b class="info"
+              >{{itinerary.duration//60}} hours and {{itinerary.duration%60}}
+              minutes
+            </b>
             {% elif itinerary.duration//60 > 1 and itinerary.duration%60 ==1 %}
-            <b class="info">{{itinerary.duration//60}} hours and {{itinerary.duration%60}} minute </b>
+            <b class="info"
+              >{{itinerary.duration//60}} hours and {{itinerary.duration%60}}
+              minute
+            </b>
             {% elif itinerary.duration//60 > 1 and itinerary.duration%60 ==0 %}
             <b class="info">{{itinerary.duration//60}} hours</b>
 
             <!-- More than 1 hour -->
             {% elif itinerary.duration//60 == 1 and itinerary.duration%60 >1 %}
-            <b class="info">{{itinerary.duration//60}} hour and {{itinerary.duration%60}} minutes </b>
+            <b class="info"
+              >{{itinerary.duration//60}} hour and {{itinerary.duration%60}}
+              minutes
+            </b>
             {% elif itinerary.duration//60 == 1 and itinerary.duration%60 ==1 %}
-            <b class="info">{{itinerary.duration//60}} hour and {{itinerary.duration%60}} minute </b>
+            <b class="info"
+              >{{itinerary.duration//60}} hour and {{itinerary.duration%60}}
+              minute
+            </b>
             {% elif itinerary.duration//60 == 1 and itinerary.duration%60 ==0 %}
             <b class="info">{{itinerary.duration//60}} hour</b>
 
             <!-- Less than 1 hour -->
             {% elif itinerary.duration//60 == 0 and itinerary.duration%60 >1 %}
             <b class="info">{{itinerary.duration%60}} minutes </b>
-            {% elif itinerary.duration//60 == 0 and itinerary.duration%60 == 1 %}
+            {% elif itinerary.duration//60 == 0 and itinerary.duration%60 == 1
+            %}
             <b class="info">{{itinerary.duration%60}} minute </b>
             {%endif%}
           </div>
-
-
         </div>
 
-        <hr>
+        <hr />
 
         <div id="button-row" class="row justify-content-center">
-
           <div class="col">
-            <button type="button" class="btn btn-primary" name="button" onclick="editName('{{itinerary.itineraryIdentifier}}')">Change Name</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              name="button"
+              onclick="editName('{{itinerary.itineraryIdentifier}}')"
+            >
+              Change Name
+            </button>
           </div>
 
           <div class="col">
-            <button type="button" class="btn btn-danger" name="button" onclick="deleteItinerary('{{itinerary.itineraryIdentifier}}')">Delete</button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              name="button"
+              onclick="deleteItinerary('{{itinerary.itineraryIdentifier}}')"
+            >
+              Delete
+            </button>
           </div>
-
         </div>
       </div>
-
-
     </div>
 
     <script type="text/javascript">
@@ -144,52 +175,12 @@
         var marker1 = L.marker(start{{itinerary.itineraryIdentifier}}).addTo(mapPreview{{itinerary.itineraryIdentifier}});
         mapPreview{{itinerary.itineraryIdentifier}}.flyTo(start{{itinerary.itineraryIdentifier}});
       }
-
-
-
-
-
     </script>
 
-
     {%endfor%}
-
   </div>
 
   {%endif%}
-
-
-
-
-
-
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 {% endblock %}

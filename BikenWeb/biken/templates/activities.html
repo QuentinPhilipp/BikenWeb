@@ -1,8 +1,12 @@
-{% extends "layout.html" %}
-
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/activities.css') }}">
-<script type="text/javascript" src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"></script>
+{% extends "layout.html" %} {% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/activities.css') }}"
+/>
+<script
+  type="text/javascript"
+  src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"
+></script>
 <!-- Error handling -->
 
 <section id="profile">
@@ -14,35 +18,31 @@
     </div>
 
     <h2 class="pt-4">Your latest Strava activities</h2>
-    <hr>
+    <hr />
 
     <script src="../static/js/activities.js" charset="utf-8"></script>
 
     {% for message in get_flashed_messages() %}
-      <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-      </div>
-    {% endfor %}
-
-    {% if activities == [] %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
+    </div>
+    {% endfor %} {% if activities == [] %}
     <div class="text-center py-4">
       <h2>You need to link your Strava profile.</h2>
-      <a href="http://www.strava.com/oauth/authorize?client_id=51912&response_type=code&redirect_uri={{redirect_link}}/exchange_token&approval_prompt=force&scope=activity:read_all">
-        <img src="static/ressources/svg/stravaLoginBtn.svg"alt="">
+      <a
+        href="http://www.strava.com/oauth/authorize?client_id=51912&response_type=code&redirect_uri={{redirect_link}}/exchange_token&approval_prompt=force&scope=activity:read_all"
+      >
+        <img src="static/ressources/svg/stravaLoginBtn.svg" alt="" />
       </a>
-
     </div>
-    {% else %}
-
-    {% for itinerary in activities %}
+    {% else %} {% for itinerary in activities %}
     <div class="row my-3 mx-3 py-3 justify-content-center itinerary-container">
       <!-- href="/home?itinerary={{itinerary.id}}" -->
-      <a class="col-lg-6 col-sm-12" >
+      <a class="col-lg-6 col-sm-12">
         <div class="mapPreview" id="mapPreview{{itinerary.id}}"></div>
       </a>
       <div class="info-container text-center col-lg-6 col-sm-12">
-
         <div id="header-row" class="row pt-2 justify-content-center">
           <div class="col">
             <h3 id="activityName{{itinerary.id}}">{{itinerary.name}}</h3>
@@ -50,27 +50,34 @@
         </div>
 
         <div id="stat-row" class="row justify-content-center">
-
-            <div class=" text-left info-detail">
-              <div class="label-up">Distance</div>
-              <b class="info">{{itinerary.distance}} km</b>
+          <div class="text-left info-detail">
+            <div class="label-up">Distance</div>
+            <b class="info">{{itinerary.distance}} km</b>
           </div>
 
-          <div class=" text-left info-detail">
+          <div class="text-left info-detail">
             <div class="label-up">Durée</div>
             <!-- More than 2 hour -->
             {% if itinerary.time//60 > 1 and itinerary.time%60 >1 %}
-            <b class="info">{{itinerary.time//60}} hours and {{itinerary.time%60}} minutes </b>
+            <b class="info"
+              >{{itinerary.time//60}} hours and {{itinerary.time%60}} minutes
+            </b>
             {% elif itinerary.time//60 > 1 and itinerary.time%60 ==1 %}
-            <b class="info">{{itinerary.time//60}} hours and {{itinerary.time%60}} minute </b>
+            <b class="info"
+              >{{itinerary.time//60}} hours and {{itinerary.time%60}} minute
+            </b>
             {% elif itinerary.time//60 > 1 and itinerary.time%60 ==0 %}
             <b class="info">{{itinerary.time//60}} hours</b>
 
             <!-- More than 1 hour -->
             {% elif itinerary.time//60 == 1 and itinerary.time%60 >1 %}
-            <b class="info">{{itinerary.time//60}} hour and {{itinerary.time%60}} minutes </b>
+            <b class="info"
+              >{{itinerary.time//60}} hour and {{itinerary.time%60}} minutes
+            </b>
             {% elif itinerary.time//60 == 1 and itinerary.time%60 ==1 %}
-            <b class="info">{{itinerary.time//60}} hour and {{itinerary.time%60}} minute </b>
+            <b class="info"
+              >{{itinerary.time//60}} hour and {{itinerary.time%60}} minute
+            </b>
             {% elif itinerary.time//60 == 1 and itinerary.time%60 ==0 %}
             <b class="info">{{itinerary.time//60}} hour</b>
 
@@ -80,17 +87,11 @@
             {% elif itinerary.time//60 == 0 and itinerary.time%60 == 1 %}
             <b class="info">{{itinerary.time%60}} minute </b>
             {%endif%}
-
           </div>
-
-
         </div>
 
-        <hr>
-
+        <hr />
       </div>
-
-
     </div>
 
     <script type="text/javascript">
@@ -143,52 +144,10 @@
         var zoomPoint{{itinerary.id}} = L.latLng(pointList[0][0], pointList[0][1]);
         // mapPreview{{itinerary.id}}.flyTo(zoomPoint{{itinerary.id}});
       }
-
     </script>
 
-
-    {%endfor%}
-
-
-    {%endif%}
-
-
-
+    {%endfor%} {%endif%}
   </div>
-
-
-
-
-
-
-
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 {% endblock %}
