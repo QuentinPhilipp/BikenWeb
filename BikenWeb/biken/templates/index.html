@@ -1,80 +1,135 @@
-
-{% extends "layout.html" %}
-
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+{% extends "layout.html" %} {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
 
 <div class="itinerary-planner-container mx-2 my-2">
   <div class="collapse show" id="panel">
-  <form class="submit_on_enter" action="" onsubmit="requestItinerary();return false;" method="GET">
-    <input class="form-control my-1  mr-sm-2" id="start" placeholder="Start" type="text" name="start" required>
-    <input class="form-control my-1  mr-sm-2" id="finish" placeholder="Destination" type="text" name="destination" required>
-    <input class="form-control my-1  mr-sm-2" id="distance" placeholder="Distance" type="number" name="distance" max="999" hidden>
-    <div class="row button-row align-items-center">
-      <div data-toggle="buttons">
-        <label onclick="selectOneWayTrip();" id="radio1-label" class="btn itinerary-type active">
-            <input type="radio" name="type" value="oneway" id="option1-radio" checked autocomplete="off">Oneway Trip
-        </label>
-        <label onclick="selectRoundTrip();" class="btn itinerary-type ml-2" >
-            <input type="radio" name="type" value="round" id="option2-radio" autocomplete="off">Round Trip
-        </label>
+    <form
+      class="submit_on_enter"
+      action=""
+      onsubmit="requestItinerary();return false;"
+      method="GET"
+    >
+      <input
+        class="form-control my-1 mr-sm-2"
+        id="start"
+        placeholder="Start"
+        type="text"
+        name="start"
+        required
+      />
+      <input
+        class="form-control my-1 mr-sm-2"
+        id="finish"
+        placeholder="Destination"
+        type="text"
+        name="destination"
+        required
+      />
+      <input
+        class="form-control my-1 mr-sm-2"
+        id="distance"
+        placeholder="Distance"
+        type="number"
+        name="distance"
+        max="999"
+        hidden
+      />
+      <div class="row button-row align-items-center">
+        <div data-toggle="buttons">
+          <label
+            onclick="selectOneWayTrip();"
+            id="radio1-label"
+            class="btn itinerary-type active"
+          >
+            <input
+              type="radio"
+              name="type"
+              value="oneway"
+              id="option1-radio"
+              checked
+              autocomplete="off"
+            />Oneway Trip
+          </label>
+          <label onclick="selectRoundTrip();" class="btn itinerary-type ml-2">
+            <input
+              type="radio"
+              name="type"
+              value="round"
+              id="option2-radio"
+              autocomplete="off"
+            />Round Trip
+          </label>
+        </div>
+        <button
+          class="btn btn-search float-right"
+          data-toggle="collapse"
+          data-target=".navbar-collapse.show"
+        >
+          <i class="fas fa-search"></i>
+        </button>
       </div>
-      <button class="btn btn-search float-right" data-toggle="collapse" data-target=".navbar-collapse.show"><i class="fas fa-search"></i></button>
+    </form>
+    <div class="mt-3" id="itinerary-details" hidden>
+      <div class="container">
+        <div class="row justify-content-center widget-container">
+          <div class="col-5 text-center">
+            <p id="kilometer-display" class="data-display my-0">
+              <i class="fas fa-arrows-alt-h"></i> 90km
+            </p>
+          </div>
+          <div class="col-5 text-center">
+            <p id="duration-display" class="data-display my-0">
+              <i class="fas fa-stopwatch"></i> 3h
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div id="elevation-container" class="col-12" hidden>
+            <canvas id="elevationChart" height="70"></canvas>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-6 text-center">
+            <button class="btn btn-outline-secondary" onclick="saveItinerary()">
+              Save itinerary
+            </button>
+          </div>
+          <div class="col-6 text-center">
+            <button class="btn btn-outline-secondary" onclick="exportGPX()">
+              Export to GPX
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-
-  </form>
-  <div class="mt-3" id="itinerary-details" hidden>
-    <div class="container">
-      <div class="row justify-content-center widget-container">
-        <div class="col-5 text-center">
-          <p id="kilometer-display" class="data-display my-0"><i class="fas fa-arrows-alt-h"></i> 90km</p>
-        </div>
-        <div class="col-5 text-center">
-          <p id="duration-display" class="data-display my-0"><i class="fas fa-stopwatch"></i> 3h</p>
-        </div>
-      </div>
-      <div class="row">
-        <div id="elevation-container" class="col-12"">
-          <canvas id="elevationChart" height="70"></canvas>
-        </div>
-      </div>
-      <div class="row my-2">
-        <div class="col-6 text-center">
-          <button class="btn btn-outline-secondary" onclick="saveItinerary()">Save itinerary</button>
-        </div>
-        <div class="col-6 text-center">
-          <button class="btn btn-outline-secondary" onclick="exportGPX()">Export to GPX</button>
-        </div>
-      </div>
-    </div>
-
+  </div>
+  <div class="row text-center justify-content-center">
+    <button
+      onclick="toggleIconPanel()"
+      class="collapse-button text-center"
+      type="button"
+      data-toggle="collapse"
+      data-target="#panel"
+      aria-expanded="false"
+      aria-controls="collapseExample"
+    >
+      <i id="toggleButtonUp" class="fas fa-caret-up"></i>
+      <i id="toggleButtonDown" class="fas fa-caret-down" hidden></i>
+    </button>
   </div>
 </div>
-<div class="row text-center justify-content-center">
-  <button onclick="toggleIconPanel()" class="collapse-button text-center" type="button" data-toggle="collapse" data-target="#panel" aria-expanded="false" aria-controls="collapseExample">
-    <i id="toggleButtonUp" class="fas fa-caret-up"></i>
-    <i id="toggleButtonDown" class="fas fa-caret-down" hidden></i>
-
-  </button>
-</div>
-
-
-</div>
-
-
 
 <div class="screen">
   <div id="mapid"></div>
 </div>
 
-
-
-<script type="text/javascript" src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"></script>
+<script
+  type="text/javascript"
+  src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"
+></script>
 <script src="../static/js/map.js" charset="utf-8"></script>
 <script src="../static/js/app.js" charset="utf-8"></script>
 <script src="../static/js/utils.js" charset="utf-8"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-
-
 
 {% endblock %}

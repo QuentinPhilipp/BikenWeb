@@ -1,3 +1,5 @@
+var elevationChart;
+
 // submit on "Enter"
 $(document).ready(function () {
   $(".submit_on_enter").keydown(function (event) {
@@ -22,6 +24,9 @@ function saveItinerary() {
 }
 
 async function requestItinerary() {
+  // Clear all the data from previous requests
+  clearOldData();
+
   var startInput = document.getElementById("start");
   var destinationInput = document.getElementById("finish");
   var distanceInput = document.getElementById("distance");
@@ -142,7 +147,7 @@ function showItineraryDetail(itinerary) {
 
 function createChart(data) {
   document.getElementById("elevation-container").hidden = false;
-  new Chart(document.getElementById("elevationChart"), {
+  elevationChart = new Chart(document.getElementById("elevationChart"), {
     type: "line",
     data: {
       labels: data.profile,
@@ -194,7 +199,6 @@ function createChart(data) {
 }
 
 async function getElevation(itineraryID) {
-  console.log("Get Elevation");
   url = window.location.href + "plan/elevation?id=" + itineraryID;
 
   let response = await fetch(url);
@@ -202,9 +206,32 @@ async function getElevation(itineraryID) {
   await response.json().then((elevationData) => {
     if (elevationData.profile.length > 0) {
       createChart(elevationData);
-      document.getElementById("elevation-chart").innerHTML = "TEST";
     } else {
       console.log("Error");
     }
   });
+}
+
+async function clearOldData() {
+  console.log("Clear old data");
+  // clear leaflet map
+  clearMap();
+
+  // remove the elevation chart
+  elevationChart.destroy();
+}
+
+function clearMap() {
+  for (i in mymap._layers) {
+    if (
+      mymap._layers[i]._bounds != undefined ||
+      mymap._layers[i]._latlng != undefined
+    ) {
+      try {
+        mymap.removeLayer(mymap._layers[i]);
+      } catch (e) {
+        console.log("problem with " + e + mymap._layers[i]);
+      }
+    }
+  }
 }
