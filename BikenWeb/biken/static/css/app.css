@@ -88,3 +88,7 @@ input {
   line-height: 100%;
   text-decoration: none;
 }
+
+.share-btn {
+  padding: 0;
+}

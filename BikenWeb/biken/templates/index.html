@@ -69,7 +69,8 @@
         </button>
       </div>
     </form>
-    <div class="mt-3" id="itinerary-details" hidden>
+    <!-- <div class="mt-3" id="itinerary-details" hidden> -->
+    <div class="mt-3" id="itinerary-details">
       <div class="container">
         <div class="row justify-content-center widget-container">
           <div class="col-5 text-center">
@@ -88,15 +89,25 @@
             <canvas id="elevationChart" height="70"></canvas>
           </div>
         </div>
-        <div class="row my-2">
-          <div class="col-6 text-center">
+        <div class="row my-2 justify-content-around">
+          <div class="col-5 text-center">
             <button class="btn btn-outline-secondary" onclick="saveItinerary()">
-              Save itinerary
+              <span class="d-xs-block d-sm-none">Save</span>
+              <span class="d-none d-sm-block d-xl-block">Save this route</span>
             </button>
           </div>
-          <div class="col-6 text-center">
+          <div class="col-2 share-btn text-center justify-content-center">
+            <button
+              class="btn btn-outline-secondary"
+              onclick="shareItinerary()"
+            >
+              <i class="fas fa-share-alt"></i>
+            </button>
+          </div>
+          <div class="col-5 text-center">
             <button class="btn btn-outline-secondary" onclick="exportGPX()">
-              Export to GPX
+              <span class="d-xs-block d-sm-none">GPX</span>
+              <span class="d-none d-sm-block d-xl-block">Export to GPX</span>
             </button>
           </div>
         </div>
