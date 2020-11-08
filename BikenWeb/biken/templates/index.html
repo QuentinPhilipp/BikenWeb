@@ -69,8 +69,8 @@
         </button>
       </div>
     </form>
-    <!-- <div class="mt-3" id="itinerary-details" hidden> -->
-    <div class="mt-3" id="itinerary-details">
+    <div class="mt-3" id="itinerary-details" hidden>
+      <!-- <div class="mt-3" id="itinerary-details"> -->
       <div class="container">
         <div class="row justify-content-center widget-container">
           <div class="col-5 text-center">
@@ -127,6 +127,18 @@
       <i id="toggleButtonUp" class="fas fa-caret-up"></i>
       <i id="toggleButtonDown" class="fas fa-caret-down" hidden></i>
     </button>
+  </div>
+</div>
+
+<div id="share-menu" class="mx-2 my-2" hidden>
+  <span onclick="closeShareMenu()" class="close">&times;</span>
+  <h1>Share this itinerary</h1>
+  <div class="row justify-content-center">
+    <!-- The text field -->
+    <input type="text" value="" id="urlCopyInput" />
+
+    <!-- The button used to copy the text -->
+    <button id="copyButton" onclick="copyOnClick()">Copy URL</button>
   </div>
 </div>
 

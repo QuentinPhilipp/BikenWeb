@@ -17,17 +17,6 @@ body {
 
 /* 
 
-#close-info-cross {
-    position: absolute;
-    top: -10px;
-    right: -15px;
-    border:none;
-    background: none;
-}
-
-.close-button {
-  color: rgb(171, 171, 171);
-}
 
 #info-container {
   background: white;
@@ -236,16 +225,3 @@ height: 150px;
   margin-left: 10px
 }
 
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-} */

@@ -235,3 +235,32 @@ function clearMap() {
     }
   }
 }
+
+function shareItinerary() {
+  var popupShare = document.getElementById("share-menu");
+  popupShare.hidden = false;
+
+  // Write the current url
+  var myInput = document.getElementById("urlCopyInput");
+  myInput.value =
+    window.location.host +
+    "/home?itinerary=" +
+    sessionStorage.getItem("itineraryID");
+}
+
+function copyOnClick() {
+  /* Get the text field */
+  var copyText = document.getElementById("urlCopyInput");
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+  var copyButton = document.getElementById("copyButton");
+  copyButton.innerHTML = "Copied!";
+}
+
+function closeShareMenu() {
+  document.getElementById("share-menu").hidden = true;
+}
