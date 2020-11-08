@@ -151,17 +151,15 @@ def save():
     return "OK"
 
 
-# @main_bp.route("/routing/elevation",methods=['POST'])
-# def api_elevation():
-#     # print('\n\n\n\n\n'+request.json+'\n\n\n\n\n')
+@main_bp.route("/plan/elevation",methods=['GET'])
+def api_elevation():
+    query_parameters = request.args
+    itineraryId = query_parameters.get('id')
+    profile = routing.getElevation(itineraryId)
 
-#     dataWaypoints = json.loads(request.form['waypoints'])
-#     profile = routing.getElevation(dataWaypoints)
+    returnValue = {"profile":profile["profile"],"elevation":profile["elevation"]}
 
-
-#     returnValue = {"profile":profile["profile"],"elevation":profile["elevation"]}
-
-#     return jsonify(returnValue)
+    return jsonify(returnValue)
 
 
 

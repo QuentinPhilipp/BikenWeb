@@ -72,14 +72,7 @@ input {
 
 .widget-container {
   border-top: 1px solid rgba(0, 0, 0, 0.25);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
   padding: 10px 20px 10px 20px;
-}
-
-#elevation-chart {
-  height: 90px;
-  background-color: palegoldenrod;
-  width: 100%;
 }
 
 .collapse-button {

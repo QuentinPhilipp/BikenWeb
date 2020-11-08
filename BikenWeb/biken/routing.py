@@ -4,6 +4,7 @@ import time
 from math import pi,cos,sin,radians
 import random
 import biken.utils as utils
+import biken.data as dataManager
 import os
 from dotenv import load_dotenv
 import polyline
@@ -176,49 +177,55 @@ def getGPSLocation(place):
     return {"lat":response[0]["lat"],"lon":response[0]["lon"]}
 
 
-def getElevation(polylineData):
-    # Convert the polyline into gps points
-    path = polyline.decode(polylineData, 5,geojson=True)
+def getElevation(itineraryId):
+    # Get the polyline associated with the itinerary ID
+    polylineData = dataManager.getPolylineFromId(itineraryId)
 
-    # Scale down the resolution of the path for the Elevation API
-    # Max 30 points
-    divider = len(path)//30 + 1
-    newPath = path[::divider]
+    if polyline != -1 :
 
-    # Convert list of tuple to a long string for the query
-    query = "points="
-    for point in newPath:
-        query+=str(point[0])+','+str(point[1])+','
+        # Convert the polyline into gps points
+        path = polyline.decode(polylineData, 5,geojson=True)
 
-    # Remove last comma
-    query = query[:-1]
-    baseUrl = f'https://api.airmap.com/elevation/v1/ele/path?{query}'
-    headers = {'X-API-Key': ELEVATION_API_KEY}
-    r = requests.get(baseUrl, headers=headers)
-    response = r.json()
-    profile = []
-    data = response["data"]
-    if response["status"]=="success":
-        for step in data:
-            profile.extend(step["profile"])
+        # Scale down the resolution of the path for the Elevation API
+        # Max 30 points
+        divider = len(path)//30 + 1
+        newPath = path[::divider]
 
-    # # Calculate total elevation
-    # elevation = 0
-    # try:
-    #     for i in range(len(profile)-2):
-    #         if profile[i]>profile[i+1]:
-    #             elevation += (profile[i]-profile[i+1])
-    # except IndexError as e:
-    #     print("Error")
-    #
-    # print("Total elevation :",elevation)
+        # Convert list of tuple to a long string for the query
+        query = "points="
+        for point in newPath:
+            query+=str(point[0])+','+str(point[1])+','
 
+        # Remove last comma
+        query = query[:-1]
+        baseUrl = f'https://api.airmap.com/elevation/v1/ele/path?{query}'
+        headers = {'X-API-Key': ELEVATION_API_KEY}
+        r = requests.get(baseUrl, headers=headers)
+        response = r.json()
+        profile = []
+        data = response["data"]
+        if response["status"]=="success":
+            for step in data:
+                profile.extend(step["profile"])
 
-    # Max N points in the profile
-    divider = len(profile)//150 + 1
-    profile = profile[::divider]
+        # # Calculate total elevation
+        # elevation = 0
+        # try:
+        #     for i in range(len(profile)-2):
+        #         if profile[i]>profile[i+1]:
+        #             elevation += (profile[i]-profile[i+1])
+        # except IndexError as e:
+        #     print("Error")
+        #
+        # print("Total elevation :",elevation)
 
-    return {"profile":profile,"elevation":0}
+        # Max N points in the profile
+        divider = len(profile)//150 + 1
+        profile = profile[::divider]
+
+        return {"profile":profile,"elevation":0}
+    else :
+        return {"error":"Itinerary not found when requesting elevation"}
 
 
 def addKmWithAngle(radius, direction, startPos):

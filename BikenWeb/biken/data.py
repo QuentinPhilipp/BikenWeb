@@ -135,3 +135,12 @@ def mergeAccount(existingStravaUser,current_user):
 
     return existingStravaUser
 
+
+
+def getPolylineFromId(itineraryId):
+    existingItinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryId).first()
+
+    if existingItinerary:
+        return existingItinerary.polyline
+    else:
+        return -1

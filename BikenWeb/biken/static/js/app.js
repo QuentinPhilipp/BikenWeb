@@ -19,20 +19,6 @@ function saveItinerary() {
     data: { itineraryId: dataToSend },
     dataType: "json",
   });
-
-  // ,
-  // function(data, status){
-  //   console.log(status);
-  //   if (data["text"]=="OK") {
-  //     console.log("Save to the profile");
-  //   }
-  //   else if (data["text"]=="Fail") {
-  //     console.log("Failed to save to the profile");
-  //   }
-  //   else {
-  //     console.log("Unkown error");
-  //   }
-  // });
 }
 
 async function requestItinerary() {
@@ -40,8 +26,6 @@ async function requestItinerary() {
   var destinationInput = document.getElementById("finish");
   var distanceInput = document.getElementById("distance");
   var radio1 = document.getElementById("radio1-label");
-
-  console.log(radio1.classList);
 
   if (radio1.classList.contains("active")) {
     // Oneway mode
@@ -57,15 +41,10 @@ async function requestItinerary() {
 
     let response = await fetch(url);
     await response.json().then((dataItinerary) => {
-      console.log(dataItinerary);
-
       // Store locally the itinerary ID
       sessionStorage.setItem("itineraryID", dataItinerary["uniqueId"]);
 
       renderItinerary(dataItinerary);
-
-      //   // Query elevation of this path to the server
-      //   getElevation(dataItinerary.polyline)
 
       // Show elevation, distance and time
       showItineraryDetail(dataItinerary);
@@ -90,9 +69,6 @@ async function requestItinerary() {
       sessionStorage.setItem("itineraryID", dataItinerary["uniqueId"]);
 
       renderItinerary(dataItinerary);
-
-      //   // Query elevation of this path to the server
-      //   getElevation(dataItinerary.polyline)
 
       // Show elevation, distance and time
       showItineraryDetail(dataItinerary);
@@ -145,7 +121,8 @@ function showItineraryDetail(itinerary) {
   var distance = Math.round(itinerary["distance"] / 10) / 100;
   document.getElementById("kilometer-display").innerHTML = distance + " km";
 
-  // TOFIX
+  // Query elevation of this path to the server
+  getElevation(itinerary["uniqueId"]);
 
   var hours = Math.floor(itinerary["duration"] / 60);
   var minutes = Math.round(itinerary["duration"] % 60);
@@ -161,4 +138,73 @@ function showItineraryDetail(itinerary) {
     var duration = minutes + " min";
   }
   document.getElementById("duration-display").innerHTML = duration;
+}
+
+function createChart(data) {
+  document.getElementById("elevation-container").hidden = false;
+  new Chart(document.getElementById("elevationChart"), {
+    type: "line",
+    data: {
+      labels: data.profile,
+      datasets: [
+        {
+          data: data.profile,
+          borderColor: "#3e95cd",
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      scales: {
+        xAxes: [
+          {
+            ticks: {
+              display: false, //this will remove the label
+            },
+            gridLines: {
+              display: false,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            ticks: {
+              display: true, //this will remove the label
+              maxTicksLimit: 4,
+              mirror: true,
+            },
+            gridLines: {
+              display: true,
+              drawTicks: false,
+            },
+          },
+        ],
+      },
+      legend: {
+        display: false,
+      },
+      elements: {
+        point: {
+          radius: 0,
+        },
+      },
+    },
+  });
+}
+
+async function getElevation(itineraryID) {
+  console.log("Get Elevation");
+  url = window.location.href + "plan/elevation?id=" + itineraryID;
+
+  let response = await fetch(url);
+
+  await response.json().then((elevationData) => {
+    if (elevationData.profile.length > 0) {
+      createChart(elevationData);
+      document.getElementById("elevation-chart").innerHTML = "TEST";
+    } else {
+      console.log("Error");
+    }
+  });
 }
