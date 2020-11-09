@@ -53,10 +53,15 @@ def home():
             itinerary["duration"] = itineraryObject.duration
             itinerary["uniqueId"] = itineraryObject.itineraryIdentifier
 
-            if itineraryObject.startCoordLat == itineraryObject.endCoordLat and itineraryObject.startCoordLon == itineraryObject.endCoordLon:
+
+            startWaypoint = {"lat":itineraryObject.startCoordLat,"lon":itineraryObject.startCoordLon}
+            endWaypoint = {"lat":itineraryObject.endCoordLat,"lon":itineraryObject.endCoordLon}
+
+            if utils.distanceBetweenPoints(startWaypoint,endWaypoint)<=1000:
                 itinerary["type"] = "round"
-            else:
+            else :
                 itinerary["type"] = "oneway"
+
             return render_template(
                 'index.html',
                 title='Biken Home page',
@@ -185,11 +190,25 @@ def convertToItinerary():
     polyline = req['polyline']
     distance = req['distance']
     time = req['time']
+    gpx = req["gpx"]
+    itineraryName = req["name"]
 
-    itineraryID = routing.convertStravaItinerary(polyline,distance,time)
+    if gpx:
+        # Convert the itinerary
+        itineraryID = routing.convertStravaItinerary(polyline,distance,time)
 
-    returnValue = {"itineraryID":itineraryID}
-    return jsonify(returnValue)
+        itinerary = Itinerary.query.filter_by(itineraryIdentifier=itineraryID).first();
+        if itinerary:
+            filename = gpxEncoder.createGPXfile(itinerary,itineraryName)
+            if filename != "Error":
+                val = {"filename": filename, "success": True}
+                return jsonify(val)
+    else :
+        # Return only the itinerary Id to render in the route editor
+        itineraryID = routing.convertStravaItinerary(polyline,distance,time)
+
+        returnValue = {"itineraryID":itineraryID}
+        return jsonify(returnValue)
 
 
 

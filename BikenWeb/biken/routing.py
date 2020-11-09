@@ -251,8 +251,10 @@ def convertStravaItinerary(polylineData,distance,duration):
 
     # Detecting route or itinerary
     # TO FIX ( Allow a variation due to GPS imprecision)
-    if startWaypoint["lat"]==endWaypoint["lat"] and startWaypoint["lon"]==endWaypoint["lon"]:
-        itineraryType = "route"
+
+    # if startPoint and endPoint are located at 1km from each other, we consider that it's a round trip
+    if utils.distanceBetweenPoints(startWaypoint,endWaypoint)<=1000:
+        itineraryType = "round"
     else :
         itineraryType = "oneway"
 
@@ -282,7 +284,7 @@ if __name__ == '__main__':
     end["lon"] = 7.369994
 
 
-    getGPSLocation("Bitche")
+    getGPSLocation("Strasbourg")
 
     # itinerary(start,end,"bike")
 

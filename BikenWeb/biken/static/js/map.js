@@ -56,6 +56,8 @@ function renderItinerary(itinerary) {
   // Render full polyline
   displayPolyline(itinerary.polyline);
 
+  console.log(itinerary["type"]);
+
   // Add markers at the beginning and the end
   var coordinates = L.Polyline.fromEncoded(itinerary.polyline).getLatLngs();
   if (itinerary["type"] == "oneway") {

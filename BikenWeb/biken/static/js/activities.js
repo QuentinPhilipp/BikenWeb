@@ -1,15 +1,11 @@
 function convertStravaActivity(polyline, distance, time) {
-  console.log("Convert Strava activity to Biken itinerary");
-  console.log(polyline);
-  console.log(distance);
-  console.log(time);
-
   sendDataToConvert("/convertToItinerary", {
     polyline: polyline,
     distance: distance,
     time: time,
+    gpx: false,
+    name: "None",
   }).then((data) => {
-    console.log(data); // JSON data parsed by `data.json()` call
     // redirect to home page with itinerary ID in parameter
     window.location =
       window.location.origin + "/home?itinerary=" + data["itineraryID"];
@@ -30,10 +26,21 @@ async function sendDataToConvert(url = "", data = {}) {
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
-async function renderStravaItinerary(data) {
-  console.log("Strava:", data);
-}
-
-function convertStravaActivityToGPX() {
-  console.log("Convert Strava activity to GPX");
+function convertStravaActivityToGPX(polyline, distance, time, name) {
+  // Request GPX file instead of itinerary ID
+  sendDataToConvert("/convertToItinerary", {
+    polyline: polyline,
+    distance: distance,
+    time: time,
+    gpx: true,
+    name: name,
+  }).then((data) => {
+    // Download the file
+    if (data.success == true) {
+      var fileUrl = window.location.origin + "/" + data.filename;
+      window.open(fileUrl);
+    } else {
+      console.log("Fail to create GPX file");
+    }
+  });
 }

@@ -1,4 +1,4 @@
-from math import cos,pi
+from math import cos,sin,atan2,pi, sqrt
 import re
 def addKmToLatitude(originalLat,kmToAdd):
     # print(type(originalLat))
@@ -26,3 +26,25 @@ def strToWaypoints(itineraryString):
 
 
     return waypoints
+
+
+
+def distanceBetweenPoints(pointA,pointB):
+    R = 6371000 #metres
+    φ1 = pointA["lat"] * pi/180 # φ, λ in radians
+    φ2 = pointB["lat"] * pi/180
+    Δφ = (pointB["lat"]-pointA["lat"]) * pi/180
+    Δλ = (pointB["lon"]-pointA["lon"]) * pi/180
+
+    a = sin(Δφ/2) * sin(Δφ/2) + cos(φ1) * cos(φ2) * sin(Δλ/2) * sin(Δλ/2)
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    d = R * c
+
+    return d  # in meters
+
+if __name__ == '__main__':
+
+    pointA = {"lat":46.056755,"lon":14.505581}
+    pointB = {"lat":46.053155,"lon":14.503893 }
+    d = distanceBetweenPoints(pointA,pointB)
+    print("Distance :",d)
