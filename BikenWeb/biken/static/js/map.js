@@ -41,7 +41,7 @@ function setPosition(position) {
 function displayPolyline(polylineData) {
   var polyline = L.Polyline.fromEncoded(polylineData);
   polyline.setStyle({
-    color: "#F67C5A",
+    color: "#fa5514",
   });
   polyline.addTo(mymap);
   routeList.push(polyline);

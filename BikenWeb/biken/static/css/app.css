@@ -43,7 +43,8 @@
 }
 
 .btn-search {
-  border: solid 1px #8cd8bf;
+  background: #8cd8bf;
+  color: white;
   margin-right: 0px;
   margin-left: auto;
 }

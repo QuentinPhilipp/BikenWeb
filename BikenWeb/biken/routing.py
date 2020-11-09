@@ -43,7 +43,7 @@ def itinerary(startCoord,endCoord) :
     endTime = time.time()
 
     # Return the route
-    returnObject = {"type":"oneway","polyline":polyline,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
+    returnObject = {"type":"oneway","polyline":polyline,"duration":duration/COEFF_DURATION,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
     return returnObject
 
 
