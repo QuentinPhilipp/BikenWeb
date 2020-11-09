@@ -130,15 +130,28 @@
   </div>
 </div>
 
-<div id="share-menu" class="mx-2 my-2" hidden>
+<div id="share-menu" class="mx-2 my-2">
   <span onclick="closeShareMenu()" class="close">&times;</span>
-  <h1>Share this itinerary</h1>
-  <div class="row justify-content-center">
+
+  <div class="social-media-row text-center row pt-3">
+    <div class="col px-0"><i class="fab fa-facebook-messenger full"></i></div>
+    <div class="col px-0"><i class="fab fa-whatsapp-square full"></i></div>
+    <div class="col px-0"><i class="fab fa-twitter-square full"></i></div>
+    <div class="col px-0"><i class="fab fa-facebook-square full"></i></div>
+  </div>
+
+  <div class="row justify-content-around mx-2 py-2">
     <!-- The text field -->
-    <input type="text" value="" id="urlCopyInput" />
+    <input type="text" value="" class="col-8" id="urlCopyInput" />
 
     <!-- The button used to copy the text -->
-    <button id="copyButton" onclick="copyOnClick()">Copy URL</button>
+    <button
+      id="copyButton"
+      class="col-4 btn btn-outline-dark"
+      onclick="copyOnClick()"
+    >
+      Copy URL
+    </button>
   </div>
 </div>
 
