@@ -130,7 +130,7 @@
   </div>
 </div>
 
-<div id="share-menu" class="mx-2 my-2">
+<div id="share-menu" class="mx-2 my-2" hidden>
   <span onclick="closeShareMenu()" class="close">&times;</span>
 
   <div class="social-media-row text-center row pt-3">
@@ -147,7 +147,7 @@
     <!-- The button used to copy the text -->
     <button
       id="copyButton"
-      class="col-4 btn btn-outline-dark"
+      class="col-3 btn btn-outline-dark"
       onclick="copyOnClick()"
     >
       Copy URL
@@ -167,5 +167,23 @@
 <script src="../static/js/app.js" charset="utf-8"></script>
 <script src="../static/js/utils.js" charset="utf-8"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+<script>
+  // Catch if an itinerary is returned in the template and trigger the functions to display it
+  if ({{itinerary|tojson}}!=undefined)
+  {
+    itinerary = {{itinerary|tojson}};
+
+    if(itinerary!=undefined) {
+      // Store locally the itinerary ID
+      sessionStorage.setItem("itineraryID", itinerary["uniqueId"]);
+
+      renderItinerary(itinerary);
+
+      // Show elevation, distance and time
+      showItineraryDetail(itinerary);
+    }
+  }
+</script>
 
 {% endblock %}

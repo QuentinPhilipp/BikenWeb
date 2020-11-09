@@ -203,13 +203,17 @@ async function getElevation(itineraryID) {
 
   let response = await fetch(url);
 
-  await response.json().then((elevationData) => {
-    if (elevationData.profile.length > 0) {
-      createChart(elevationData);
-    } else {
-      console.log("Error");
-    }
-  });
+  try {
+    await response.json().then((elevationData) => {
+      if (elevationData.profile.length > 0) {
+        createChart(elevationData);
+      } else {
+        console.log("Error while getting elevation");
+      }
+    });
+  } catch (error) {
+    console.log("Error while getting elevation");
+  }
 }
 
 async function clearOldData() {
@@ -240,6 +244,9 @@ function shareItinerary() {
   var popupShare = document.getElementById("share-menu");
   popupShare.hidden = false;
 
+  // Test
+  sessionStorage.setItem("itineraryID", "ugex4r1UMjKA29E0");
+
   // Write the current url
   var myInput = document.getElementById("urlCopyInput");
   myInput.value =
@@ -264,3 +271,5 @@ function copyOnClick() {
 function closeShareMenu() {
   document.getElementById("share-menu").hidden = true;
 }
+
+shareItinerary();

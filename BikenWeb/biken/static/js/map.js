@@ -31,8 +31,11 @@ function getLocation() {
 }
 
 function setPosition(position) {
-  var pos = L.latLng(position.coords.latitude, position.coords.longitude);
-  mymap.setView(pos, 10);
+  // Set position only if there is no itinerary requested in URL
+  if (window.location.search == "" || window.location.search == undefined) {
+    var pos = L.latLng(position.coords.latitude, position.coords.longitude);
+    mymap.setView(pos, 10);
+  }
 }
 
 function displayPolyline(polylineData) {

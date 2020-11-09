@@ -51,6 +51,18 @@ def home():
             itinerary["polyline"] = itineraryObject.polyline
             itinerary["distance"] = itineraryObject.distance
             itinerary["duration"] = itineraryObject.duration
+            itinerary["uniqueId"] = itineraryObject.itineraryIdentifier
+
+            if itineraryObject.startCoordLat == itineraryObject.endCoordLat and itineraryObject.startCoordLon == itineraryObject.endCoordLon:
+                itinerary["type"] = "round"
+            else:
+                itinerary["type"] = "oneway"
+            return render_template(
+                'index.html',
+                title='Biken Home page',
+                current_user=current_user,
+                itinerary=itinerary
+            )
             # itinerary=itineraryObject.waypoints
 
         else:

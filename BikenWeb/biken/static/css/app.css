@@ -104,6 +104,11 @@ input {
   margin: auto;
 }
 
+#urlCopyInput {
+  padding-left: 5px;
+  padding-right: 0px;
+}
+
 .close {
   color: #aaa;
   float: right;
