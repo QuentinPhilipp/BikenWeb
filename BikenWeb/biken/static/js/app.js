@@ -35,8 +35,8 @@ async function requestItinerary() {
   if (radio1.classList.contains("active")) {
     // Oneway mode
     url =
-      window.location.href +
-      "plan/itinerary?start=" +
+      window.location.origin +
+      "/plan/itinerary?start=" +
       startInput.value +
       "&destination=" +
       destinationInput.value +
@@ -57,8 +57,8 @@ async function requestItinerary() {
   } else {
     // Round mode
     url =
-      window.location.href +
-      "plan/itinerary?start=" +
+      window.location.origin +
+      "/plan/itinerary?start=" +
       startInput.value +
       "&destination=" +
       destinationInput.value +
@@ -68,8 +68,6 @@ async function requestItinerary() {
 
     let response = await fetch(url);
     await response.json().then((dataItinerary) => {
-      console.log(dataItinerary);
-
       // Store locally the itinerary ID
       sessionStorage.setItem("itineraryID", dataItinerary["uniqueId"]);
 
@@ -109,7 +107,6 @@ function selectOneWayTrip() {
 }
 
 function toggleIconPanel() {
-  console.log("Toggle");
   var toggleButtonUp = document.getElementById("toggleButtonUp");
   var toggleButtonDown = document.getElementById("toggleButtonDown");
   if (toggleButtonUp.hidden) {
@@ -199,7 +196,9 @@ function createChart(data) {
 }
 
 async function getElevation(itineraryID) {
-  url = window.location.href + "plan/elevation?id=" + itineraryID;
+  url = window.location.origin + "/plan/elevation?id=" + itineraryID;
+
+  console.log(url);
 
   let response = await fetch(url);
 
@@ -271,5 +270,3 @@ function copyOnClick() {
 function closeShareMenu() {
   document.getElementById("share-menu").hidden = true;
 }
-
-shareItinerary();
