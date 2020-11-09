@@ -40,7 +40,7 @@ function convertStravaActivityToGPX(polyline, distance, time, name) {
       var fileUrl = window.location.origin + "/" + data.filename;
       window.open(fileUrl);
     } else {
-      console.log("Fail to create GPX file");
+      showError("Fail to create GPX file", 1500, "warning");
     }
   });
 }

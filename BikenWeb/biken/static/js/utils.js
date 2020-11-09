@@ -19,3 +19,23 @@ async function exportGPX(itineraryID = undefined, itineraryName = undefined) {
     }
   });
 }
+
+async function showError(message, timeout = 1000, colorCode = "warning") {
+  box = document.getElementById("warning-box");
+
+  var color;
+  if (colorCode == "warning") {
+    color = "#f0ad4e";
+  } else if (colorCode == "success") {
+    color = "#5cb85c";
+  } else if (colorCode == "danger") {
+    color = "#d9534f";
+  }
+
+  box.style.background = color;
+  box.innerHTML = message;
+  box.hidden = false;
+  setTimeout(function () {
+    box.hidden = true;
+  }, timeout);
+}

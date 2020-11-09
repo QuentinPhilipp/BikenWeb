@@ -164,12 +164,19 @@ def planItinerary():
 
 
 @main_bp.route("/save",methods=["POST"])
-@login_required
 def save():
-    itineraryId = request.form['itineraryId']
+    if current_user.is_authenticated:
+        req = request.get_json()
+        itineraryId = req['itineraryID']
 
-    dataManager.bindUserToItinerary(itineraryId,current_user.userId)
-    return "OK"
+        dataManager.bindUserToItinerary(itineraryId,current_user.userId)
+
+        returnValue = {"success":True}
+        return jsonify(returnValue)
+    else :
+        returnValue = {"error":"notLoggedIn"}
+        flash('You must be logged in to save an itinerary.')
+        return jsonify(returnValue) 
 
 
 @main_bp.route("/plan/elevation",methods=['GET'])

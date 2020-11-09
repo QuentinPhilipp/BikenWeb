@@ -1,3 +1,17 @@
 .hr-light {
   background: rgba(255, 255, 255, 0.5);
 }
+
+#warning-box {
+  position: absolute;
+  overflow: hidden;
+  z-index: 110;
+  max-width: 400px;
+  width: 100%;
+  background: #f0ad4e;
+  border-radius: 3px;
+  padding: 10px 10px;
+}
+body {
+  overflow-x: hidden;
+}

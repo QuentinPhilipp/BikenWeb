@@ -12,15 +12,28 @@ $(document).ready(function () {
 });
 
 function saveItinerary() {
-  var dataToSend = sessionStorage.getItem("itineraryID");
-  console.log("Data to send:", dataToSend);
+  var itineraryID = sessionStorage.getItem("itineraryID");
 
-  $.ajax({
-    url: "/save",
-    type: "POST",
-    data: { itineraryId: dataToSend },
-    dataType: "json",
+  sendDataForSave("/save", {
+    itineraryID: itineraryID,
+  }).then((data) => {
+    if (data.error == "notLoggedIn") {
+      window.location.href = window.origin + "/login";
+    } else {
+      showError("Saved", 1000, "success");
+    }
   });
+}
+
+async function sendDataForSave(url = "", data = {}) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
 }
 
 async function requestItinerary() {
