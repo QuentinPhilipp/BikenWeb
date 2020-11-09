@@ -78,7 +78,21 @@ function renderItinerary(itinerary) {
 
     // getElevation(dataItinerary.polyline);
   } else {
-    displayMarker(coordinates[0]);
+    var start = L.latLng(coordinates[0].lat, coordinates[0].lng);
+    var middle = L.latLng(
+      coordinates[Math.floor(coordinates.length / 2)].lat,
+      coordinates[Math.floor(coordinates.length / 2)].lng
+    );
+
+    displayMarker(start);
+
+    var bounds = L.latLngBounds(start, middle);
+
+    mymap.flyToBounds(bounds, {
+      animate: true,
+      duration: 1,
+      padding: [90, 90],
+    });
   }
 }
 

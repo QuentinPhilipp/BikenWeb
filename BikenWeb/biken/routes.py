@@ -129,7 +129,11 @@ def planItinerary():
         # If the start is an adress
         if gpsStart and distance:
             route = routing.route(gpsStart,distance)
-
+            
+            # Store itinerary in DB
+            itineraryId = dataManager.storeItinerary(route)
+            route["uniqueId"]=itineraryId
+ 
             if render=='false':
                 # return only the data
                 return jsonify(route)

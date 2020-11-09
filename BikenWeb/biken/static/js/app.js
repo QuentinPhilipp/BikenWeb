@@ -73,6 +73,7 @@ async function requestItinerary() {
 
       renderItinerary(dataItinerary);
 
+      console.log(dataItinerary);
       // Show elevation, distance and time
       showItineraryDetail(dataItinerary);
     });
@@ -198,8 +199,6 @@ function createChart(data) {
 async function getElevation(itineraryID) {
   url = window.location.origin + "/plan/elevation?id=" + itineraryID;
 
-  console.log(url);
-
   let response = await fetch(url);
 
   try {
@@ -244,14 +243,25 @@ function shareItinerary() {
   popupShare.hidden = false;
 
   // Test
-  sessionStorage.setItem("itineraryID", "ugex4r1UMjKA29E0");
+  // sessionStorage.setItem("itineraryID", "ugex4r1UMjKA29E0");
 
   // Write the current url
   var myInput = document.getElementById("urlCopyInput");
   myInput.value =
-    window.location.host +
+    window.location.origin +
     "/home?itinerary=" +
     sessionStorage.getItem("itineraryID");
+
+  // Set the sharing links
+  // Whatsapp
+  var whatsappLink = document.getElementById("whatsapp-redirect");
+  var text = "Check this itinerary I made with BikenApp " + myInput.value;
+  whatsappLink.href = "https://web.whatsapp.com/send?text=" + encodeURI(text);
+
+  // Twitter
+  var twitterLink = document.getElementById("twitter-redirect");
+  var text = "Check this itinerary I made with BikenApp " + myInput.value;
+  twitterLink.href = "https://twitter.com/intent/tweet?text=" + encodeURI(text);
 }
 
 function copyOnClick() {
@@ -270,3 +280,5 @@ function copyOnClick() {
 function closeShareMenu() {
   document.getElementById("share-menu").hidden = true;
 }
+
+// shareItinerary();

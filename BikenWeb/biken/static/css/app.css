@@ -127,3 +127,7 @@ input {
 .full {
   font-size: 50px;
 }
+
+.social-media-row a {
+  color: #000;
+}
