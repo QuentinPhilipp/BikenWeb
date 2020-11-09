@@ -239,6 +239,36 @@ def addKmWithAngle(radius, direction, startPos):
 
     return returnValues
 
+def convertStravaItinerary(polylineData,distance,duration):
+    startTime = time.time()
+    
+    # Convert the polyline into gps points
+    path = polyline.decode(polylineData, 5,geojson=True)
+
+    # Create waypoints
+    startWaypoint = {"name":"Start","lon": path[0][0],"lat": path[0][1]}
+    endWaypoint = {"name":"Destination","lon": path[len(path)-1][0],"lat": path[len(path)-1][1]}
+
+    # Detecting route or itinerary
+    # TO FIX ( Allow a variation due to GPS imprecision)
+    if startWaypoint["lat"]==endWaypoint["lat"] and startWaypoint["lon"]==endWaypoint["lon"]:
+        itineraryType = "route"
+    else :
+        itineraryType = "oneway"
+
+    
+    endTime = time.time()
+
+    # Create the itinerary object
+    itineraryObject = {"type":itineraryType,"polyline":polylineData,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
+    
+    print("\n\n\n",itineraryObject,"\n\n\n")
+
+    # Store itinerary in DB
+    itineraryId = dataManager.storeItinerary(itineraryObject)
+    uniqueId = itineraryId
+
+    return uniqueId
 
 
 

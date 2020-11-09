@@ -179,6 +179,19 @@ def api_elevation():
 
 
 
+@main_bp.route("/convertToItinerary",methods=["POST"])
+def convertToItinerary():
+    req = request.get_json()
+    polyline = req['polyline']
+    distance = req['distance']
+    time = req['time']
+
+    itineraryID = routing.convertStravaItinerary(polyline,distance,time)
+
+    returnValue = {"itineraryID":itineraryID}
+    return jsonify(returnValue)
+
+
 
 @main_bp.route("/getGPX",methods=["GET"])
 def getGpx():

@@ -91,6 +91,24 @@
         </div>
 
         <hr />
+        <div class="row justify-content-around">
+          <button
+            onclick="convertStravaActivity('{{itinerary.polyline}}','{{itinerary.distance}}','{{itinerary.time}}')"
+            class="btn btn-outline-secondary col-4"
+          >
+            <span class="d-xs-block d-sm-none">Edit</span>
+            <span class="d-none d-sm-block d-xl-block"
+              >View in route editor</span
+            >
+          </button>
+          <button
+            onclick="convertStravaActivityToGPX()"
+            class="btn btn-outline-secondary col-4"
+          >
+            <span class="d-xs-block d-sm-none">GPX</span>
+            <span class="d-none d-sm-block d-xl-block">Download GPX</span>
+          </button>
+        </div>
       </div>
     </div>
 

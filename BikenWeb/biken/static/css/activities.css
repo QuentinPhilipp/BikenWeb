@@ -24,3 +24,7 @@
 #stat-row {
   min-height: 50%;
 }
+
+.info-container {
+  height: 100%;
+}
