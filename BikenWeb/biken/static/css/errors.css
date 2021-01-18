@@ -1,0 +1,16 @@
+.error-container {
+  width: 360px;
+  background: #f1f1f1;
+  height: max-content;
+  padding: 40px 40px;
+  border-radius: 10px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: rgba(0, 0, 0, 0.1) 1px solid;
+}
+
+.error-container h1 {
+  font-size: 80px;
+}

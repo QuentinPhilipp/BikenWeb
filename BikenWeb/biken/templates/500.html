@@ -1,0 +1,16 @@
+{% extends "layout.html" %} {% block title %}Page Not Found{% endblock %} {%
+block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/errors.css') }}"
+/>
+
+<div class="error-container text-center">
+  <h1>Oops</h1>
+  <h2>500 - Server down</h2>
+  <p>Our server is taking a break</p>
+  <p>Try again later or <a
+    href="mailto:quentin.philipp@hotmail.fr?subject=Server down for BikenApp"
+  >
+  contact the owner</p></a>
+</div>

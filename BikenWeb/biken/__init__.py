@@ -2,6 +2,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask import render_template
 
 
 db = SQLAlchemy()
@@ -20,13 +21,16 @@ def create_app():
     with app.app_context():
         from . import routes
         from . import auth
+        from . import errors
 
         # Register Blueprints
         app.register_blueprint(routes.main_bp)
         app.register_blueprint(auth.auth_bp)
+        app.register_blueprint(errors.err_bp)
 
         # Create Database Models
         db.create_all()
 
         return app
+
 

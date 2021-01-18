@@ -1,0 +1,16 @@
+{% extends "layout.html" %} {% block title %}Page Not Found{% endblock %} {%
+block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/errors.css') }}"
+/>
+
+<div class="error-container text-center">
+  <h1>Oops</h1>
+  <h2>404 - Page not found</h2>
+  <p>What you were looking for is just not there.</p>
+  <p>
+    <a href="{{ url_for('main_bp.home') }}">Go back to home page</a> {% endblock
+    %}
+  </p>
+</div>
