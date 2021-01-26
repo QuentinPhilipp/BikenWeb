@@ -97,6 +97,10 @@ async function requestItinerary() {
 function selectRoundTrip() {
   var finishInput = document.getElementById("finish");
   var distanceInput = document.getElementById("distance");
+  var searchButton = document.getElementById("search-oneway");
+
+  // Change ID to trip
+  searchButton.id = "search-trip";
 
   // disable one way
   finishInput.required = false;
@@ -110,6 +114,10 @@ function selectRoundTrip() {
 function selectOneWayTrip() {
   var finishInput = document.getElementById("finish");
   var distanceInput = document.getElementById("distance");
+  var searchButton = document.getElementById("search-trip");
+
+  // Change ID to trip
+  searchButton.id = "search-oneway";
 
   // disable round trip
   distanceInput.required = false;
