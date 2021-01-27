@@ -3,6 +3,10 @@
   height: 100%;
 }
 
+.unclick {
+  pointer-events: none;
+}
+
 .screen {
   top: 70px;
   left: 0;
