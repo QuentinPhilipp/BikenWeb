@@ -146,7 +146,7 @@ function showItineraryDetail(itinerary) {
   document.getElementById("kilometer-display").innerHTML = distance + " km";
 
   // Query elevation of this path to the server
-  getElevation(itinerary["uniqueId"]);
+  // getElevation(itinerary["uniqueId"]);
 
   var hours = Math.floor(itinerary["duration"] / 60);
   var minutes = Math.round(itinerary["duration"] % 60);
@@ -241,7 +241,7 @@ async function clearOldData() {
   clearMap();
 
   // remove the elevation chart
-  elevationChart.destroy();
+  // elevationChart.destroy();
 }
 
 function clearMap() {
