@@ -99,44 +99,32 @@ def planItinerary():
     distance = query_parameters.get('distance')
     routeType = query_parameters.get('type')
     render = query_parameters.get('render')
-    waypoints = query_parameters.get('waypoints')
 
     if routeType=="oneway":
+        gpsStart=routing.getGPSLocation(startPlace)
+        gpsDestination=routing.getGPSLocation(destinationPlace)
+        if gpsStart and gpsDestination:
+            itinerary = routing.itinerary(gpsStart,gpsDestination)
 
-        if waypoints:
-            # Group 1 lat
-            # Group 2 lon
-            pattern = re.compile(r"(-?\d+.\d+);(-?\d+.\d+)")
-
-            waypointsList = []
-            for match in pattern.finditer(waypoints):
-                waypointsList.append({"lat": match.group(1), "lon": match.group(2)})
-            itinerary = routing.itinerary(waypointsList[0],waypointsList[1])
-        
-        else:
-            gpsStart=routing.getGPSLocation(startPlace)
-            gpsDestination=routing.getGPSLocation(destinationPlace)
-            if gpsStart and gpsDestination:
-                itinerary = routing.itinerary(gpsStart,gpsDestination)
+            # Store itinerary in DB
+            itineraryId = dataManager.storeItinerary(itinerary)
+            itinerary["uniqueId"]=itineraryId
+ 
+            if render=='false':
+                # return only the data
+                return jsonify(itinerary)
             else :
-                val = {"error": "Bad request", "error_desc": "Start and/or destination not found"}
-                return jsonify(val)
-
-        # Store itinerary in DB
-        itineraryId = dataManager.storeItinerary(itinerary)
-        itinerary["uniqueId"]=itineraryId
-
-        if render=='false':
-            # return only the data
-            return jsonify(itinerary)
+                # Return the template
+                return render_template(
+                    'index.html',
+                    title='Biken Home page',
+                    current_user=current_user,
+                    itinerary=itinerary
+                )
         else :
-            # Return the template
-            return render_template(
-                'index.html',
-                title='Biken Home page',
-                current_user=current_user,
-                itinerary=itinerary
-            )
+            val = {"error": "Bad request", "error_desc": "Start and/or destination not found"}
+            return jsonify(val)
+
 
     elif routeType=="round":
         # Remove 10% of distance
@@ -173,31 +161,6 @@ def planItinerary():
 
 
 
-@main_bp.route("/plan/recalculateItinerary", methods=["GET"])
-def recalculateItinerary():
-    try:
-        query_parameters = request.args
-        waypoints = query_parameters.get('waypoints')
-
-        # Group 1 lat
-        # Group 2 lon
-        pattern = re.compile(r"(-?\d+.\d+);(-?\d+.\d+)")
-
-        waypointsList = []
-        for match in pattern.finditer(waypoints):
-            waypointsList.append({"lat": match.group(1), "lon": match.group(2)})
-
-        gpsStart = None
-        distance = None
-        print(f"Compute route with {waypointsList}")
-        route = routing.route(gpsStart, distance, waypointsList)
-        itineraryId = dataManager.storeItinerary(route)
-        route["uniqueId"]=itineraryId
-        # return only the data
-        return jsonify(route)
-    except:
-        val = {"error": "Error", "error_desc": "Error while recalculating itinerary"}
-        return jsonify(val)
 
 
 @main_bp.route("/save",methods=["POST"])

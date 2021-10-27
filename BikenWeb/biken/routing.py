@@ -27,33 +27,29 @@ def itinerary(startCoord,endCoord) :
 
     # Add the waypoints in the request
     url = f"https://api.mapbox.com/directions/v5/mapbox/cycling/{startLon},{startLat};{endLon},{endLat}?alternatives=false&overview=full&geometries=polyline&steps=false&access_token={MAPBOX_API_KEY}"
-
+    
     # Request data and sort the results
-    try:
-        print("Request itinerary: ",url)
-        r = requests.get(url)
-        data = r.json()
-        polyline = data["routes"][0]["geometry"]
-        distance = int(data["routes"][0]["distance"])
-        duration = int(data["routes"][0]["duration"]/60)
+    print("Request itinerary: ",url)
+    r = requests.get(url)
+    data = r.json()
+    polyline = data["routes"][0]["geometry"]
+    distance = int(data["routes"][0]["distance"])
+    duration = int(data["routes"][0]["duration"]/60)
 
-        # Create waypoints
-        startWaypoint = {"name":data["waypoints"][0]["name"],"lon": data["waypoints"][0]["location"][0],"lat": data["waypoints"][0]["location"][1]}
-        endWaypoint = {"name":data["waypoints"][1]["name"],"lon": data["waypoints"][1]["location"][0],"lat": data["waypoints"][1]["location"][1]}
+    # Create waypoints
+    startWaypoint = {"name":data["waypoints"][0]["name"],"lon": data["waypoints"][0]["location"][0],"lat": data["waypoints"][0]["location"][1]}
+    endWaypoint = {"name":data["waypoints"][1]["name"],"lon": data["waypoints"][1]["location"][0],"lat": data["waypoints"][1]["location"][1]}
 
-        endTime = time.time()
+    endTime = time.time()
 
-        # Return the route
-        returnObject = {"type":"oneway","polyline":polyline,"duration":duration/COEFF_DURATION,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
-        return returnObject
-    except Exception as e:
-        return {"type":"error","polyline":[],"duration":0,"distance":0,"calculationTime":0,"start":0,"end":0}
+    # Return the route
+    returnObject = {"type":"oneway","polyline":polyline,"duration":duration/COEFF_DURATION,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
+    return returnObject
 
 
-def route(startPoint,distance, waypointList=[]) :
+def route(startPoint,distance) :
     numberOfPoints = 5
-    if waypointList == []:
-        waypointList = generateCircle(startPoint,distance,numberOfPoints)
+    waypointList = generateCircle(startPoint,distance,numberOfPoints)
 
     # Add the waypoints in the request
     url = f"https://api.mapbox.com/directions/v5/mapbox/cycling/{waypointList[0]['lon']},{waypointList[0]['lat']};{waypointList[1]['lon']},{waypointList[1]['lat']};{waypointList[2]['lon']},{waypointList[2]['lat']};{waypointList[3]['lon']},{waypointList[3]['lat']};{waypointList[4]['lon']},{waypointList[4]['lat']};{waypointList[0]['lon']},{waypointList[0]['lat']}?alternatives=false&overview=full&geometries=polyline&steps=false&access_token={MAPBOX_API_KEY}"
@@ -75,7 +71,7 @@ def route(startPoint,distance, waypointList=[]) :
     endTime = time.time()
 
     # Return the route
-    returnObject = {"type":"round","polyline":polyline,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint, "waypoints":waypointList}
+    returnObject = {"type":"round","polyline":polyline,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
     return returnObject
 
 
@@ -83,7 +79,7 @@ def removeUturn(coordsList):
     # Need to check if two adjacents points are the same;
 
     verified = False
-    bufferSize=10
+    bufferSize=10;
 
 
     # while not verified:
@@ -245,7 +241,7 @@ def addKmWithAngle(radius, direction, startPos):
 
 def convertStravaItinerary(polylineData,distance,duration):
     startTime = time.time()
-
+    
     # Convert the polyline into gps points
     path = polyline.decode(polylineData, 5,geojson=True)
 
@@ -262,12 +258,12 @@ def convertStravaItinerary(polylineData,distance,duration):
     else :
         itineraryType = "oneway"
 
-
+    
     endTime = time.time()
 
     # Create the itinerary object
     itineraryObject = {"type":itineraryType,"polyline":polylineData,"duration":duration,"distance":distance,"calculationTime":endTime-startTime,"start":startWaypoint,"end":endWaypoint}
-
+    
     print("\n\n\n",itineraryObject,"\n\n\n")
 
     # Store itinerary in DB
