@@ -1,5 +1,5 @@
 
-Flask==1.1.1
+Flask==2.3.2
 Flask-Cors==3.0.9
 python-utils==2.3.0
 requests==2.22.0
